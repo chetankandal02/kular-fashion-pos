@@ -33,9 +33,7 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-6">
-                            <script>
-                                document.write(new Date().getFullYear())
-                            </script> © Kular Fashion.
+                            {{ date('Y') }} © Kular Fashion.
                         </div>
                     </div>
                 </div>

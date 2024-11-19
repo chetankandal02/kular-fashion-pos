@@ -19,39 +19,98 @@
             </div>
 
             <div class="row">
-                <!-- Actions (Hold, Cancel, etc.) -->
-                <div v-for="action in actions" :key="action.name" class="col-6 mb-2 pe-1">
-                    <button :class="`btn ${action.class} w-100`" @click="handleActionClick(action.name)">
-                        <i :class="action.icon" class="font-size-14 me-1"></i>
-                        {{ action.name }}
+                <!-- Hold Sale Button -->
+                <div class="col-6 mb-2 pe-1">
+                    <button class="btn btn-warning w-100" @click="handleActionClick('Hold Sale')">
+                        <i class="mdi mdi-pause font-size-14 me-1"></i>
+                        Hold Sale
+                    </button>
+                </div>
+
+                <!-- Cancel Button -->
+                <div class="col-6 mb-2 pe-1">
+                    <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                        <i class="mdi mdi-close font-size-14 me-1"></i>
+                        Cancel
+                    </button>
+                </div>
+
+                <!-- Layway Button -->
+                <div class="col-6 mb-2 pe-1">
+                    <button class="btn btn-secondary w-100" @click="handleActionClick('Layway')">
+                        <i class="mdi mdi-account-cash font-size-14 me-1"></i>
+                        Layway
+                    </button>
+                </div>
+
+                <!-- Credit Notes Button -->
+                <div class="col-6 mb-2 pe-1">
+                    <button class="btn btn-dark w-100" @click="handleActionClick('Credit Notes')">
+                        <i class="mdi mdi-notebook-edit-outline font-size-14 me-1"></i>
+                        Credit Notes
+                    </button>
+                </div>
+
+                <!-- Tender Button -->
+                <div class="col-6 mb-2 pe-1">
+                    <button class="btn btn-success w-100" @click="handleActionClick('Tender')">
+                        <i class="mdi mdi-cash-plus font-size-14 me-1"></i>
+                        Tender
+                    </button>
+                </div>
+
+                <!-- Return Sale Button -->
+                <div class="col-6 mb-2 pe-1">
+                    <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#returnSaleModal">
+                        <i class="mdi mdi-keyboard-return font-size-14 me-1"></i>
+                        Return Sale
+                    </button>
+                </div>
+
+                <!-- EOD Button -->
+                <div class="col-6 mb-2 pe-1">
+                    <button class="btn btn-info w-100" @click="handleActionClick('EOD')">
+                        <i class="mdi mdi-printer font-size-14 me-1"></i>
+                        EOD
+                    </button>
+                </div>
+
+                <!-- Gift Voucher Button -->
+                <div class="col-6 mb-2 pe-1">
+                    <button class="btn btn-dark w-100" @click="handleActionClick('Gift Voucher')">
+                        <i class="mdi mdi-gift font-size-14 me-1"></i>
+                        Gift Voucher
                     </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <ReturnSaleModal @returnSaleConfirmed="returnSale" />
+    <CancelOrderModal />
 </template>
 
 <script>
+import ReturnSaleModal from './ReturnSaleModal.vue';
+import CancelOrderModal from './CancelOrderModal.vue';
+
 export default {
+    components: {
+        ReturnSaleModal,
+        CancelOrderModal
+    },
+    props: {
+        orderItems: Array,
+    },
     data() {
         return {
-            orderItems: [
-                { code: '#SK2540', description: 'Neal Matthews', price: 45 },
-                { code: '#SK2541', description: 'Jamal Burnett', price: 470 },
-            ],
-            actions: [
-                { name: 'Hold Sale', class: 'btn-warning', icon: 'mdi mdi-pause' },
-                { name: 'Cancel', class: 'btn-danger', icon: 'mdi mdi-close' },
-                { name: 'Layway', class: 'btn-secondary', icon: 'mdi mdi-account-cash' },
-                { name: 'Credit Notes', class: 'btn-dark', icon: 'mdi mdi-notebook-edit-outline' },
-                { name: 'Tender', class: 'btn-success', icon: 'mdi mdi-cash-plus' },
-                { name: 'Return Sale', class: 'btn-danger', icon: 'mdi mdi-keyboard-return' },
-                { name: 'EOD', class: 'btn-info', icon: 'mdi mdi-printer' },
-                { name: 'Gift Voucher', class: 'btn-dark', icon: 'mdi mdi-gift' },
-            ],
+            //
         };
     },
     methods: {
+        returnSale(item){
+            console.log('return ', item)
+        },
         handleActionClick(actionName) {
             switch (actionName) {
                 case 'Hold Sale':

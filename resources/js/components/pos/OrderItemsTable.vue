@@ -44,7 +44,6 @@ export default {
             orderItems: [
                 { code: '#SK2540', description: 'Neal Matthews', color: 'Grey', size: 'S', brand: 'Puma', price: 45 },
                 { code: '#SK2541', description: 'Jamal Burnett', color: 'Black', size: 'L', brand: 'Nike', price: 470 },
-                // Add more order items here
             ],
         };
     },
