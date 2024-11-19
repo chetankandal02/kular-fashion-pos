@@ -1,55 +1,18 @@
-@if($hasPlugin('image'))
-@push('scripts')
-<script>
-    function Image(input, previewId) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $(previewId).prop('hidden', false).attr('src', e.target.result);
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    $('#add-department-image').change(function() {
-        Image(this, '#preview-department');
-        Image(this, '#previewDepartment');
-    });
-
-    $('#add-productType-image').change(function() {
-        Image(this, '#preview-productType');
-        Image(this, '#preview-product-type');
-    });
-
-    $('#add-brand-image').change(function() {
-        Image(this, '#preview-brand');
-        Image(this, '#previewBrand');
-    });
-
-    $('#add-product-image').change(function() {
-        // Image(this, '#preview-brand');
-        Image(this, '#preview-product');
-        Image(this, '#previewProduct');
-    })
-</script>
-@endpush
-@endif
-
 @if($hasPlugin('datePicker'))
     @push('styles')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/libs/flatpickr/flatpickr.min.css') }}">
     @endpush
 
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="{{ asset('assets/libs/flatpickr/flatpickr.min.js') }}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        $(function() {
             flatpickr('.date-picker', {
                 dateFormat: "Y-m-d",
                 allowInput: true,
                 maxDate: "today"
             });
-        })
+        });
     </script>
     @endpush
 @endif
@@ -90,13 +53,8 @@
     @endpush
 
     @push('scripts')
-        <!-- Responsive examples -->
-        <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
-        <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
-        <!-- Required datatable js -->
         <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-        <!-- Buttons examples -->
         <script src="{{ asset('assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset('assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}"></script>
     @endpush
