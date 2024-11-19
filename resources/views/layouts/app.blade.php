@@ -11,6 +11,7 @@
     <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
     <script src="assets/js/plugin.js"></script>
 
+    @stack('styles')
     @vite('resources/js/app.js')
 </head>
 
@@ -46,5 +47,7 @@
     <script src="assets/libs/metismenu/metisMenu.min.js"></script>
     <script src="assets/libs/node-waves/waves.min.js"></script>
     <script src="assets/js/app.js"></script>
+
+    @stack('scripts')
 </body>
 </html>

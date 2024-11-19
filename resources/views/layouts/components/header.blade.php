@@ -32,7 +32,9 @@
                     <span>Search Article</span>
                 </button>
             
-                <sales-list-button></sales-list-button>
+                <button type="button" class="btn header-item waves-effect" data-bs-toggle="modal" data-bs-target="#salesListModal">
+                    <span>Sales List</span>
+                </button>
             </div>
         </div>
 
