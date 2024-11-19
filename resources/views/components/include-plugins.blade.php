@@ -68,10 +68,10 @@
 
 @if($hasPlugin('chosen'))
     @push('styles')
-        <link rel="stylesheet" href="{{ asset('assets/css/chosen.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('assets/libs/chosen/chosen.min.css') }}" />
     @endpush
     @push('scripts')
-        <script src="{{ asset('assets/js/chosen.jquery.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/chosen/chosen.jquery.min.js') }}"></script>
     @endpush
 @endif
 

@@ -40,7 +40,7 @@ export default {
                 { code: '#SK2541', description: 'Jamal Burnett', price: 470 },
             ],
             actions: [
-                { name: 'Hold Order', class: 'btn-warning', icon: 'mdi mdi-pause' },
+                { name: 'Hold Sale', class: 'btn-warning', icon: 'mdi mdi-pause' },
                 { name: 'Cancel', class: 'btn-danger', icon: 'mdi mdi-close' },
                 { name: 'Layway', class: 'btn-secondary', icon: 'mdi mdi-account-cash' },
                 { name: 'Credit Notes', class: 'btn-dark', icon: 'mdi mdi-notebook-edit-outline' },
@@ -54,7 +54,7 @@ export default {
     methods: {
         handleActionClick(actionName) {
             switch (actionName) {
-                case 'Hold Order':
+                case 'Hold Sale':
                     this.holdOrder();
                     break;
                 case 'Cancel':
