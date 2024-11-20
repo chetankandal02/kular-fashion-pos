@@ -25,7 +25,10 @@ export default {
     },
     data() {
         return {
-            orderItems: [],
+            orderItems: [
+                { code: '300001', description: 'Neal Matthews', color: 'Grey', size: 'S', brand: 'Puma', price: 45 },
+                { code: '300005', description: 'Jamal Burnett', color: 'Black', size: 'L', brand: 'Nike', price: 470 },
+            ],
             availableProducts: [
                 { id: 1, name: 'TShirt', description: 'Comfortable cotton T-shirt', price: 15, image: 'https://via.placeholder.com/100' },
                 { id: 2, name: 'Jeans', description: 'Denim jeans', price: 30, image: 'https://via.placeholder.com/100' },

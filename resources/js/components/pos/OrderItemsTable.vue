@@ -6,7 +6,7 @@
                 <table class="table align-middle table-nowrap mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="align-middle">Item Code</th>
+                            <th class="align-middle">Article Code</th>
                             <th class="align-middle">Description</th>
                             <th class="align-middle">Color</th>
                             <th class="align-middle">Size</th>
@@ -24,8 +24,12 @@
                             <td>{{ item.brand }}</td>
                             <td>{{ item.price }}</td>
                             <td>
+                                <button @click="editItemPriceModal(item)" type="button"
+                                    class="btn btn-sm btn-primary waves-effect waves-light me-2">
+                                    <i class="bx bx-edit fs-5"></i>
+                                </button>
                                 <button @click="removeItem(item)" type="button"
-                                    class="btn btn-primary btn-danger waves-effect waves-light">
+                                    class="btn btn-sm btn-danger waves-effect waves-light">
                                     <i class="bx bx-trash-alt fs-5"></i>
                                 </button>
                             </td>
@@ -35,21 +39,44 @@
             </div>
         </div>
     </div>
+
+    <EditItemPriceModal :selectedItem="selectedItem" @save-price-change="savePriceChange" />
 </template>
 
 <script>
+import EditItemPriceModal from './EditItemPriceModal.vue';
+
 export default {
+    props: {
+        orderItems: {
+            type: Array,
+            required: true
+        }
+    },
+    emits: ['remove-from-cart'],
+    components: {
+        EditItemPriceModal
+    },
     data() {
         return {
-            orderItems: [
-                { code: '#SK2540', description: 'Neal Matthews', color: 'Grey', size: 'S', brand: 'Puma', price: 45 },
-                { code: '#SK2541', description: 'Jamal Burnett', color: 'Black', size: 'L', brand: 'Nike', price: 470 },
-            ],
+            selectedItem: null
         };
     },
     methods: {
+        editItemPriceModal(item) {
+            this.selectedItem = { ...item };
+            const modal = new bootstrap.Modal($('#editPriceModal'));
+            modal.show();
+        },
+        savePriceChange(updatedItem) {
+            const index = this.orderItems.findIndex(item => item.code === updatedItem.code);
+            if (index !== -1) {
+                this.orderItems[index].price = updatedItem.price;
+                this.orderItems[index].reason = updatedItem.reason;
+            }
+        },
         removeItem(item) {
-            this.orderItems = this.orderItems.filter(i => i !== item);
+            this.$emit('remove-from-cart', item);
         },
     },
 };

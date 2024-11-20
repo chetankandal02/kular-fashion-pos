@@ -29,7 +29,7 @@
 
                 <!-- Cancel Button -->
                 <div class="col-6 mb-2 pe-1">
-                    <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">
+                    <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#cancelSaleModal">
                         <i class="mdi mdi-close font-size-14 me-1"></i>
                         Cancel
                     </button>
@@ -53,7 +53,7 @@
 
                 <!-- Tender Button -->
                 <div class="col-6 mb-2 pe-1">
-                    <button class="btn btn-success w-100" @click="handleActionClick('Tender')">
+                    <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#tenderModal">
                         <i class="mdi mdi-cash-plus font-size-14 me-1"></i>
                         Tender
                     </button>
@@ -77,7 +77,7 @@
 
                 <!-- Gift Voucher Button -->
                 <div class="col-6 mb-2 pe-1">
-                    <button class="btn btn-dark w-100" @click="handleActionClick('Gift Voucher')">
+                    <button class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#giftVoucherModal">
                         <i class="mdi mdi-gift font-size-14 me-1"></i>
                         Gift Voucher
                     </button>
@@ -87,17 +87,23 @@
     </div>
 
     <ReturnSaleModal @returnSaleConfirmed="returnSale" />
-    <CancelOrderModal />
+    <CancelSaleModal />
+    <TenderModal />
+    <GiftVoucherModal />
 </template>
 
 <script>
 import ReturnSaleModal from './ReturnSaleModal.vue';
-import CancelOrderModal from './CancelOrderModal.vue';
+import CancelSaleModal from './CancelSaleModal.vue';
+import TenderModal from './TenderModal.vue';
+import GiftVoucherModal from './GiftVoucherModal.vue';
 
 export default {
     components: {
         ReturnSaleModal,
-        CancelOrderModal
+        CancelSaleModal,
+        TenderModal,
+        GiftVoucherModal
     },
     props: {
         orderItems: Array,
