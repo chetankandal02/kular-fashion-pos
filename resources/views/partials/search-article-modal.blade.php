@@ -8,28 +8,29 @@
 
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-4 mb-3">
+                    {{-- <div class="col-md-4 mb-3">
                         <x-form-input name="search_by_keyword" label="Search"></x-form-input>
-                    </div>
+                    </div> --}}
                     <div class="col-md-4 mb-3">
                         <label for="search_by_brand">Brand</label>
                         <select name="search_by_brand" id="search_by_brand" class="form-control">
                             <option value="">Select brand</option>
-                            <option value="1">Adidas</option>
-                            <option value="2">Puma</option>
-                            <option value="3">Nike</option>
+                            @foreach($brands as $brand)
+                            <option value="{{ $brand->id }}">{{$brand->name}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="search_by_product_type">Product Type</label>
                         <select name="search_by_product_type" id="search_by_product_type" class="form-control">
                             <option value="">Select Product Type</option>
-                            <option value="1">T-Shirt</option>
-                            <option value="2">Shirt</option>
+                            @foreach($productTypes as $productType)
+                            <option value="{{ $productType->id}}">{{$productType->product_type_name}}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
-                <table class="table table-striped table-bordered">
+                <table class="table table-striped table-bordered" id="search-article-modal" style="width: 100%;">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -39,35 +40,12 @@
                             <th>Brand</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>300001</td>
-                            <td>123456</td>
-                            <td>Men</td>
-                            <td>Adidas</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>300002</td>
-                            <td>asdasd</td>
-                            <td>Women</td>
-                            <td>Puma</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>300003</td>
-                            <td>Chetan</td>
-                            <td>Unisex</td>
-                            <td>Nike</td>
-                        </tr>
-                    </tbody>
+
                 </table>
             </div>
         </div>
     </div>
 </div>
-
 
 @push('scripts')
 <script>
@@ -79,6 +57,36 @@
         $('#search_by_product_type').chosen({
             width: "100%"
         });
-    })
+
+        $(document).ready(function() {
+            var table = $('#search-article-modal').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '{{ route('get.products') }}',
+                    data: function (d) {
+                        d.brand_id = $('#search_by_brand').val();
+                        d.product_type_id = $('#search_by_product_type').val();
+                        d.page = Math.floor(d.start / d.length) + 1;
+                    }
+                },
+                columns: [
+                    { title: "#", data: 'id'},
+                    { title: "Article Code", data: 'article_code' },
+                    { title: "Manufacture Code", data: 'manufacture_code' },
+                    { title: "Department", data: 'department.name' },
+                    { title: "Brand", data: 'brand.name' },
+                ],
+                order: [[0, 'desc']]
+            });
+            $('#search_by_brand').on('change', function() {
+                table.ajax.reload();
+            });
+
+            $('#search_by_product_type').on('change', function() {
+                table.ajax.reload();
+            });
+        });
+    });
 </script>
 @endpush
