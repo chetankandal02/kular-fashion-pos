@@ -10,6 +10,7 @@
     <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
     <link href="assets/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css')}}" rel="stylesheet" type="text/css" />
     <script src="assets/js/plugin.js"></script>
 
     @stack('styles')
@@ -48,6 +49,7 @@
     <script src="assets/libs/metismenu/metisMenu.min.js"></script>
     <script src="assets/libs/node-waves/waves.min.js"></script>
     <script src="assets/js/app.js"></script>
+    <script src="{{ asset('assets\libs\sweetalert2\sweetalert2.min.js')}}"></script>
 
     @stack('scripts')
 </body>

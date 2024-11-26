@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\ProductQuantity;
 
 class ProductController extends Controller
 {
@@ -48,4 +49,60 @@ class ProductController extends Controller
 
         return response()->json($data);
     }
+
+    public function generateCheckDigit($ean) {
+        
+        if (strlen($ean) != 12) {
+            throw new \Exception("EAN must have 12 digits.");
+        }
+    
+        $digits = str_split($ean); 
+        $oddSum = 0;
+        $evenSum = 0;
+    
+        for ($i = 0; $i < 12; $i += 2) {
+            $oddSum += $digits[$i];
+        }
+    
+        for ($i = 1; $i < 12; $i += 2) {
+            $evenSum += $digits[$i];
+        }
+    
+        $totalSum = ($oddSum * 3) + $evenSum;
+        $checkDigit = (10 - ($totalSum % 10)) % 10;
+    
+        return $checkDigit;
+    }
+
+    public function productValidate($barcode)
+    {
+        $products = ProductQuantity::with('product.brand','product.department', 'sizes.sizeDetail', 'colors.colorDetail')->get();
+        foreach($products as $product)
+        {
+            $article_code = $product->product->article_code;
+            $color_code = $product->colors->colorDetail->color_code;
+            $new_code = $product->sizes->sizeDetail->new_code;
+            $article_code = $article_code.$color_code.$new_code;
+            $checkCode = $this->generateCheckDigit($article_code);
+            $generated_code = $article_code . $checkCode;
+
+            if ($generated_code == $barcode) {
+                $productData = [
+                    'product_id'   => $product->product->id,
+                    'code' => $product->product->article_code,
+                    'description' => $product->product->short_description,
+                    'color' => $product->colors->colorDetail->color_name,
+                    'size' => $product->sizes->sizeDetail->size,
+                    'brand' => $product->product->brand->name,
+                    'price' => (float) $product->sizes->mrp, // Ensure price is a float
+                    'total_quantity'=> $product->quantity,
+                ];
+
+                return response()->json(['success' => true, 'message' => 'Product barcode is valid.', 'product' => $productData], 200);
+            }
+        }
+        return response()->json(['success' => false, 'message' => 'Product barcode is invalid.']);
+    }
+
+   
 }

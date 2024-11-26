@@ -15,3 +15,5 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/', [FrontendController::class, 'index'])->name('/');
     Route::get('/get-products', [ProductController::class, 'getProducts'])->name('get.products');
 });
+
+Route::get('product-validate/{barcode}', [ProductController::class, 'productValidate']);
