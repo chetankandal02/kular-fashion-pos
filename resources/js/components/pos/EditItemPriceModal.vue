@@ -10,13 +10,15 @@
                     <div v-if="selectedItem">
                         <div class="mb-3">
                             <label for="itemPrice" class="form-label">Price</label>
-                            <input type="number" class="form-control" id="itemPrice" v-model="selectedItem.price"
+                            <input type="number" class="form-control" id="itemPrice"  v-model="priceModel"
                                 placeholder="Enter new price" />
+                                <div v-if="errorPrice" class="text-danger mt-2">Please enter a new price.</div>
                         </div>
                         <div class="mb-3">
                             <label for="priceReason" class="form-label">Reason</label>
                             <textarea class="form-control" id="priceReason" v-model="selectedItem.reason"
                                 placeholder="Enter the reason for the price change"></textarea>
+                                <div v-if="errorReason" class="text-danger mt-2">Reason is required.</div>
                         </div>
                     </div>
                 </div>
@@ -32,11 +34,61 @@
 <script>
 export default {
     props: ['selectedItem'],
+    data() {
+        return {
+            errorReason: false,
+            errorPrice: false,
+        };
+    },
+    computed: {
+        priceModel: {
+            get() {
+                return this.selectedItem.changedPrice ? this.selectedItem.changedPrice.amount : this.selectedItem.price;
+            },
+            set(value) {
+                if (this.selectedItem.changedPrice) {
+                    this.selectedItem.changedPrice.amount = value;
+                } else {
+                    this.selectedItem.price = value;
+                }
+            }
+        }
+    },
     methods: {
         savePriceChange() {
-            this.$emit('save-price-change', this.selectedItem);
-            const modal = bootstrap.Modal.getInstance(document.getElementById('editPriceModal'));
-            modal.hide();
+            if (!this.selectedItem.reason || this.selectedItem.reason.trim() === '') {
+                this.errorReason = true;
+            } else {
+                this.errorReason = false;
+            }
+
+            // if (this.priceModel === this.selectedItem.price) {
+            //     this.errorPrice = true;
+            //     return;
+            // } else {
+            //     this.errorPrice = false;
+            // }
+
+            if (!this.errorReason && !this.errorPrice) {
+                let items = JSON.parse(localStorage.getItem('orderItems')) || [];
+                const itemIndex = items.findIndex(item => item.product_id === this.selectedItem.product_id && item.size === this.selectedItem.size);
+                if (itemIndex !== -1) {
+                    const updatedItem = { 
+                        ...items[itemIndex], 
+                        changedPrice: {
+                            amount: this.selectedItem.price, 
+                            reason: this.selectedItem.reason 
+                        }
+                    };
+                    items.splice(itemIndex, 1, updatedItem);
+                    this.$emit('save-price-change', this.selectedItem);
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editPriceModal'));
+                    modal.hide();
+                    localStorage.setItem('orderItems', JSON.stringify(items));  
+                } else {
+                    console.log('Item not found');
+                }
+            }
         }
     },
 };

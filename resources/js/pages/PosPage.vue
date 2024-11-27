@@ -25,25 +25,24 @@ export default {
     },
     data() {
         return {
-            orderItems: [
-                { code: '300001', description: 'Neal Matthews', color: 'Grey', size: 'S', brand: 'Puma', price: 45 },
-                { code: '300005', description: 'Jamal Burnett', color: 'Black', size: 'L', brand: 'Nike', price: 470 },
-            ],
-            availableProducts: [
-                { id: 1, name: 'TShirt', description: 'Comfortable cotton T-shirt', price: 15, image: 'https://via.placeholder.com/100' },
-                { id: 2, name: 'Jeans', description: 'Denim jeans', price: 30, image: 'https://via.placeholder.com/100' },
-                { id: 3, name: 'Shoes', description: 'Running shoes', price: 50, image: 'https://via.placeholder.com/100' },
-            ],
+            orderItems: [],
         };
     },
     methods: {
         addToCart(product) {
             this.orderItems.push(product);
+            localStorage.setItem('orderItems', JSON.stringify(this.orderItems));
         },
         removeFromCart(product) {
-            this.orderItems = this.orderItems.filter(item => item.id !== product.id);
+            this.orderItems = this.orderItems.filter(item => item.product_id !== product.product_id || item.size !== product.size || item.color !== product.color);
+            localStorage.setItem('orderItems', JSON.stringify(this.orderItems));
         },
     },
+    mounted(){
+        if(localStorage.getItem('orderItems')){
+            this.orderItems = JSON.parse(localStorage.getItem('orderItems'));
+        }
+    }
 };
 </script>
 
