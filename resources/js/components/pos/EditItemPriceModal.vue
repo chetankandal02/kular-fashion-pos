@@ -10,15 +10,15 @@
                     <div v-if="selectedItem">
                         <div class="mb-3">
                             <label for="itemPrice" class="form-label">Price</label>
-                            <input type="number" class="form-control" id="itemPrice"  v-model="priceModel"
-                                placeholder="Enter new price" />
-                                <div v-if="errorPrice" class="text-danger mt-2">Please enter a new price.</div>
+                            <input type="number" class="form-control" id="itemPrice" v-model="priceModel"
+                                placeholder="Enter new price"  :class="{'is-invalid': selectedItem.price==priceModel}"/>
+                            <span v-if="selectedItem.price==priceModel" class="invalid-feedback">Please enter a new price.</span>
                         </div>
                         <div class="mb-3">
                             <label for="priceReason" class="form-label">Reason</label>
                             <textarea class="form-control" id="priceReason" v-model="selectedItem.reason"
-                                placeholder="Enter the reason for the price change"></textarea>
-                                <div v-if="errorReason" class="text-danger mt-2">Reason is required.</div>
+                                placeholder="Enter the reason for the price change"  :class="{'is-invalid': errorReason}"></textarea>
+                            <span v-if="errorReason" class="invalid-feedback">Reason is required.</span>
                         </div>
                     </div>
                 </div>
@@ -37,7 +37,6 @@ export default {
     data() {
         return {
             errorReason: false,
-            errorPrice: false,
         };
     },
     computed: {
@@ -62,14 +61,7 @@ export default {
                 this.errorReason = false;
             }
 
-            // if (this.priceModel === this.selectedItem.price) {
-            //     this.errorPrice = true;
-            //     return;
-            // } else {
-            //     this.errorPrice = false;
-            // }
-
-            if (!this.errorReason && !this.errorPrice) {
+            if (!this.errorReason && !this.selectedItem.price!=this.priceModel) {
                 let items = JSON.parse(localStorage.getItem('orderItems')) || [];
                 const itemIndex = items.findIndex(item => item.product_id === this.selectedItem.product_id && item.size === this.selectedItem.size);
                 if (itemIndex !== -1) {
