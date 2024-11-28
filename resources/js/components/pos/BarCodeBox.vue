@@ -25,7 +25,7 @@ export default {
                 const {product} = response.data;
                 if (product) {
                     console.log(this.$parent.orderItems);
-                    const existingProduct = this.$parent.orderItems.find(
+                   /* const existingProduct = this.$parent.orderItems.find(
                         item => item.code === product.code && item.size === product.size && item.color === product.color
                     );
                     if (existingProduct) {
@@ -38,7 +38,8 @@ export default {
                         });
                     } else {
                         this.$emit('add-to-cart', product);
-                    }
+                    }*/
+                    this.$emit('add-to-cart', product);
                 } else {
                     Swal.fire({
                         title: 'Error!',

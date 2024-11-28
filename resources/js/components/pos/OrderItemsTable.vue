@@ -16,7 +16,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in orderItems" :key="item.code">
+                        <tr v-for="(item, index) in orderItems" :key="item.code + item.size">
                             <td><a href="javascript: void(0);" class="text-body fw-bold">{{ item.code }}</a></td>
                             <td>{{ item.description }}</td>
                             <td>{{ item.color }}</td>
@@ -24,12 +24,18 @@
                             <td>{{ item.brand }}</td>
                             <td>{{ formatPrice(item.changedPrice ? item.changedPrice.amount : item.price) }}</td>
                             <td>
-                                <button @click="editItemPriceModal(item)" type="button"
-                                    class="btn btn-sm btn-primary waves-effect waves-light me-2">
+                                <button
+                                    @click="editItemPriceModal(item)"
+                                    type="button"
+                                    class="btn btn-sm btn-primary waves-effect waves-light me-2"
+                                >
                                     <i class="bx bx-edit fs-5"></i>
                                 </button>
-                                <button @click="removeItem(item)" type="button"
-                                    class="btn btn-sm btn-danger waves-effect waves-light">
+                                <button
+                                    @click="removeItem(index)"
+                                    type="button"
+                                    class="btn btn-sm btn-danger waves-effect waves-light"
+                                >
                                     <i class="bx bx-trash-alt fs-5"></i>
                                 </button>
                             </td>
@@ -40,48 +46,49 @@
         </div>
     </div>
 
-    <EditItemPriceModal :selectedItem="selectedItem" @save-price-change="savePriceChange" />
+    <!-- Modal for editing item price -->
+    <EditItemPriceModal :selectedItem="selectedItem" @save-price-change="updateItemPrice" />
 </template>
 
 <script>
 import EditItemPriceModal from './EditItemPriceModal.vue';
 
 export default {
-    props: {
-        orderItems: {
-            type: Array,
-            required: true
-        }
-    },
-    emits: ['remove-from-cart'],
     components: {
         EditItemPriceModal
     },
-    data() {
-        return {
-            selectedItem: null
-        };
+    props: {
+        orderItems: {
+            type: Array
+        }
     },
     methods: {
         formatPrice(price) {
-            if (!price) return '$0.00';  // Handle null or undefined price
+            if (!price) return '£0.00';
             return `£${parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
         },
         editItemPriceModal(item) {
             this.selectedItem = { ...item };
-            const modal = new bootstrap.Modal($('#editPriceModal'));
-            modal.show();
+            const modalElement = document.getElementById('editPriceModal');
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+            modalInstance.show();
         },
-        savePriceChange(updatedItem) {
-            const index = this.orderItems.findIndex(item => item.code === updatedItem.code);
+        updateItemPrice(updatedItem) {
+            const index = this.orderItems.findIndex(
+                (item) =>
+                    item.product_id === updatedItem.product_id &&
+                    item.size === updatedItem.size
+            );
+
             if (index !== -1) {
-                this.orderItems[index].price = updatedItem.price;
-                this.orderItems[index].reason = updatedItem.reason;
+                this.orderItems[index] = updatedItem;
             }
+
+            localStorage.setItem('orderItems', JSON.stringify(this.orderItems));
         },
         removeItem(item) {
             this.$emit('remove-from-cart', item);
-        },
-    },
+        }
+    }
 };
 </script>
