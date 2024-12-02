@@ -31,11 +31,15 @@ export default {
     methods: {
         addToCart(product) {
             this.orderItems.push(product);
+            console.log('this.orderItems',this.orderItems)
             localStorage.setItem('orderItems', JSON.stringify(this.orderItems));
+
         },
-        removeFromCart(product) {
-            this.orderItems = this.orderItems.filter(item => item.product_id !== product.product_id || item.size !== product.size || item.color !== product.color);
+        removeFromCart(itemIndex) {
+            this.orderItems.splice(itemIndex, 1);
             localStorage.setItem('orderItems', JSON.stringify(this.orderItems));
+            /* this.orderItems = this.orderItems.filter(item => item.product_id !== product.product_id || item.size !== product.size || item.color !== product.color);
+            localStorage.setItem('orderItems', JSON.stringify(this.orderItems)); */
         },
     },
     mounted(){
