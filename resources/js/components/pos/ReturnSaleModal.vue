@@ -10,7 +10,7 @@
                 <div class="modal-body">
                     <div class="search-box mb-2">
                         <div class="position-relative">
-                            <input type="number" v-model="query" class="form-control" :class="{'is-invalid': barcodeInvalid}" placeholder="Enter barcode">
+                            <input type="number" v-model="query" class="form-control" :class="{'is-invalid': barcodeInvalid}" placeholder="Enter barcode" @input="returnItem">
                             <i class="bx bx-barcode search-icon"></i>
                             <span v-if="barcodeInvalid" class="invalid-feedback">Barcode must be 13 characters long.</span>
                         </div>
@@ -51,6 +51,11 @@ export default {
             }
 
             this.returnSale();
+        },
+        returnItem(){
+            if(this.query.toString().length === 13){
+                this.query = '';
+            }
         }
     }
 };

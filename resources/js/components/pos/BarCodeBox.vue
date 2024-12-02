@@ -24,16 +24,3 @@ export default {
     },
 };
 </script>
-
-<style scoped>
-/* Hide number input arrows */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-input[type="number"] {
-    -moz-appearance: textfield; /* Firefox */
-}
-</style>
