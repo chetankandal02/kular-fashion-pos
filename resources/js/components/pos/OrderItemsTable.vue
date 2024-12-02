@@ -22,7 +22,7 @@
                             <td>{{ item.color }}</td>
                             <td>{{ item.size }}</td>
                             <td>{{ item.brand }}</td>
-                            <td>{{ item.price }}</td>
+                            <td>{{ formatPrice(item.changedPrice ? item.changedPrice.amount : item.price) }}</td>
                             <td>
                                 <button @click="editItemPriceModal(item)" type="button"
                                     class="btn btn-sm btn-primary waves-effect waves-light me-2">
@@ -63,6 +63,10 @@ export default {
         };
     },
     methods: {
+        formatPrice(price) {
+            if (!price) return '$0.00';  // Handle null or undefined price
+            return `£${parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
+        },
         editItemPriceModal(item) {
             this.selectedItem = { ...item };
             const modal = new bootstrap.Modal($('#editPriceModal'));
