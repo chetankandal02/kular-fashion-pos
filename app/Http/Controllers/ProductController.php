@@ -56,22 +56,14 @@ class ProductController extends Controller
             throw new \Exception("EAN must have 12 digits.");
         }
     
-        $digits = str_split($ean); 
-        $oddSum = 0;
-        $evenSum = 0;
-    
-        for ($i = 0; $i < 12; $i += 2) {
-            $oddSum += $digits[$i];
+        $sum = 0;
+        for ($i = 0; $i < 12; $i++) {
+            $digit = (int) $ean[$i];
+            $sum += ($i % 2 === 0) ? $digit : $digit * 3;
         }
     
-        for ($i = 1; $i < 12; $i += 2) {
-            $evenSum += $digits[$i];
-        }
-    
-        $totalSum = ($oddSum * 3) + $evenSum;
-        $checkDigit = (10 - ($totalSum % 10)) % 10;
-    
-        return $checkDigit;
+        $remainder = $sum % 10;
+        return $remainder === 0 ? 0 : 10 - $remainder;
     }
 
     public function productValidate($barcode)
