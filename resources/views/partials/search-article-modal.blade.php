@@ -1,4 +1,4 @@
-<div class="modal fade" id="searchArticalModal" tabindex="-1" aria-labelledby="searchArticalModalLabel" aria-hidden="true">
+<div class="modal fade" id="searchArticalModal" tabindex="-1" aria-labelledby="searchArticalModalLabel">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">

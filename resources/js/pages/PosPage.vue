@@ -31,9 +31,7 @@ export default {
     methods: {
         addToCart(product) {
             this.orderItems.push(product);
-            console.log('this.orderItems',this.orderItems)
             localStorage.setItem('orderItems', JSON.stringify(this.orderItems));
-
         },
         removeFromCart(itemIndex) {
             this.orderItems.splice(itemIndex, 1);

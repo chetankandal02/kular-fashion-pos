@@ -1,6 +1,5 @@
 <template>
-    <div class="modal fade" id="giftVoucherModal" tabindex="-1" aria-labelledby="giftVoucherModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="giftVoucherModal" tabindex="-1" aria-labelledby="giftVoucherModalLabel">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

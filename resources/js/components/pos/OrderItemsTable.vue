@@ -25,7 +25,7 @@
                             <td>{{ formatPrice(item.changedPrice ? item.changedPrice.amount : item.price) }}</td>
                             <td>
                                 <button
-                                    @click="editItemPriceModal(item)"
+                                    @click="editItemPriceModal(item, index)"
                                     type="button"
                                     class="btn btn-sm btn-primary waves-effect waves-light me-2"
                                 >
@@ -47,7 +47,7 @@
     </div>
 
     <!-- Modal for editing item price -->
-    <EditItemPriceModal :selectedItem="selectedItem" @save-price-change="updateItemPrice" />
+    <EditItemPriceModal :selected-item="selectedItem" @save-price-change="updateItemPrice" />
 </template>
 
 <script>
@@ -62,32 +62,35 @@ export default {
             type: Array
         }
     },
+    emits: ['removeFromCart'],
+    data(){
+        return {
+            selectedItem: null,
+            selectedItemIndex: -1
+        }
+    },
     methods: {
         formatPrice(price) {
             if (!price) return '£0.00';
             return `£${parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
         },
-        editItemPriceModal(item) {
+        editItemPriceModal(item, index) {
+            this.selectedItemIndex = index;
             this.selectedItem = { ...item };
+
             const modalElement = document.getElementById('editPriceModal');
             const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
             modalInstance.show();
         },
         updateItemPrice(updatedItem) {
-            const index = this.orderItems.findIndex(
-                (item) =>
-                    item.product_id === updatedItem.product_id &&
-                    item.size === updatedItem.size
-            );
-
-            if (index !== -1) {
-                this.orderItems[index] = updatedItem;
+            if (this.selectedItemIndex > -1) {
+                this.orderItems[this.selectedItemIndex] = updatedItem;
             }
 
             localStorage.setItem('orderItems', JSON.stringify(this.orderItems));
         },
         removeItem(item) {
-            this.$emit('remove-from-cart', item);
+            this.$emit('removeFromCart', item);
         }
     }
 };

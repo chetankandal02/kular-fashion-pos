@@ -120,7 +120,6 @@
                             }
                         });
                     } else {
-                        console.log('sasd');
                         toggleButton.prop('checked', !toggleButton.prop('checked')); 
                     }
                 });
@@ -176,7 +175,6 @@
                     type: 'GET',
                     dataType: 'json',
                     success: function(data) {
-                        console.log(data);
                         data.states.forEach(function(state) {
                             stateSelect.append(new Option(state.name, state.id));
                         });

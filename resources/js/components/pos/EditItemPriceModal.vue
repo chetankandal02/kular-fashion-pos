@@ -1,5 +1,5 @@
 <template>
-    <div class="modal fade" id="editPriceModal" tabindex="-1" aria-labelledby="editPriceModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editPriceModal" tabindex="-1" aria-labelledby="editPriceModalLabel">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -45,7 +45,6 @@
 
 <script>
 export default {
-    props: ['selectedItem'],
     data() {
         return {
             localSelectedItem: { ...this.selectedItem },
@@ -58,7 +57,13 @@ export default {
             immediate: true,
             handler(newValue) {
                 this.localSelectedItem = { ...newValue };
-            }
+            },
+            deep: true
+        }
+    },
+    props: {
+        selectedItem: {
+            type: Object
         }
     },
     computed: {
@@ -100,23 +105,10 @@ export default {
                     }
                 };
 
-                let items = JSON.parse(localStorage.getItem('orderItems')) || [];
-                const itemIndex = items.findIndex(
-                    (item) =>
-                        item.product_id === updatedItem.product_id &&
-                        item.size === updatedItem.size
-                );
+                this.$emit('save-price-change', updatedItem);
 
-                if (itemIndex !== -1) {
-                    items.splice(itemIndex, 1, updatedItem);
-                    localStorage.setItem('orderItems', JSON.stringify(items));
-                    this.$emit('save-price-change', updatedItem);
-
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('editPriceModal'));
-                    modal.hide();
-                } else {
-                    console.log('Item not found');
-                }
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editPriceModal'));
+                modal.hide();
             }
         }
     }
