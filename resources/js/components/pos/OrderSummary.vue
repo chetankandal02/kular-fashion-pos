@@ -110,8 +110,9 @@ export default {
     },
     props: {
         orderItems: Array,
+        returnItems: Array,
     },
-    emits: ['cancelSale'],
+    emits: ['cancelSale', 'returnItem'],
     data() {
         return {
             //
@@ -119,7 +120,7 @@ export default {
     },
     methods: {
         returnItem(item){
-            console.log('return ', item)
+            this.$emit('returnItem', item);
         },
         cancelSale(){
             this.$emit('cancelSale');
