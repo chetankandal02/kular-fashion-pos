@@ -9,9 +9,11 @@
                 <div class="modal-body">
                     <div class="search-box mb-2">
                         <div class="position-relative">
-                            <input type="number" v-model="query" class="form-control" :class="{'is-invalid': barcodeInvalid}" placeholder="Enter barcode" @input="returnItem">
+                            <input type="number" v-model="query" class="form-control" ref="barcodeInput"
+                                :class="{ 'is-invalid': barcodeInvalid }" placeholder="Enter barcode" @input="returnItem">
                             <i class="bx bx-barcode search-icon"></i>
-                            <span v-if="barcodeInvalid" class="invalid-feedback">Barcode must be 13 characters long.</span>
+                            <span v-if="barcodeInvalid" class="invalid-feedback">Barcode must be 13 characters
+                                long.</span>
                         </div>
                     </div>
                 </div>
@@ -30,17 +32,27 @@ export default {
             barcodeInvalid: false
         }
     },
+    mounted() {
+        const modalElement = document.getElementById('returnSaleModal');
+        modalElement.addEventListener('shown.bs.modal', () => {
+            this.$refs.barcodeInput.focus(); 
+        });
+    },
+    beforeDestroy() {
+        const modalElement = document.getElementById('returnSaleModal');
+        modalElement.removeEventListener('shown.bs.modal', this.focusInput);
+    },
     methods: {
-        async returnItem(){
-            if(this.query.toString().length === 13){
+        async returnItem() {
+            if (this.query.toString().length === 13) {
                 const barcode = this.query;
                 this.query = '';
                 const response = await axios.get(`/validate-item/${barcode}`);
-                const {product} = response.data;
+                const { product } = response.data;
                 if (product) {
                     this.barcodeInvalid = false;
                     this.$emit('return-item-confirmed', product);
-                    
+
                     const myModalEl = $('#returnSaleModal');
                     const modal = bootstrap.Modal.getInstance(myModalEl);
                     modal.hide();

@@ -9,7 +9,7 @@
                 <div class="modal-body">
                     <div class="search-box mb-2">
                         <div class="position-relative">
-                            <input type="number" v-model="amount" class="form-control" placeholder="Enter Amount">
+                            <input type="number" v-model="amount" class="form-control" placeholder="Enter Amount" ref="amountInput">
                             <i class="mdi mdi-currency-eur search-icon"></i>
                         </div>
                     </div>
@@ -29,6 +29,16 @@ export default {
         return {
             amount: ''
         }
+    },
+    mounted() {
+        const modalElement = document.getElementById('giftVoucherModal');
+        modalElement.addEventListener('shown.bs.modal', () => {
+            this.$refs.amountInput.focus();
+        });
+    },
+    beforeDestroy() {
+        const modalElement = document.getElementById('giftVoucherModal');
+        modalElement.removeEventListener('shown.bs.modal', this.focusInput);
     },
     methods: {
         generateGiftVoucher() {
