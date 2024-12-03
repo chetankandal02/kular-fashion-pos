@@ -24,7 +24,6 @@ export default {
                 const response = await axios.get(`/product-validate/${barcode}`);
                 const {product} = response.data;
                 if (product) {
-                    console.log(this.$parent.orderItems);
                    /* const existingProduct = this.$parent.orderItems.find(
                         item => item.code === product.code && item.size === product.size && item.color === product.color
                     );

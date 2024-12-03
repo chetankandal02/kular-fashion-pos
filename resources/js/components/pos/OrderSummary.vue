@@ -20,15 +20,15 @@
 
             <div class="row">
                 <!-- Hold Sale Button -->
-                <div class="col-6 mb-2 pe-1">
-                    <button class="btn btn-warning w-100" @click="handleActionClick('Hold Sale')">
+                <div class="col-6 mb-2 pe-1" v-if="totalItems > 0">
+                    <button class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#holdSaleModal">
                         <i class="mdi mdi-pause font-size-14 me-1"></i>
                         Hold Sale
                     </button>
                 </div>
 
                 <!-- Cancel Button -->
-                <div class="col-6 mb-2 pe-1">
+                <div class="col-6 mb-2 pe-1" v-if="totalItems > 0">
                     <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#cancelSaleModal">
                         <i class="mdi mdi-close font-size-14 me-1"></i>
                         Cancel
@@ -36,7 +36,7 @@
                 </div>
 
                 <!-- Layway Button -->
-                <div class="col-6 mb-2 pe-1">
+                <div class="col-6 mb-2 pe-1" v-if="totalItems > 0">
                     <button class="btn btn-secondary w-100" @click="handleActionClick('Layway')">
                         <i class="mdi mdi-account-cash font-size-14 me-1"></i>
                         Layway
@@ -44,7 +44,7 @@
                 </div>
 
                 <!-- Credit Notes Button -->
-                <div class="col-6 mb-2 pe-1">
+                <div class="col-6 mb-2 pe-1" v-if="totalItems > 0">
                     <button class="btn btn-dark w-100" @click="handleActionClick('Credit Notes')">
                         <i class="mdi mdi-notebook-edit-outline font-size-14 me-1"></i>
                         Credit Notes
@@ -52,7 +52,7 @@
                 </div>
 
                 <!-- Tender Button -->
-                <div class="col-6 mb-2 pe-1">
+                <div class="col-6 mb-2 pe-1" v-if="totalItems > 0">
                     <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#tenderModal">
                         <i class="mdi mdi-cash-plus font-size-14 me-1"></i>
                         Tender
@@ -87,13 +87,15 @@
     </div>
 
     <ReturnSaleModal @returnSaleConfirmed="returnSale" />
-    <CancelSaleModal />
+    <HoldSaleModal />
+    <CancelSaleModal @cancelSaleConfirmed="cancelSale" />
     <TenderModal />
     <GiftVoucherModal />
 </template>
 
 <script>
 import ReturnSaleModal from './ReturnSaleModal.vue';
+import HoldSaleModal from './HoldSaleModal.vue';
 import CancelSaleModal from './CancelSaleModal.vue';
 import TenderModal from './TenderModal.vue';
 import GiftVoucherModal from './GiftVoucherModal.vue';
@@ -101,6 +103,7 @@ import GiftVoucherModal from './GiftVoucherModal.vue';
 export default {
     components: {
         ReturnSaleModal,
+        HoldSaleModal,
         CancelSaleModal,
         TenderModal,
         GiftVoucherModal
@@ -108,6 +111,7 @@ export default {
     props: {
         orderItems: Array,
     },
+    emits: ['cancelSale'],
     data() {
         return {
             //
@@ -117,13 +121,13 @@ export default {
         returnSale(item){
             console.log('return ', item)
         },
+        cancelSale(){
+            this.$emit('cancelSale');
+        },
         handleActionClick(actionName) {
             switch (actionName) {
                 case 'Hold Sale':
                     this.holdOrder();
-                    break;
-                case 'Cancel':
-                    this.cancelOrder();
                     break;
                 case 'Layway':
                     this.laywayOrder();
@@ -131,17 +135,8 @@ export default {
                 case 'Credit Notes':
                     this.creditNotes();
                     break;
-                case 'Tender':
-                    this.tenderOrder();
-                    break;
-                case 'Return Sale':
-                    this.returnSale();
-                    break;
                 case 'EOD':
                     this.endOfDay();
-                    break;
-                case 'Gift Voucher':
-                    this.giftVoucher();
                     break;
                 default:
                     console.log(`Unknown action: ${actionName}`);

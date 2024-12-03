@@ -7,7 +7,7 @@
         </div>
         <!-- Right Column: Order Summary -->
         <div class="col-lg-4">
-            <OrderSummary :order-items="orderItems" />
+            <OrderSummary :order-items="orderItems" @cancel-sale="cancelSale" />
         </div>
     </div>
 </template>
@@ -39,6 +39,10 @@ export default {
             /* this.orderItems = this.orderItems.filter(item => item.product_id !== product.product_id || item.size !== product.size || item.color !== product.color);
             localStorage.setItem('orderItems', JSON.stringify(this.orderItems)); */
         },
+        cancelSale(){
+            this.orderItems = [];
+            localStorage.removeItem('orderItems');
+        }
     },
     mounted(){
         if(localStorage.getItem('orderItems')){
