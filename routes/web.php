@@ -16,4 +16,4 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/get-products', [ProductController::class, 'getProducts'])->name('get.products');
 });
 
-Route::get('product-validate/{barcode}', [ProductController::class, 'productValidate']);
+Route::get('/validate-item/{barcode}', [ProductController::class, 'productValidate']);

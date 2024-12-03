@@ -3,11 +3,11 @@
         <!-- Left Column: Search and Order Items -->
         <div class="col-lg-8">
             <BarCodeBox @add-to-cart="addToCart" />
-            <OrderItemsTable :order-items="orderItems" @remove-from-cart="removeFromCart" />
+            <OrderItemsTable :order-items="orderItems" :return-items="returnItems" @remove-from-cart="removeFromCart" />
         </div>
         <!-- Right Column: Order Summary -->
         <div class="col-lg-4">
-            <OrderSummary :order-items="orderItems" @cancel-sale="cancelSale" />
+            <OrderSummary :order-items="orderItems" :return-items="returnItems" @cancel-sale="cancelSale" />
         </div>
     </div>
 </template>
@@ -26,6 +26,7 @@ export default {
     data() {
         return {
             orderItems: [],
+            returnItems: []
         };
     },
     methods: {
@@ -36,8 +37,6 @@ export default {
         removeFromCart(itemIndex) {
             this.orderItems.splice(itemIndex, 1);
             localStorage.setItem('orderItems', JSON.stringify(this.orderItems));
-            /* this.orderItems = this.orderItems.filter(item => item.product_id !== product.product_id || item.size !== product.size || item.color !== product.color);
-            localStorage.setItem('orderItems', JSON.stringify(this.orderItems)); */
         },
         cancelSale(){
             this.orderItems = [];

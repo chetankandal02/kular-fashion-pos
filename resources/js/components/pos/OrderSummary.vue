@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <ReturnSaleModal @returnSaleConfirmed="returnSale" />
+    <ReturnSaleModal @returnItemConfirmed="returnItem" />
     <HoldSaleModal />
     <CancelSaleModal @cancelSaleConfirmed="cancelSale" />
     <TenderModal />
@@ -118,7 +118,7 @@ export default {
         };
     },
     methods: {
-        returnSale(item){
+        returnItem(item){
             console.log('return ', item)
         },
         cancelSale(){

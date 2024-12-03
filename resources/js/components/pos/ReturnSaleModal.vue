@@ -15,16 +15,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" @click="confirmReturnSale">Confirm Return</button>
-                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     data() {
         return {
@@ -33,27 +31,28 @@ export default {
         }
     },
     methods: {
-        returnSale(){
-            this.barcodeInvalid = false;
-            this.$emit('return-sale-confirmed', this.query);
-            
-            const myModalEl = $('#returnSaleModal');
-            const modal = bootstrap.Modal.getInstance(myModalEl);
-            modal.hide();
-            this.query = '';
-        },
-        confirmReturnSale() {
-            let returnSaleBarCode = String(this.query);
-            if (returnSaleBarCode.length !== 13) {
-                this.barcodeInvalid = true;
-                return;
-            }
-
-            this.returnSale();
-        },
-        returnItem(){
+        async returnItem(){
             if(this.query.toString().length === 13){
+                const barcode = this.query;
                 this.query = '';
+                const response = await axios.get(`/validate-item/${barcode}`);
+                const {product} = response.data;
+                if (product) {
+                    this.barcodeInvalid = false;
+                    this.$emit('return-item-confirmed', product);
+                    
+                    const myModalEl = $('#returnSaleModal');
+                    const modal = bootstrap.Modal.getInstance(myModalEl);
+                    modal.hide();
+                    this.query = '';
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Product Barcode is invalid.',
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                    });
+                }
             }
         }
     }

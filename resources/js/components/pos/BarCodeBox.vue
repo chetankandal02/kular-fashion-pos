@@ -21,23 +21,9 @@ export default {
             if(this.query.toString().length === 13){
                 const barcode = this.query;
                 this.query = '';
-                const response = await axios.get(`/product-validate/${barcode}`);
+                const response = await axios.get(`/validate-item/${barcode}`);
                 const {product} = response.data;
                 if (product) {
-                   /* const existingProduct = this.$parent.orderItems.find(
-                        item => item.code === product.code && item.size === product.size && item.color === product.color
-                    );
-                    if (existingProduct) {
-                        console.log(existingProduct);
-                        Swal.fire({
-                            title: 'Product Already Exists!',
-                            text: `The product ${product.code} is already in sale.`,
-                            icon: 'info',
-                            confirmButtonText: 'Okay'
-                        });
-                    } else {
-                        this.$emit('add-to-cart', product);
-                    }*/
                     this.$emit('add-to-cart', product);
                 } else {
                     Swal.fire({
