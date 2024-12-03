@@ -55,7 +55,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item, index) in orderItems" :key="item.code + item.size">
+                        <tr v-if="!orderItems.length">
+                            <td colspan="7" class="text-center">No items added for sale</td>
+                        </tr>
+                        <tr v-for="(item, index) in orderItems" :key="index">
                             <td><a href="javascript: void(0);" class="text-body fw-bold">{{ item.code }}</a></td>
                             <td>{{ item.description }}</td>
                             <td>{{ item.color }}</td>

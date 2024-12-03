@@ -13,7 +13,8 @@
                             <tr>
                                 <th>#</th>
                                 <th>Sale ID</th>
-                                <th>Total Items</th>
+                                <th>Sale Items</th>
+                                <th>Return Items</th>
                                 <th>Grand Total</th>
                                 <th>Action</th>
                             </tr>
@@ -22,6 +23,7 @@
                             <tr v-for="(sale, index) in sales" :key="sale.saleId">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ sale.saleId }}</td>
+                                <td>{{ sale.totalItems }}</td>
                                 <td>{{ sale.totalItems }}</td>
                                 <td>{{ sale.grandTotal }}</td>
                                 <td>

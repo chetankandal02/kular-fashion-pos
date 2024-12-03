@@ -4,13 +4,18 @@
             <h4>Order Summary</h4>
 
             <div class="d-flex justify-content-between">
-                <h5>Sub Total</h5>
-                <h5>{{ subtotal }}</h5>
+                <h5>Sale Items</h5>
+                <h5>{{ this.orderItems.length }}</h5>
+            </div>
+
+            <div class="d-flex justify-content-between" v-if="this.returnItems.length">
+                <h5>Return Items</h5>
+                <h5>{{ this.returnItems.length }}</h5>
             </div>
 
             <div class="d-flex justify-content-between">
-                <h5>Total Items</h5>
-                <h5>{{ totalItems }}</h5>
+                <h5>Sub Total</h5>
+                <h5>{{ subtotal }}</h5>
             </div>
 
             <div class="d-flex justify-content-between">
@@ -20,7 +25,7 @@
 
             <div class="row">
                 <!-- Hold Sale Button -->
-                <div class="col-6 mb-2 pe-1" v-if="totalItems > 0">
+                <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
                     <button class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#holdSaleModal">
                         <i class="mdi mdi-pause font-size-14 me-1"></i>
                         Hold Sale
@@ -28,7 +33,7 @@
                 </div>
 
                 <!-- Cancel Button -->
-                <div class="col-6 mb-2 pe-1" v-if="totalItems > 0">
+                <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
                     <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#cancelSaleModal">
                         <i class="mdi mdi-close font-size-14 me-1"></i>
                         Cancel
@@ -36,7 +41,7 @@
                 </div>
 
                 <!-- Layway Button -->
-                <div class="col-6 mb-2 pe-1" v-if="totalItems > 0">
+                <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
                     <button class="btn btn-secondary w-100" @click="handleActionClick('Layway')">
                         <i class="mdi mdi-account-cash font-size-14 me-1"></i>
                         Layway
@@ -44,7 +49,7 @@
                 </div>
 
                 <!-- Credit Notes Button -->
-                <div class="col-6 mb-2 pe-1" v-if="totalItems > 0">
+                <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
                     <button class="btn btn-dark w-100" @click="handleActionClick('Credit Notes')">
                         <i class="mdi mdi-notebook-edit-outline font-size-14 me-1"></i>
                         Credit Notes
@@ -52,7 +57,7 @@
                 </div>
 
                 <!-- Tender Button -->
-                <div class="col-6 mb-2 pe-1" v-if="totalItems > 0">
+                <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length">
                     <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#tenderModal">
                         <i class="mdi mdi-cash-plus font-size-14 me-1"></i>
                         Tender
@@ -147,13 +152,26 @@ export default {
     },
     computed: {
         subtotal() {
-            return this.orderItems.reduce((sum, item) => sum + item.price, 0);
-        },
-        totalItems() {
-            return this.orderItems.length;
+            let orderItemsTotal = this.orderItems.reduce((sum, item) => {
+                return sum + (item.changedPrice?.amount || item.price);
+            }, 0);
+
+            let returnItemsTotal = this.returnItems.reduce((sum, item) => {
+                return sum + (item.changedPrice?.amount || item.price);
+            }, 0);
+
+            return `£${(orderItemsTotal - returnItemsTotal).toFixed(2)}`;
         },
         grandTotal() {
-            return this.subtotal;
+            let orderItemsTotal = this.orderItems.reduce((sum, item) => {
+                return sum + (item.changedPrice?.amount || item.price);
+            }, 0);
+
+            let returnItemsTotal = this.returnItems.reduce((sum, item) => {
+                return sum + (item.changedPrice?.amount || item.price);
+            }, 0);
+
+            return `£${(orderItemsTotal - returnItemsTotal).toFixed(2)}`;
         },
     },
 };
