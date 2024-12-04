@@ -22,7 +22,7 @@
         @include('layouts.components.header')
         
         <div class="main-content">
-            <div class="page-content">
+            <div class="page-content mt-5">
                 <div class="container-fluid">
 					@yield('content')
 

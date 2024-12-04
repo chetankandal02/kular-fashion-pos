@@ -52,7 +52,8 @@
                 </div>
 
                 <!-- Tender Button -->
-                <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length && this.returnItems.length && grandTotal(false)==0">
+                <div class="col-6 mb-2 pe-1"
+                    v-if="this.orderItems.length && this.returnItems.length && grandTotal(false) == 0">
                     <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#finishSaleModal">
                         <i class="mdi mdi-check-all font-size-14 me-1"></i>
                         Finish
@@ -73,6 +74,14 @@
                     </button>
                 </div>
 
+                <!-- Gift Voucher Button -->
+                <div class="col-6 mb-2 pe-1">
+                    <button class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#giftVoucherModal">
+                        <i class="mdi mdi-gift font-size-14 me-1"></i>
+                        Gift Voucher
+                    </button>
+                </div>
+
                 <!-- EOD Button -->
                 <div class="col-6 mb-2 pe-1">
                     <button class="btn btn-info w-100" @click="handleActionClick('EOD')">
@@ -81,13 +90,6 @@
                     </button>
                 </div>
 
-                <!-- Gift Voucher Button -->
-                <div class="col-6 mb-2 pe-1">
-                    <button class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#giftVoucherModal">
-                        <i class="mdi mdi-gift font-size-14 me-1"></i>
-                        Gift Voucher
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -128,16 +130,16 @@ export default {
         };
     },
     methods: {
-        returnItem(item){
+        returnItem(item) {
             this.$emit('returnItem', item);
         },
-        cancelSale(){
+        cancelSale() {
             this.$emit('cancelSale');
         },
-        holdSale(){
+        holdSale() {
             this.$emit('holdSale');
         },
-        finishSale(){
+        finishSale() {
             this.$emit('finishSale');
         },
         handleActionClick(actionName) {
@@ -168,7 +170,7 @@ export default {
                 return sum + (item.changedPrice?.amount || item.price);
             }, 0);
 
-            if(!isMoneyFormat){
+            if (!isMoneyFormat) {
                 return `${(orderItemsTotal - returnItemsTotal).toFixed(2)}`;
             }
 

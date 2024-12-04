@@ -12,8 +12,7 @@
                             <input type="number" v-model="query" class="form-control" ref="barcodeInput"
                                 :class="{ 'is-invalid': barcodeInvalid }" placeholder="Scan barcode" @input="returnItem">
                             <i class="bx bx-barcode search-icon"></i>
-                            <span v-if="barcodeInvalid" class="invalid-feedback">Barcode must be 13 characters
-                                long.</span>
+                            <span v-if="barcodeInvalid" class="invalid-feedback">Barcode must be 13 characters long.</span>
                         </div>
                     </div>
                 </div>
