@@ -15,7 +15,7 @@
 
             <div class="d-flex justify-content-between">
                 <h5>Grand Total</h5>
-                <h5>{{ grandTotal }}</h5>
+                <h5>{{ grandTotal() }}</h5>
             </div>
 
             <div class="row">
@@ -52,7 +52,13 @@
                 </div>
 
                 <!-- Tender Button -->
-                <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length">
+                <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length && this.returnItems.length && grandTotal(false)==0">
+                    <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#finishSaleModal">
+                        <i class="mdi mdi-check-all font-size-14 me-1"></i>
+                        Finish
+                    </button>
+                </div>
+                <div class="col-6 mb-2 pe-1" v-else-if="this.orderItems.length">
                     <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#tenderModal">
                         <i class="mdi mdi-cash-plus font-size-14 me-1"></i>
                         Tender
@@ -80,13 +86,6 @@
                     <button class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#giftVoucherModal">
                         <i class="mdi mdi-gift font-size-14 me-1"></i>
                         Gift Voucher
-                    </button>
-                </div>
-
-                <div class="col-12 mb-2 pe-1">
-                    <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#finishSaleModal">
-                        <i class="mdi mdi-check-all font-size-14 me-1"></i>
-                        Finish
                     </button>
                 </div>
             </div>
@@ -159,10 +158,8 @@ export default {
                     console.log(`Unknown action: ${actionName}`);
                     break;
             }
-        }
-    },
-    computed: {
-        grandTotal() {
+        },
+        grandTotal(isMoneyFormat = true) {
             let orderItemsTotal = this.orderItems.reduce((sum, item) => {
                 return sum + (item.changedPrice?.amount || item.price);
             }, 0);
@@ -171,8 +168,12 @@ export default {
                 return sum + (item.changedPrice?.amount || item.price);
             }, 0);
 
+            if(!isMoneyFormat){
+                return `${(orderItemsTotal - returnItemsTotal).toFixed(2)}`;
+            }
+
             return `£${(orderItemsTotal - returnItemsTotal).toFixed(2)}`;
         },
-    },
+    }
 };
 </script>
