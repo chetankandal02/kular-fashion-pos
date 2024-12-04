@@ -14,11 +14,6 @@
             </div>
 
             <div class="d-flex justify-content-between">
-                <h5>Sub Total</h5>
-                <h5>{{ subtotal }}</h5>
-            </div>
-
-            <div class="d-flex justify-content-between">
                 <h5>Grand Total</h5>
                 <h5>{{ grandTotal }}</h5>
             </div>
@@ -87,15 +82,23 @@
                         Gift Voucher
                     </button>
                 </div>
+
+                <div class="col-12 mb-2 pe-1">
+                    <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#finishSaleModal">
+                        <i class="mdi mdi-check-all font-size-14 me-1"></i>
+                        Finish
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <ReturnSaleModal @returnItemConfirmed="returnItem" />
-    <HoldSaleModal />
+    <HoldSaleModal @holdSaleConfirmed="holdSale" />
     <CancelSaleModal @cancelSaleConfirmed="cancelSale" />
     <TenderModal />
     <GiftVoucherModal />
+    <FinishSaleModal @finishSaleConfirmed="finishSale" />
 </template>
 
 <script>
@@ -104,6 +107,7 @@ import HoldSaleModal from './HoldSaleModal.vue';
 import CancelSaleModal from './CancelSaleModal.vue';
 import TenderModal from './TenderModal.vue';
 import GiftVoucherModal from './GiftVoucherModal.vue';
+import FinishSaleModal from './FinishSaleModal.vue';
 
 export default {
     components: {
@@ -111,13 +115,14 @@ export default {
         HoldSaleModal,
         CancelSaleModal,
         TenderModal,
-        GiftVoucherModal
+        GiftVoucherModal,
+        FinishSaleModal
     },
     props: {
         orderItems: Array,
         returnItems: Array,
     },
-    emits: ['cancelSale', 'returnItem'],
+    emits: ['cancelSale', 'returnItem', 'finishSale', 'holdSale'],
     data() {
         return {
             //
@@ -129,6 +134,12 @@ export default {
         },
         cancelSale(){
             this.$emit('cancelSale');
+        },
+        holdSale(){
+            this.$emit('holdSale');
+        },
+        finishSale(){
+            this.$emit('finishSale');
         },
         handleActionClick(actionName) {
             switch (actionName) {
@@ -151,17 +162,6 @@ export default {
         }
     },
     computed: {
-        subtotal() {
-            let orderItemsTotal = this.orderItems.reduce((sum, item) => {
-                return sum + (item.changedPrice?.amount || item.price);
-            }, 0);
-
-            let returnItemsTotal = this.returnItems.reduce((sum, item) => {
-                return sum + (item.changedPrice?.amount || item.price);
-            }, 0);
-
-            return `£${(orderItemsTotal - returnItemsTotal).toFixed(2)}`;
-        },
         grandTotal() {
             let orderItemsTotal = this.orderItems.reduce((sum, item) => {
                 return sum + (item.changedPrice?.amount || item.price);
