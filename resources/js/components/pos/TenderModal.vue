@@ -11,7 +11,7 @@
                         <!-- Dynamic buttons using v-for -->
                         <div v-for="(method, index) in tenderMethods" :key="index" class="col-6 col-md-4 mb-3">
                             <button type="button" class="btn btn-dark waves-effect waves-light w-100"
-                                @click="handleTenderClick(method.label)" data-bs-toggle="modal" data-bs-target="#tenderMethodModal">
+                                @click="selectedMethod = method.label" data-bs-toggle="modal" data-bs-target="#tenderMethodModal">
                                 <i :class="`mdi ${method.icon} d-block font-size-16`"></i> {{ method.label }}
                             </button>
                         </div>
@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <TenderMethodModal :selectedMethod="selectedMethod" />
+    <TenderMethodModal :selectedMethod="selectedMethod" @on-payment-done="onOnPaymentDone" />
 </template>
 
 <script>
@@ -48,6 +48,9 @@ export default {
     methods: {
         handleTenderClick(label) {
             this.selectedMethod = label;
+        },
+        onOnPaymentDone(payment){
+            console.log('payment',payment)
         }
     }
 };

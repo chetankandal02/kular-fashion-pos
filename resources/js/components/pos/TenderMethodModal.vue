@@ -9,16 +9,16 @@
                 <div class="modal-body">
                     <div class="search-box mb-2">
                         <div class="position-relative" v-if="selectedMethod==='Cash' || selectedMethod==='Card' || selectedMethod==='Euro'">
-                            <input type="number" v-model="amount" class="form-control" placeholder="Enter Amount" ref="amountInput">
+                            <input type="number" v-model="amount" class="form-control" placeholder="Enter Amount" ref="amountInput" @keydown.enter="savePaymentInfo">
                             <i class="mdi mdi-currency-eur search-icon"></i>
                         </div>
                         <div class="position-relative" v-else>
-                            <input type="number" v-model="barcode" class="form-control" placeholder="Scan barcode" autofocus @input="addToCart">
+                            <input type="number" v-model="barcode" class="form-control" placeholder="Scan barcode" @input="savePaymentInfo">
                             <i class="bx bx-barcode search-icon"></i>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" v-if="selectedMethod==='Cash' || selectedMethod==='Card' || selectedMethod==='Euro'">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" @click="savePaymentInfo">Save</button>
                 </div>
@@ -48,10 +48,11 @@ export default {
             tenderModal.show();
         },
         savePaymentInfo(){
-            if(selectedMethod==='Cash' || selectedMethod==='Card' || selectedMethod==='Euro'){
-                console.log('amount', amount);
-            } else {
-                console.log('barcode', barcode);
+            if(this.selectedMethod==='Cash' || this.selectedMethod==='Card' || this.selectedMethod==='Euro'){
+                console.log('amount', this.amount);
+            } else if(String(this.barcode).length === 13){
+                console.log('barcode', this.barcode);
+                this.barcode = '';
             }
         }
     },

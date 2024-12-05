@@ -10,27 +10,42 @@
                     <div v-if="localSelectedItem">
                         <div class="mb-3">
                             <label for="itemPrice" class="form-label">Price</label>
-                            <input
-                                type="number"
-                                class="form-control"
-                                id="itemPrice"
-                                v-model="priceModel"
-                                @keyup="handlePriceChange"
-                                placeholder="Enter new price"
-                                :class="{ 'is-invalid': priceError }"
-                            />
+                            <input type="number" class="form-control" id="itemPrice" v-model="priceModel"
+                                @keyup="handlePriceChange" placeholder="Enter new price"
+                                :class="{ 'is-invalid': priceError }" />
                             <span v-if="priceError" class="invalid-feedback">{{ priceError }}</span>
                         </div>
+                                                
                         <div class="mb-3">
                             <label for="priceReason" class="form-label">Reason</label>
-                            <textarea
-                                class="form-control"
-                                id="priceReason"
-                                v-model="localSelectedItem.reason"
+                            <div class="row mb-2" v-if="changePriceReasons.length > 0">
+                                <div class="col-6 col-sm-4" v-for="reason in changePriceReasons">
+                                    <div class="form-check">
+                                        <input v-model="selectedReasonId" :value="reason.id" class="form-check-input"
+                                            name="reason" type="radio" id="reason-{{ reason.id }}"
+                                            :class="{ 'is-invalid': errorSelectedReason }">
+
+                                        <label class="form-check-label" for="reason-{{ reason.id }}">
+                                            {{ reason.name }}
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-sm-4">
+                                    <div class="form-check">
+                                        <input v-model="selectedReasonId" :value="0" class="form-check-input"
+                                            name="reason" type="radio" id="other-reason"
+                                            :class="{ 'is-invalid': errorSelectedReason }">
+                                        <label class="form-check-label" for="other-reason">Other</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <textarea class="form-control" id="priceReason" v-if="selectedReasonId===0" v-model="localSelectedItem.reason"
                                 placeholder="Enter the reason for the price change"
-                                :class="{ 'is-invalid': errorReason }"
-                            ></textarea>
-                            <span v-if="errorReason" class="invalid-feedback">Reason is required.</span>
+                                :class="{ 'is-invalid': errorReason }"></textarea>
+
+                            <span v-if="errorReason || errorSelectedReason" class="invalid-feedback" :class="{ 'd-block': errorSelectedReason }">Reason is required.</span>
                         </div>
                     </div>
                 </div>
@@ -49,13 +64,21 @@ export default {
         return {
             localSelectedItem: { ...this.selectedItem },
             errorReason: false,
-            priceError: ''
+            priceError: '',
+            selectedReasonId: '',
+            errorSelectedReason: false
         };
     },
     watch: {
         selectedItem: {
             immediate: true,
             handler(newValue) {
+                if(newValue?.changedPrice){
+                    this.selectedReasonId = newValue.changedPrice?.reasonId;
+                } else {
+                    this.selectedReasonId = '';
+                }
+
                 this.localSelectedItem = { ...newValue };
             },
             deep: true
@@ -64,6 +87,9 @@ export default {
     props: {
         selectedItem: {
             type: Object
+        },
+        changePriceReasons: {
+            type: Array
         }
     },
     computed: {
@@ -88,20 +114,28 @@ export default {
             }
         },
         savePriceChange() {
-            if (!this.localSelectedItem.reason || this.localSelectedItem.reason.trim() === '') {
+            if (!this.selectedReasonId === null || this.selectedReasonId ==='') {
+                this.errorSelectedReason = true;
+            } else {
+                this.errorSelectedReason = false;
+            }
+
+            if ((!this.localSelectedItem.reason || this.localSelectedItem.reason.trim() === '') && this.selectedReasonId === 0) {
                 this.errorReason = true;
             } else {
                 this.errorReason = false;
             }
 
+
             this.handlePriceChange();
 
-            if (!this.errorReason && !this.priceError) {
+            if (!this.errorReason && !this.errorSelectedReason && !this.priceError) {
                 const updatedItem = {
                     ...this.localSelectedItem,
                     changedPrice: {
                         amount: this.priceModel,
-                        reason: this.localSelectedItem.reason
+                        reason: this.selectedReasonId === 0 ? this.localSelectedItem.reason : '',
+                        reasonId: this.selectedReasonId
                     }
                 };
 
