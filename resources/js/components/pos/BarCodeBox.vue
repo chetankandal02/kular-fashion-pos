@@ -1,15 +1,12 @@
 <template>
     <div class="search-box mb-2">
-        <div class="position-relative">
-            <input type="number" v-model="query" class="form-control" placeholder="Scan barcode" autofocus
-                @input="addToCart">
-            <i class="bx bx-barcode search-icon"></i>
-        </div>
+        <VirtualNumberKeyboard ref="virtualKeyboard" variant="barcode" :inputValue="query" @on-change="validateItem" />
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import VirtualNumberKeyboard from '../VirtualNumberKeyboard.vue';
 
 export default {
     data() {
@@ -17,11 +14,17 @@ export default {
             query: '',
         };
     },
+    components: {
+        VirtualNumberKeyboard
+    },
+    mounted() {
+        this.$refs.virtualKeyboard.focusInput();
+    },
     methods: {
-        async addToCart() {
-            if (this.query.toString().length === 13) {
-                const barcode = this.query;
-                this.query = '';
+        async validateItem(input) {
+            if (input.length === 13) {
+                const barcode = input;
+
                 const response = await axios.get(`/validate-item/${barcode}`);
                 const { product } = response.data;
                 if (product) {
@@ -34,6 +37,8 @@ export default {
                         confirmButtonText: 'Okay'
                     });
                 }
+            } else {
+                this.query = input;
             }
         },
     },

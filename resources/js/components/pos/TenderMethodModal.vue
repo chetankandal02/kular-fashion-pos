@@ -8,14 +8,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="search-box mb-2">
-                        <div class="position-relative" v-if="selectedMethod==='Cash' || selectedMethod==='Card' || selectedMethod==='Euro'">
-                            <input type="number" v-model="amount" class="form-control" placeholder="Enter Amount" ref="amountInput" @keydown.enter="savePaymentInfo">
-                            <i class="mdi mdi-currency-eur search-icon"></i>
-                        </div>
-                        <div class="position-relative" v-else>
-                            <input type="number" v-model="barcode" class="form-control" placeholder="Scan barcode" @input="savePaymentInfo">
-                            <i class="bx bx-barcode search-icon"></i>
-                        </div>
+                        <VirtualNumberKeyboard v-if="selectedMethod==='Cash' || selectedMethod==='Card' || selectedMethod==='Euro'" :inputValue="amount" @on-change="changeAmount" />
+                        <VirtualNumberKeyboard v-else variant="barcode" :inputValue="barcode" @on-change="changeBarcode" />
                     </div>
                 </div>
                 <div class="modal-footer" v-if="selectedMethod==='Cash' || selectedMethod==='Card' || selectedMethod==='Euro'">
@@ -28,9 +22,14 @@
 </template>
 
 <script>
+import VirtualNumberKeyboard from '../VirtualNumberKeyboard.vue';
+
 export default {
     props: {
         selectedMethod: String
+    },
+    components: {
+        VirtualNumberKeyboard
     },
     data(){
         return {
@@ -47,12 +46,21 @@ export default {
             const tenderModal = new bootstrap.Modal(document.getElementById('tenderModal'));
             tenderModal.show();
         },
+        changeAmount(value){
+            this.amount = value;
+        },
+        changeBarcode(value){
+            this.barcode = value;
+            if(this.barcode.length===13){
+                this.savePaymentInfo();
+            }
+        },
         savePaymentInfo(){
             if(this.selectedMethod==='Cash' || this.selectedMethod==='Card' || this.selectedMethod==='Euro'){
                 console.log('amount', this.amount);
             } else if(String(this.barcode).length === 13){
                 console.log('barcode', this.barcode);
-                this.barcode = '';
+                this.barcode = !this.barcode ? 'empty' : '';
             }
         }
     },

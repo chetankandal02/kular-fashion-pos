@@ -8,10 +8,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="search-box mb-2">
-                        <div class="position-relative">
-                            <input type="number" v-model="amount" class="form-control" placeholder="Enter Amount" ref="amountInput">
-                            <i class="mdi mdi-currency-eur search-icon"></i>
-                        </div>
+                        <VirtualNumberKeyboard 
+                            ref="virtualKeyboard"
+                            :inputValue="amount" 
+                            @on-change="changeAmount" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -24,17 +24,20 @@
 </template>
 
 <script>
+import VirtualNumberKeyboard from '../VirtualNumberKeyboard.vue';
+
 export default {
-    data(){
+    data() {
         return {
             amount: ''
-        }
+        };
+    },
+    components: {
+        VirtualNumberKeyboard
     },
     mounted() {
         const modalElement = document.getElementById('giftVoucherModal');
-        modalElement.addEventListener('shown.bs.modal', () => {
-            this.$refs.amountInput.focus();
-        });
+        modalElement.addEventListener('shown.bs.modal', this.focusInput);
     },
     beforeDestroy() {
         const modalElement = document.getElementById('giftVoucherModal');
@@ -45,6 +48,14 @@ export default {
             const myModalEl = document.getElementById('giftVoucherModal');
             const modal = bootstrap.Modal.getInstance(myModalEl);
             modal.hide();
+        },
+        changeAmount(value) {
+            this.amount = value;
+        },
+        focusInput() {
+            if (this.$refs.virtualKeyboard && this.$refs.virtualKeyboard.$refs.input) {
+                this.$refs.virtualKeyboard.$refs.input.focus();
+            }
         }
     }
 };
