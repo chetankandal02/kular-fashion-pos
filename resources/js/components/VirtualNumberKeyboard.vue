@@ -23,9 +23,13 @@
             </div>
             <div class="row mb-1">
                 <div v-for="key in row4" class="col-4 px-2" :key="key">
-                    <button class="btn btn-primary w-100" @click="addDigit(key)" v-if="key !== '.'">{{ key }}</button>
+                    <button class="btn btn-primary w-100" @click="addDigit(key)" v-if="key !== '.' && key !== '<-'">{{ key }}</button>
                     <button v-if="key === '.' && !query.includes('.') && variant !== 'barcode'"
                         class="btn btn-primary w-100 key" @click="addDigit(key)">{{ key }}</button>
+
+                    <button v-if="key === '<-'" class="btn btn-primary w-100 key" @click="addDigit(key)">
+                        <i class="mdi mdi-keyboard-backspace"></i>
+                    </button>
                 </div>
             </div>
             <div class="row">

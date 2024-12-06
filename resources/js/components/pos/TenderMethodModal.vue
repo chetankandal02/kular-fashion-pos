@@ -8,8 +8,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="search-box mb-2">
-                        <VirtualNumberKeyboard v-if="selectedMethod==='Cash' || selectedMethod==='Card' || selectedMethod==='Euro'" :inputValue="amount" @on-change="changeAmount" />
-                        <VirtualNumberKeyboard v-else variant="barcode" :inputValue="barcode" @on-change="changeBarcode" />
+                        <VirtualNumberKeyboard ref="virtualKeyboard" v-if="selectedMethod==='Cash' || selectedMethod==='Card' || selectedMethod==='Euro'" :inputValue="amount" @on-change="changeAmount" />
+                        <VirtualNumberKeyboard ref="virtualKeyboard" v-else variant="barcode" :inputValue="barcode" @on-change="changeBarcode" />
                     </div>
                 </div>
                 <div class="modal-footer" v-if="selectedMethod==='Cash' || selectedMethod==='Card' || selectedMethod==='Euro'">
@@ -40,6 +40,12 @@ export default {
     mounted() {
         const tenderMethodModal = document.getElementById('tenderMethodModal');
         tenderMethodModal.addEventListener('hidden.bs.modal', this.openTenderModal);
+        tenderMethodModal.addEventListener('shown.bs.modal', this.focusInput);
+    },
+    beforeDestroy() {
+        const tenderMethodModal = document.getElementById('tenderMethodModal');
+        tenderMethodModal.removeEventListener('hidden.bs.modal', this.openTenderModal);
+        tenderMethodModal.removeEventListener('shown.bs.modal', this.focusInput);
     },
     methods: {
         openTenderModal() {
@@ -62,11 +68,12 @@ export default {
                 console.log('barcode', this.barcode);
                 this.barcode = !this.barcode ? 'empty' : '';
             }
+        },
+        focusInput() {
+            if (this.$refs.virtualKeyboard && this.$refs.virtualKeyboard.$refs.input) {
+                this.$refs.virtualKeyboard.$refs.input.focus();
+            }
         }
-    },
-    beforeDestroy() {
-        const tenderMethodModal = document.getElementById('tenderMethodModal');
-        tenderMethodModal.removeEventListener('hidden.bs.modal', this.openTenderModal);
     }
 };
 </script>

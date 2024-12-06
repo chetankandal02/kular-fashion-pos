@@ -8,12 +8,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="search-box mb-2">
-                        <div class="position-relative">
-                            <input type="number" v-model="query" class="form-control" ref="barcodeInput"
-                                :class="{ 'is-invalid': barcodeInvalid }" placeholder="Scan barcode" @input="returnItem">
-                            <i class="bx bx-barcode search-icon"></i>
-                            <span v-if="barcodeInvalid" class="invalid-feedback">Barcode must be 13 characters long.</span>
-                        </div>
+                        <VirtualNumberKeyboard 
+                            ref="virtualKeyboard"
+                            variant="barcode"
+                            :inputValue="query" 
+                            @on-change="returnItem" />
                     </div>
                 </div>
             </div>
@@ -23,6 +22,7 @@
 
 <script>
 import axios from 'axios';
+import VirtualNumberKeyboard from '../VirtualNumberKeyboard.vue';
 
 export default {
     data() {
@@ -31,21 +31,20 @@ export default {
             barcodeInvalid: false
         }
     },
+    components: {
+        VirtualNumberKeyboard
+    },
     mounted() {
         const modalElement = document.getElementById('returnSaleModal');
-        modalElement.addEventListener('shown.bs.modal', () => {
-            this.$refs.barcodeInput.focus(); 
-        });
+        modalElement.addEventListener('shown.bs.modal', this.focusInput);
     },
     beforeDestroy() {
         const modalElement = document.getElementById('returnSaleModal');
         modalElement.removeEventListener('shown.bs.modal', this.focusInput);
     },
     methods: {
-        async returnItem() {
-            if (this.query.toString().length === 13) {
-                const barcode = this.query;
-                this.query = '';
+        async returnItem(barcode) {
+            if (barcode.toString().length === 13) {
                 const response = await axios.get(`/validate-item/${barcode}`);
                 const { product } = response.data;
                 if (product) {
@@ -55,7 +54,6 @@ export default {
                     const myModalEl = $('#returnSaleModal');
                     const modal = bootstrap.Modal.getInstance(myModalEl);
                     modal.hide();
-                    this.query = '';
                 } else {
                     Swal.fire({
                         title: 'Error!',
@@ -64,6 +62,11 @@ export default {
                         confirmButtonText: 'Okay'
                     });
                 }
+            }
+        },
+        focusInput() {
+            if (this.$refs.virtualKeyboard && this.$refs.virtualKeyboard.$refs.input) {
+                this.$refs.virtualKeyboard.$refs.input.focus();
             }
         }
     }
