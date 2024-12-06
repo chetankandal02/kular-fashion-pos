@@ -69,6 +69,12 @@
     <script src="{{ asset('assets\libs\sweetalert2\sweetalert2.min.js') }}"></script>
 
     @stack('scripts')
+
+    <script>
+        window.config = {
+            userId: '{{ Auth::id() }}'
+        }
+    </script>
 </body>
 
 </html>

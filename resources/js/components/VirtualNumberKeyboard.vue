@@ -1,11 +1,13 @@
 <template>
     <div class="position-relative" ref="keyboardWrapper">
         <input type="text" v-model="query" class="form-control" :placeholder="placeholderText" @focus="showKeyboard"
-            @input="validateInput" ref="input" />
+            @input="validateInput" ref="input" :class="{'is-invalid' : invalidMessage}" />
 
         <i class="bx search-icon" :class="iconClass"></i>
 
-        <div v-if="isVisible" class="virtual-keyboard">
+        <span class="invalid-feedback">{{ invalidMessage }}</span>
+
+        <div v-if="isVisible" class="virtual-keyboard" :class="{'invalid-input' : invalidMessage}">
             <div class="row mb-1">
                 <div v-for="key in row1" class="col-4 px-2" :key="key">
                     <button class="btn btn-primary w-100" @click="addDigit(key)">{{ key }}</button>
@@ -48,6 +50,10 @@
 export default {
     props: {
         inputValue: {
+            type: String,
+            default: ""
+        },
+        invalidMessage: {
             type: String,
             default: ""
         },
@@ -149,5 +155,8 @@ export default {
     left: 20px;
     z-index: 9999;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.virtual-keyboard.invalid-input{
+    top: 58px;
 }
 </style>
