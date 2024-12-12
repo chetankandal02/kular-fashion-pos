@@ -40,7 +40,6 @@ export default {
                 { icon: 'mdi-gift-outline', label: 'Gift Voucher' },
                 { icon: 'mdi-note-minus-outline', label: 'Credit Note' },
                 { icon: 'mdi-note-text-outline', label: 'Deposit Note' },
-                { icon: 'mdi-wallet-giftcard', label: 'Gift Card' },
             ],
             selectedMethod: ''
         };

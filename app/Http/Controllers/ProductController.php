@@ -86,8 +86,8 @@ class ProductController extends Controller
                     'color' => $product->colors->colorDetail->color_name,
                     'size' => $product->sizes->sizeDetail->size,
                     'brand' => $product->product->brand->name,
-                    'price' => (float) $product->sizes->mrp, // Ensure price is a float
-                    'total_quantity'=> $product->quantity,
+                    'price' => (float) $product->sizes->mrp,
+                    'available_quantity'=> $product->quantity,
                 ];
 
                 return response()->json(['success' => true, 'message' => 'Product barcode is valid.', 'product' => $productData], 200);

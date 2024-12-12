@@ -40,7 +40,7 @@
 
                     <div class="text-center py-5 text-black" v-else>
                         <h1 class="mdi mdi-cart-outline"></h1>
-                        <h4 class="py-2">No holded order</h4>
+                        <h4 class="py-2">No holded sale</h4>
                     </div>
                 </div>
             </div>

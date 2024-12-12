@@ -1,7 +1,7 @@
 <template>
     <div class="position-relative" ref="keyboardWrapper">
         <input type="text" v-model="query" class="form-control" :placeholder="placeholderText" @focus="showKeyboard"
-            @input="validateInput" ref="input" :class="{'is-invalid' : invalidMessage}" />
+            @input="validateInput" ref="input" @keydown.enter="emitAmount" :class="{'is-invalid' : invalidMessage}" />
 
         <i class="bx search-icon" :class="iconClass"></i>
 
@@ -99,7 +99,12 @@ export default {
     },
     methods: {
         showKeyboard() {
-            this.isVisible = true;
+            if(this.variant !== 'barcode'){
+                this.isVisible = true;
+            }
+        },
+        emitAmount(){
+            this.$emit('onSubmit')
         },
         validateInput(event) {
             let inputValue = event.target.value;

@@ -28,7 +28,16 @@ export default {
                 const response = await axios.get(`/validate-item/${barcode}`);
                 const { product } = response.data;
                 if (product) {
-                    this.$emit('add-to-cart', product);
+                    if(product.available_quantity > 0){
+                        this.$emit('add-to-cart', product);
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Product is out of stock',
+                            icon: 'error',
+                            confirmButtonText: 'Okay'
+                        });
+                    }
                 } else {
                     Swal.fire({
                         title: 'Error!',

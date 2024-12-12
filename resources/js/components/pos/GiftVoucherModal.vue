@@ -34,7 +34,7 @@
 
                     <div class="search-box mb-2">
                         <VirtualNumberKeyboard ref="virtualKeyboard" :invalidMessage="invalidMessage"
-                            @on-change="changeAmount" />
+                            @on-change="changeAmount" @on-submit="generateGiftVoucher" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -85,10 +85,27 @@ export default {
                     auth_user_id: window.config.userId
                 });
 
-                console.log('response', response)
+                if (response.data.success) {
+                    this.amount = '';
+                    
+                    Swal.fire({
+                        title: "Success!",
+                        text: response.data.message,
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 2000,
+                    })
 
-                /* const myModalEl = document.getElementById('giftVoucherModal');
-                bootstrap.Modal.getInstance(myModalEl).hide(); */
+                    const myModalEl = document.getElementById('giftVoucherModal');
+                    bootstrap.Modal.getInstance(myModalEl).hide();
+                } else {
+                    Swal.fire({
+                        title: "Error!",
+                        text: 'Something went wrong!',
+                        icon: "error",
+                        confirmButtonText: 'Okay'
+                    })
+                }
             }
         },
         changeAmount(value) {

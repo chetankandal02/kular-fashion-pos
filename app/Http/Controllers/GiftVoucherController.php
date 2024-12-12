@@ -33,7 +33,8 @@ class GiftVoucherController extends Controller
 
         // Return success response
         return response()->json([
-            'message' => 'Gift voucher created successfully!',
+            'success' => true,
+            'message' => 'Gift voucher generated successfully!',
             'gift_voucher' => $giftVoucher
         ], 201);
     }
