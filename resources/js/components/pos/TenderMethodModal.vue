@@ -8,11 +8,16 @@
                 </div>
                 <div class="modal-body">
                     <div class="search-box mb-2">
-                        <VirtualNumberKeyboard ref="virtualKeyboard" v-if="selectedMethod==='Cash' || selectedMethod==='Card' || selectedMethod==='Euro'" :inputValue="amount" @on-change="changeAmount" />
-                        <VirtualNumberKeyboard ref="virtualKeyboard" v-else variant="barcode" :inputValue="barcode" @on-change="changeBarcode" />
+                        <VirtualNumberKeyboard ref="virtualKeyboard"
+                            v-if="selectedMethod === 'Cash' || selectedMethod === 'Card' || selectedMethod === 'Euro'"
+                            :inputValue="initialAmount" @on-change="changeAmount" @on-submit="savePaymentInfo" />
+
+                        <VirtualNumberKeyboard ref="virtualKeyboard" v-else variant="barcode" :inputValue="barcode"
+                            @on-change="changeBarcode" @on-submit="savePaymentInfo" />
                     </div>
                 </div>
-                <div class="modal-footer" v-if="selectedMethod==='Cash' || selectedMethod==='Card' || selectedMethod==='Euro'">
+                <div class="modal-footer"
+                    v-if="selectedMethod === 'Cash' || selectedMethod === 'Card' || selectedMethod === 'Euro'">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" @click="savePaymentInfo">Save</button>
                 </div>
@@ -22,19 +27,26 @@
 </template>
 
 <script>
+import axios from 'axios';
 import VirtualNumberKeyboard from '../VirtualNumberKeyboard.vue';
 
 export default {
     props: {
-        selectedMethod: String
+        selectedMethod: String,
+        amountToBePaid: String
     },
     components: {
         VirtualNumberKeyboard
     },
-    data(){
+    data() {
         return {
-            amount: '',
+            amount: this.initialAmount,
             barcode: ''
+        }
+    },
+    computed: {
+        initialAmount() {
+            return this.amountToBePaid || '';
         }
     },
     mounted() {
@@ -52,21 +64,62 @@ export default {
             const tenderModal = new bootstrap.Modal(document.getElementById('tenderModal'));
             tenderModal.show();
         },
-        changeAmount(value){
+        changeAmount(value) {
             this.amount = value;
         },
-        changeBarcode(value){
+        changeBarcode(value) {
             this.barcode = value;
-            if(this.barcode.length===13){
+            if (this.barcode.length === 13) {
                 this.savePaymentInfo();
             }
         },
-        savePaymentInfo(){
-            if(this.selectedMethod==='Cash' || this.selectedMethod==='Card' || this.selectedMethod==='Euro'){
-                console.log('amount', this.amount);
-            } else if(String(this.barcode).length === 13){
-                console.log('barcode', this.barcode);
-                this.barcode = !this.barcode ? 'empty' : '';
+        makePayment(amount) {
+            let paymentInfo = {
+                method: this.selectedMethod,
+                amount: parseFloat(amount)
+            }
+            this.$emit('onPaymentDone', paymentInfo);
+            this.openTenderModal();
+        },
+        async payWithGiftCard(barcode) {
+            const response = await axios.post('/api/gift-voucher/validate', {
+                barcode: barcode
+            });
+
+            if (response.data.success) {
+                this.makePayment(response.data.gift.amount);
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: response.data.message,
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                });
+            }
+        },
+        payWithCreditNote(barcode) {
+
+        },
+        payWithDepositNote(barcode) {
+
+        },
+        savePaymentInfo() {
+            if (this.selectedMethod === 'Cash' || this.selectedMethod === 'Card' || this.selectedMethod === 'Euro') {
+                let paymentInfo = {
+                    method: this.selectedMethod,
+                    amount: parseFloat(this.amount || this.initialAmount)
+                }
+                this.$emit('onPaymentDone', paymentInfo);
+                this.openTenderModal();
+            } else if (String(this.barcode).length === 13) {
+                if (this.selectedMethod === 'Gift Voucher') {
+                    this.payWithGiftCard(this.barcode);
+                } else if (this.selectedMethod === 'Credit Note') {
+                    this.payWithCreditNote(this.barcode);
+                } else {
+                    this.payWithDepositNote(this.barcode);
+                }
+                this.barcode = '';
             }
         },
         focusInput() {

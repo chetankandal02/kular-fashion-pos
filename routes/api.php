@@ -10,3 +10,4 @@ Route::get('/user', function (Request $request) {
 
 
 Route::post('/gift-voucher', [GiftVoucherController::class, 'create']);
+Route::post('/gift-voucher/validate', [GiftVoucherController::class, 'validate']);

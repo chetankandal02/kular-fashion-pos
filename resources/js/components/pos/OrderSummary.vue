@@ -18,6 +18,17 @@
                 <h5>{{ grandTotal() }}</h5>
             </div>
 
+
+            <div class="d-flex justify-content-between" v-for="payment in paymentInfo">
+                <h5>Paid by {{ payment.method }}</h5>
+                <h5>£{{ payment.amount.toFixed(2) }}</h5>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <h5>Pending Balance</h5>
+                <h5>{{ amountToBePaid(false) }}</h5>
+            </div>
+
             <div class="row">
                 <!-- Hold Sale Button -->
                 <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
@@ -40,29 +51,6 @@
                     <button class="btn btn-secondary w-100" @click="handleActionClick('Layway')">
                         <i class="mdi mdi-account-cash font-size-14 me-1"></i>
                         Layway
-                    </button>
-                </div>
-
-                <!-- Credit Notes Button -->
-                <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
-                    <button class="btn btn-dark w-100" @click="handleActionClick('Credit Notes')">
-                        <i class="mdi mdi-notebook-edit-outline font-size-14 me-1"></i>
-                        Credit Notes
-                    </button>
-                </div>
-
-                <!-- Tender Button -->
-                <div class="col-6 mb-2 pe-1"
-                    v-if="this.orderItems.length && this.returnItems.length && grandTotal(false) == 0">
-                    <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#finishSaleModal">
-                        <i class="mdi mdi-check-all font-size-14 me-1"></i>
-                        Finish
-                    </button>
-                </div>
-                <div class="col-6 mb-2 pe-1" v-else-if="this.orderItems.length">
-                    <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#tenderModal">
-                        <i class="mdi mdi-cash-plus font-size-14 me-1"></i>
-                        Tender
                     </button>
                 </div>
 
@@ -90,6 +78,25 @@
                     </button>
                 </div>
 
+                <!-- Tender Button -->
+                <div class="col-12 mb-2 pe-1" v-if="amountToBePaid() > 0">
+                    <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#tenderModal">
+                        <i class="mdi mdi-cash-plus font-size-14 me-1"></i>
+                        Tender
+                    </button>
+                </div>
+                <div class="col-12 mb-2 pe-1" v-else-if="amountToBePaid() < 0">
+                    <button class="btn btn-success w-100" @click="handleActionClick('Credit Notes')">
+                        <i class="mdi mdi-notebook-edit-outline font-size-14 me-1"></i>
+                        Credit Notes
+                    </button>
+                </div>
+                <div class="col-12 mb-2 pe-1" v-else>
+                    <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#finishSaleModal">
+                        <i class="mdi mdi-check-all font-size-14 me-1"></i>
+                        Finish
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -97,7 +104,8 @@
     <ReturnSaleModal @returnItemConfirmed="returnItem" />
     <HoldSaleModal @holdSaleConfirmed="holdSale" />
     <CancelSaleModal @cancelSaleConfirmed="cancelSale" />
-    <TenderModal />
+    <TenderModal :paymentInfo="paymentInfo" :amountToBePaid="String(amountToBePaid())"
+        @capturePaymentConfirmed="capturePayment" />
     <GiftVoucherModal />
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
 </template>
@@ -123,15 +131,22 @@ export default {
         orderItems: Array,
         returnItems: Array,
     },
-    emits: ['cancelSale', 'returnItem', 'finishSale', 'holdSale'],
+    emits: ['cancelSale', 'returnItem', 'finishSale', 'placeOrder', 'holdSale', 'capturePaymentConfirmed', 'returnItem'],
     data() {
         return {
-            //
+            paymentInfo: localStorage.getItem('paymentInfo') ? JSON.parse(localStorage.getItem('paymentInfo')) : []
         };
     },
     methods: {
         returnItem(item) {
             this.$emit('returnItem', item);
+        },
+        amountToBePaid(isMoneyFormat = true) {
+            if (!isMoneyFormat) {
+                return `£${this.grandTotal(false) - parseFloat(this.getTotalPaidAmount()).toFixed(2)}`
+            }
+
+            return this.grandTotal(false) - parseFloat(this.getTotalPaidAmount());
         },
         cancelSale() {
             this.$emit('cancelSale');
@@ -141,6 +156,21 @@ export default {
         },
         finishSale() {
             this.$emit('finishSale');
+        },
+        capturePayment(payment) {
+            const existingPayment = this.paymentInfo.find(item => item.method === payment.method);
+
+            if (existingPayment) {
+                existingPayment.amount += payment.amount;
+            } else {
+                this.paymentInfo.push({ method: payment.method, amount: payment.amount });
+            }
+
+            localStorage.setItem('paymentInfo', JSON.stringify(this.paymentInfo));
+
+            if(this.amountToBePaid()==0){
+                this.$emit('placeOrder');
+            }
         },
         handleActionClick(actionName) {
             switch (actionName) {
@@ -160,6 +190,9 @@ export default {
                     console.log(`Unknown action: ${actionName}`);
                     break;
             }
+        },
+        getTotalPaidAmount() {
+            return this.paymentInfo.reduce((total, payment) => total + payment.amount, 0);
         },
         grandTotal(isMoneyFormat = true) {
             let orderItemsTotal = this.orderItems.reduce((sum, item) => {

@@ -8,7 +8,7 @@
         <!-- Right Column: Order Summary -->
         <div class="col-lg-4">
             <OrderSummary :order-items="orderItems" :return-items="returnItems" @return-item="returnItem"
-                @cancel-sale="cancelSale" @finish-sale="finishSale" @hold-sale="holdSale" />
+                @cancel-sale="cancelSale" @finish-sale="placeOrder" @hold-sale="holdSale" @place-order="placeOrder" />
         </div>
     </div>
 </template>
@@ -58,6 +58,9 @@ export default {
             this.returnItems.push(item);
             localStorage.setItem('returnItems', JSON.stringify(this.returnItems));
         },
+        placeOrder(){
+            console.log('Place Order')
+        },
         addToCart(item, storageKey = 'orderItems') {
             if (storageKey == 'orderItems') {
                 this.orderItems.push(item);
@@ -103,9 +106,6 @@ export default {
 
             this.orderItems = [];
             localStorage.removeItem('orderItems');
-        },
-        finishSale() {
-            console.log('finish Sale')
         },
         holdSale() {
             let returnItems = localStorage.getItem('returnItems');

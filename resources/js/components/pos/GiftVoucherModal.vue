@@ -33,7 +33,7 @@
                     </div>
 
                     <div class="search-box mb-2">
-                        <VirtualNumberKeyboard ref="virtualKeyboard" :invalidMessage="invalidMessage"
+                        <VirtualNumberKeyboard ref="virtualKeyboard" :inputValue="amount" :invalidMessage="invalidMessage"
                             @on-change="changeAmount" @on-submit="generateGiftVoucher" />
                     </div>
                 </div>
@@ -87,7 +87,7 @@ export default {
 
                 if (response.data.success) {
                     this.amount = '';
-                    
+
                     Swal.fire({
                         title: "Success!",
                         text: response.data.message,

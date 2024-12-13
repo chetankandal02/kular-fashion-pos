@@ -12,26 +12,45 @@ class GiftVoucher extends Model
     protected static function booted()
     {
         static::creating(function ($giftVoucher) {
-            // Get the last barcode from the database, if it exists
-            $lastBarcode = GiftVoucher::where('barcode', 'like', '100%')  // Ensure we're looking at the relevant barcode format
+            $lastBarcode = GiftVoucher::where('barcode', 'like', '100%')
                 ->orderBy('barcode', 'desc')
                 ->value('barcode');
 
-            // Increment the number part of the barcode
             if ($lastBarcode) {
-                // Extract the numeric part (first 6 digits) from the last barcode
                 $lastNumericPart = substr($lastBarcode, 0, 6);
-                $newNumericPart = str_pad($lastNumericPart + 1, 6, '0', STR_PAD_LEFT);  // Ensure it's 6 digits
+                $newNumericPart = str_pad($lastNumericPart + 1, 6, '0', STR_PAD_LEFT);
             } else {
-                // If no previous barcode exists, start from 100000
                 $newNumericPart = '100000';
             }
 
-            // Format the current date in DDMMYY
             $datePart = Carbon::now()->format('dmy');
 
-            // Combine both parts to create the final barcode
-            $giftVoucher->barcode = $newNumericPart . $datePart;
+            $barcodeWithoutCheckDigit = $newNumericPart . $datePart;
+            $checkDigit = calculateCheckDigit($barcodeWithoutCheckDigit);
+
+            $giftVoucher->barcode = $barcodeWithoutCheckDigit . $checkDigit;
         });
+
+        function calculateCheckDigit($barcode) {
+            $sum = 0;
+            $reverseBarcode = strrev($barcode);
+        
+            for ($i = 0; $i < strlen($reverseBarcode); $i++) {
+                $digit = (int) $reverseBarcode[$i];
+        
+                if ($i % 2 == 1) {
+                    $digit *= 2;
+        
+                    if ($digit > 9) {
+                        $digit -= 9;
+                    }
+                }
+        
+                $sum += $digit;
+            }
+        
+            return (10 - ($sum % 10)) % 10;
+        }
+        
     }
 }

@@ -11,7 +11,7 @@
                         <!-- Dynamic buttons using v-for -->
                         <div v-for="(method, index) in tenderMethods" :key="index" class="col-6 col-md-4 mb-3">
                             <button type="button" class="btn btn-dark waves-effect waves-light w-100"
-                                @click="selectedMethod = method.label" data-bs-toggle="modal" data-bs-target="#tenderMethodModal">
+                                @click="selectMethod(method.label)">
                                 <i :class="`mdi ${method.icon} d-block font-size-16`"></i> {{ method.label }}
                             </button>
                         </div>
@@ -21,7 +21,8 @@
         </div>
     </div>
 
-    <TenderMethodModal :selectedMethod="selectedMethod" @on-payment-done="onOnPaymentDone" />
+    <TenderMethodModal :amountToBePaid="String(amountToBePaid)" :selectedMethod="selectedMethod"
+        @on-payment-done="onPaymentDone" />
 </template>
 
 <script>
@@ -31,6 +32,17 @@ export default {
     components: {
         TenderMethodModal
     },
+    props: {
+        paymentInfo: {
+            type: Array,
+            required: true
+        },
+        amountToBePaid: {
+            type: String,
+            required: true
+        }
+    },
+    emits: ['capturePaymentConfirmed'],
     data() {
         return {
             tenderMethods: [
@@ -45,11 +57,21 @@ export default {
         };
     },
     methods: {
-        handleTenderClick(label) {
-            this.selectedMethod = label;
+        selectMethod(method){
+            this.selectedMethod = method;
+            
+            $('.modal-backdrop').remove();
+            $('#tenderModal').hide();
+
+            const tenderMethodModal = new bootstrap.Modal(document.getElementById('tenderMethodModal'));
+            tenderMethodModal.show();
         },
-        onOnPaymentDone(payment){
-            console.log('payment',payment)
+        onPaymentDone(payment) {
+            $('.modal-backdrop').remove();
+            $('#tenderMethodModal').hide();
+            $('#tenderModal').show();
+
+            this.$emit('capturePaymentConfirmed', payment);
         }
     }
 };
