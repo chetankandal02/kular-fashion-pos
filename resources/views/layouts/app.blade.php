@@ -73,7 +73,8 @@
 
     <script>
         window.config = {
-            userId: '{{ Auth::id() }}'
+            userId: '{{ Auth::id() }}',
+            euro_to_pound: '{{ setting("euro_to_pound") }}'
         }
     </script>
 </body>

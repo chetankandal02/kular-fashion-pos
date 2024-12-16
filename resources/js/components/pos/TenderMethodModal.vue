@@ -7,7 +7,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <span v-if="error">{{error}}</span>
+                    <span class="text-danger" v-if="error">{{ error }}</span>
                     <div class="search-box mb-2">
                         <VirtualNumberKeyboard ref="virtualKeyboard"
                             v-if="selectedMethod === 'Cash' || selectedMethod === 'Card' || selectedMethod === 'Euro'"
@@ -20,7 +20,8 @@
                 <div class="modal-footer"
                     v-if="selectedMethod === 'Cash' || selectedMethod === 'Card' || selectedMethod === 'Euro'">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" @click="savePaymentInfo" :disabled="error">Save</button>
+                    <button type="button" class="btn btn-primary" @click="savePaymentInfo"
+                        :disabled="error ? true : false">Save</button>
                 </div>
             </div>
         </div>
@@ -48,6 +49,10 @@ export default {
     },
     computed: {
         initialAmount() {
+            if (this.selectedMethod === 'Euro') {
+                let initialAmount = parseFloat(this.amountToBePaid)/parseFloat(window.config.euro_to_pound) || 0;
+                return String(initialAmount.toFixed(2));
+            } 
             return this.amountToBePaid || '';
         }
     },
@@ -61,6 +66,17 @@ export default {
         tenderMethodModal.removeEventListener('hidden.bs.modal', this.openTenderModal);
         tenderMethodModal.removeEventListener('shown.bs.modal', this.focusInput);
     },
+    watch: {
+        selectedMethod(newMethod, oldMethod) {
+            this.error = '';
+
+            if (newMethod === 'Cash' || newMethod === 'Card' || newMethod === 'Euro') {
+                this.barcode = '';
+            } else {
+                this.amount = '';
+            }
+        }
+    },
     methods: {
         openTenderModal() {
             bootstrap.Modal.getInstance($('#tenderMethodModal')).hide();
@@ -69,9 +85,12 @@ export default {
             tenderModal.show();
         },
         changeAmount(value) {
-            if(this.selectedMethod === 'Card' && parseFloat(value) > this.amountToBePaid){
-                this.error = `Can't pay more than £${this.amountToBePaid.toFixed(2)}`;
+            if (this.selectedMethod === 'Card' && parseFloat(value) > parseFloat(this.amountToBePaid)) {
+                this.error = `Can't pay more than £${parseFloat(this.amountToBePaid).toFixed(2)}`;
+            } else {
+                this.error = ``;
             }
+
             this.amount = value;
         },
         changeBarcode(value) {

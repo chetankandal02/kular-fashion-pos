@@ -60,6 +60,7 @@ export default {
         selectMethod(method){
             this.selectedMethod = method;
             bootstrap.Modal.getInstance($('#tenderModal')).hide();
+            $('.modal-backdrop').remove();
 
             const tenderMethodModal = new bootstrap.Modal(document.getElementById('tenderMethodModal'));
             tenderMethodModal.show();

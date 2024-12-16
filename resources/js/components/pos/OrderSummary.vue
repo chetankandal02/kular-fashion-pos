@@ -21,7 +21,11 @@
 
             <div class="d-flex justify-content-between" v-for="payment in paymentInfo">
                 <h5>Paid by {{ payment.method }}</h5>
-                <h5>£{{ payment.amount.toFixed(2) }}</h5>
+                <h5>
+                    <span v-if="payment.method === 'Euro'">€</span>
+                    <span v-else>£</span>
+                    {{ payment.amount.toFixed(2) }}
+                </h5>
             </div>
 
             <div class="d-flex justify-content-between" v-if="paymentInfo.length > 0">
@@ -139,11 +143,15 @@ export default {
             this.$emit('returnItem', item);
         },
         amountToBePaid(isMoneyFormat = true) {
+            const grandTotal = parseFloat(this.grandTotal(false));
+            const totalPaidAmount = parseFloat(this.getTotalPaidAmount());
+            const amountDue = grandTotal - totalPaidAmount;
+
             if (!isMoneyFormat) {
-                return `£${this.grandTotal(false) - parseFloat(this.getTotalPaidAmount()).toFixed(2)}`
+                return `£${amountDue.toFixed(2)}`;
             }
 
-            return this.grandTotal(false) - parseFloat(this.getTotalPaidAmount());
+            return `${amountDue.toFixed(2)}`;
         },
         cancelSale() {
             this.$emit('cancelSale');
@@ -197,6 +205,7 @@ export default {
                     this.$emit('placeOrder');
                 }
             } else {
+                $('.modal-backdrop').remove();
                 bootstrap.Modal.getInstance($('#tenderMethodModal')).hide();
                 bootstrap.Modal.getInstance($('#tenderModal')).show();
             }
@@ -218,7 +227,17 @@ export default {
             }
         },
         getTotalPaidAmount() {
-            return this.paymentInfo.reduce((total, payment) => total + payment.amount, 0);
+            const euroToPound = window.config.euro_to_pound || 0;
+
+            return this.paymentInfo.reduce((total, payment) => {
+                if (payment.method === 'Euro') {
+                    let amountInPound = parseFloat(payment.amount) * parseFloat(euroToPound) || 0;
+                    console.log(amountInPound)
+                    return total + amountInPound;
+                }
+
+                return total + parseFloat(payment.amount);
+            }, 0);
         },
         grandTotal(isMoneyFormat = true) {
             let orderItemsTotal = this.orderItems.reduce((sum, item) => {

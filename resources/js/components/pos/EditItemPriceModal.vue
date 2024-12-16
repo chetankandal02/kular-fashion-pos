@@ -41,9 +41,9 @@
                                 </div>
                             </div>
 
-                            <textarea class="form-control" id="priceReason" v-if="selectedReasonId===0" v-model="localSelectedItem.reason"
+                            <textarea class="form-control" id="priceReason" v-if="!selectedReasonId || selectedReasonId===0" v-model="localSelectedItem.reason"
                                 placeholder="Enter the reason for the price change"
-                                :class="{ 'is-invalid': errorReason }"></textarea>
+                                :class="{ 'is-invalid': errorReason || errorSelectedReason }"></textarea>
 
                             <span v-if="errorReason || errorSelectedReason" class="invalid-feedback" :class="{ 'd-block': errorSelectedReason }">Reason is required.</span>
                         </div>
@@ -114,7 +114,7 @@ export default {
             }
         },
         savePriceChange() {
-            if (!this.selectedReasonId === null || this.selectedReasonId ==='') {
+            if (!this.selectedReasonId && !this.localSelectedItem.reason) {
                 this.errorSelectedReason = true;
             } else {
                 this.errorSelectedReason = false;
@@ -134,15 +134,14 @@ export default {
                     ...this.localSelectedItem,
                     changedPrice: {
                         amount: this.priceModel,
-                        reason: this.selectedReasonId === 0 ? this.localSelectedItem.reason : '',
+                        reason: this.selectedReasonId === 0 || !this.selectedReasonId ? this.localSelectedItem.reason : '',
                         reasonId: this.selectedReasonId
                     }
                 };
 
                 this.$emit('save-price-change', updatedItem);
 
-                const modal = bootstrap.Modal.getInstance(document.getElementById('editPriceModal'));
-                modal.hide();
+                bootstrap.Modal.getInstance($('#editPriceModal')).hide();
             }
         }
     }
