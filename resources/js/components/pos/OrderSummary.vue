@@ -104,7 +104,7 @@
     <ReturnSaleModal @returnItemConfirmed="returnItem" />
     <HoldSaleModal @holdSaleConfirmed="holdSale" />
     <CancelSaleModal @cancelSaleConfirmed="cancelSale" />
-    <TenderModal v-if="!isPaymentCompleted" :paymentInfo="paymentInfo" :amountToBePaid="String(amountToBePaid())"
+    <TenderModal :paymentInfo="paymentInfo" :amountToBePaid="String(amountToBePaid())"
         @capturePaymentConfirmed="capturePayment" />
     <GiftVoucherModal />
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
@@ -134,11 +134,6 @@ export default {
         paymentInfo: Array
     },
     emits: ['cancelSale', 'returnItem', 'finishSale', 'placeOrder', 'creditNote', 'holdSale', 'capturePaymentConfirmed', 'returnItem'],
-    data() {
-        return {
-            isPaymentCompleted: false
-        };
-    },
     methods: {
         returnItem(item) {
             this.$emit('returnItem', item);
@@ -184,20 +179,26 @@ export default {
             localStorage.setItem('paymentInfo', JSON.stringify(this.paymentInfo));
 
             if (this.amountToBePaid() <= 0) {
-
                 setTimeout(() => {
                     if (bootstrap.Modal.getInstance($('#tenderModal'))) {
                         bootstrap.Modal.getInstance($('#tenderModal')).hide();
                     }
                 }, 750);
 
-
                 if (bootstrap.Modal.getInstance($('#tenderMethodModal'))) {
                     bootstrap.Modal.getInstance($('#tenderMethodModal')).hide();
                 }
 
-                this.$emit('placeOrder');
-                //this.isPaymentCompleted = true;
+                if (this.amountToBePaid() < 0) {
+                    this.creditNote();
+                }
+
+                if (this.amountToBePaid() == 0) {
+                    this.$emit('placeOrder');
+                }
+            } else {
+                bootstrap.Modal.getInstance($('#tenderMethodModal')).hide();
+                bootstrap.Modal.getInstance($('#tenderModal')).show();
             }
         },
         handleActionClick(actionName) {

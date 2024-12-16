@@ -63,6 +63,8 @@ export default {
     },
     methods: {
         openTenderModal() {
+            bootstrap.Modal.getInstance($('#tenderMethodModal')).hide();
+
             const tenderModal = new bootstrap.Modal(document.getElementById('tenderModal'));
             tenderModal.show();
         },
@@ -84,10 +86,10 @@ export default {
                 amount: parseFloat(amount)
             }
             this.$emit('onPaymentDone', paymentInfo);
-            // this.openTenderModal();
+            //this.openTenderModal();
         },
         async payWithGiftCard(barcode) {
-            const response = await axios.post('/api/gift-voucher/validate', {
+            const response = await axios.post('/api/gift-voucher/apply', {
                 barcode: barcode
             });
 
@@ -102,8 +104,21 @@ export default {
                 });
             }
         },
-        payWithCreditNote(barcode) {
+        async payWithCreditNote(barcode) {
+            const response = await axios.post('/api/credit-note/apply', {
+                barcode: barcode
+            });
 
+            if (response.data.success) {
+                this.makePayment(response.data.credit.amount);
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: response.data.message,
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                });
+            }
         },
         payWithDepositNote(barcode) {
 

@@ -11,7 +11,7 @@ Route::get('/user', function (Request $request) {
 
 
 Route::post('/gift-voucher', [GiftVoucherController::class, 'create']);
-Route::post('/gift-voucher/validate', [GiftVoucherController::class, 'validate']);
+Route::post('/gift-voucher/apply', [GiftVoucherController::class, 'apply']);
 
 Route::post('/credit-note', [CreditNoteController::class, 'create']);
-Route::post('/credit-note/validate', [CreditNoteController::class, 'validate']);
+Route::post('/credit-note/apply', [CreditNoteController::class, 'apply']);

@@ -35,7 +35,7 @@ class GiftVoucherController extends Controller
         ], 201);
     }
 
-    public function validate(Request $request){
+    public function apply(Request $request){
         $giftVoucher = GiftVoucher::where('barcode', $request->barcode)->whereNull('deleted_at')->first();
         if(!$giftVoucher){
             return response()->json([
@@ -43,6 +43,8 @@ class GiftVoucherController extends Controller
                 'message' => 'Invalid gift voucher',
             ]);
         }
+
+        $giftVoucher->delete();
 
         return response()->json([
             'success' => true,
