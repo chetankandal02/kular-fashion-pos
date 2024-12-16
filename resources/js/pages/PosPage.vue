@@ -7,7 +7,7 @@
         </div>
         <!-- Right Column: Order Summary -->
         <div class="col-lg-4">
-            <OrderSummary :order-items="orderItems" :return-items="returnItems" @return-item="returnItem"
+            <OrderSummary :order-items="orderItems" :return-items="returnItems" :payment-info="paymentInfo" @return-item="returnItem"
                 @cancel-sale="cancelSale" @finish-sale="placeOrder" @hold-sale="holdSale" @place-order="placeOrder" />
         </div>
     </div>
@@ -29,7 +29,8 @@ export default {
     data() {
         return {
             orderItems: [],
-            returnItems: []
+            returnItems: [],
+            paymentInfo: localStorage.getItem('paymentInfo') ? JSON.parse(localStorage.getItem('paymentInfo')) : [],
         };
     },
     mounted() {
@@ -96,6 +97,11 @@ export default {
                     }.bind(this))
                 }
 
+                if (holdSale.paymentInfo) {
+                    this.paymentInfo = holdSale.paymentInfo;
+                    localStorage.setItem('paymentInfo', JSON.stringify(this.paymentInfo));
+                }
+
                 holdSales.splice(holdSaleIndex, 1);
                 localStorage.setItem('holdSales', JSON.stringify(holdSales));
             }
@@ -106,10 +112,14 @@ export default {
 
             this.orderItems = [];
             localStorage.removeItem('orderItems');
+
+            this.paymentInfo = [];
+            localStorage.removeItem('paymentInfo');
         },
         holdSale(customerName) {
             let returnItems = localStorage.getItem('returnItems');
             let orderItems = localStorage.getItem('orderItems');
+            let paymentInfo = localStorage.getItem('paymentInfo');
 
             let holdSales = [];
             if (localStorage.getItem('holdSales')) {
@@ -139,6 +149,13 @@ export default {
                     orderItemsTotal = this.orderItems.reduce((sum, item) => {
                         return sum + (item.changedPrice?.amount || item.price);
                     }, 0);
+                }
+            }
+
+            if(paymentInfo){
+                paymentInfo = JSON.parse(paymentInfo);
+                if(paymentInfo.length > 0){
+                    tempHoldSale.paymentInfo = paymentInfo;
                 }
             }
 

@@ -24,7 +24,7 @@
                 <h5>£{{ payment.amount.toFixed(2) }}</h5>
             </div>
 
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between" v-if="paymentInfo.length > 0">
                 <h5>Pending Balance</h5>
                 <h5>{{ amountToBePaid(false) }}</h5>
             </div>
@@ -91,7 +91,7 @@
                         Credit Note
                     </button>
                 </div>
-                <div class="col-12 mb-2 pe-1" v-else>
+                <div class="col-12 mb-2 pe-1" v-else-if="this.orderItems.length || this.returnItems.length">
                     <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#finishSaleModal">
                         <i class="mdi mdi-check-all font-size-14 me-1"></i>
                         Finish
@@ -131,11 +131,11 @@ export default {
     props: {
         orderItems: Array,
         returnItems: Array,
+        paymentInfo: Array
     },
     emits: ['cancelSale', 'returnItem', 'finishSale', 'placeOrder', 'creditNote', 'holdSale', 'capturePaymentConfirmed', 'returnItem'],
     data() {
         return {
-            paymentInfo: localStorage.getItem('paymentInfo') ? JSON.parse(localStorage.getItem('paymentInfo')) : [],
             isPaymentCompleted: false
         };
     },
@@ -184,18 +184,20 @@ export default {
             localStorage.setItem('paymentInfo', JSON.stringify(this.paymentInfo));
 
             if (this.amountToBePaid() <= 0) {
-                if (bootstrap.Modal.getInstance($('#tenderModal'))) {
-                    setTimeout(() => {
+
+                setTimeout(() => {
+                    if (bootstrap.Modal.getInstance($('#tenderModal'))) {
                         bootstrap.Modal.getInstance($('#tenderModal')).hide();
-                    }, 750);
-                }
+                    }
+                }, 750);
+
 
                 if (bootstrap.Modal.getInstance($('#tenderMethodModal'))) {
                     bootstrap.Modal.getInstance($('#tenderMethodModal')).hide();
                 }
-                
+
                 this.$emit('placeOrder');
-                this.isPaymentCompleted = true;
+                //this.isPaymentCompleted = true;
             }
         },
         handleActionClick(actionName) {

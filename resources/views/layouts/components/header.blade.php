@@ -39,6 +39,10 @@
                 <button type="button" class="btn header-item waves-effect" data-bs-toggle="modal" data-bs-target="#onHoldSalesModal">
                     <span>On Hold Sales</span>
                 </button>
+                
+                <button type="button" class="btn header-item waves-effect" data-bs-toggle="modal" data-bs-target="#transferInventoryModal">
+                    <span>Transfer Inventory</span>
+                </button>
             </div>
         </div>
 

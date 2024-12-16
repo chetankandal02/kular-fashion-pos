@@ -28,6 +28,7 @@
                     @yield('content')
 
                     <on-hold-sales-modal></on-hold-sales-modal>
+                    <inventory-transfer-modal></inventory-transfer-modal>
 
                     <!-- Virtual Keypad -->
                     <div id="keypad" class="keypad">
