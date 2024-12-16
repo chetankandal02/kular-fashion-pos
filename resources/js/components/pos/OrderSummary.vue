@@ -153,8 +153,8 @@ export default {
         cancelSale() {
             this.$emit('cancelSale');
         },
-        holdSale() {
-            this.$emit('holdSale');
+        holdSale(customerName) {
+            this.$emit('holdSale', customerName);
         },
         finishSale() {
             this.$emit('finishSale');
@@ -183,10 +183,6 @@ export default {
 
             localStorage.setItem('paymentInfo', JSON.stringify(this.paymentInfo));
 
-            if (this.amountToBePaid() == 0) {
-                this.$emit('placeOrder');
-            }
-
             if (this.amountToBePaid() <= 0) {
                 if (bootstrap.Modal.getInstance($('#tenderModal'))) {
                     setTimeout(() => {
@@ -198,14 +194,12 @@ export default {
                     bootstrap.Modal.getInstance($('#tenderMethodModal')).hide();
                 }
                 
-                //this.isPaymentCompleted = true;
+                this.$emit('placeOrder');
+                this.isPaymentCompleted = true;
             }
         },
         handleActionClick(actionName) {
             switch (actionName) {
-                case 'Hold Sale':
-                    this.holdOrder();
-                    break;
                 case 'Layway':
                     this.laywayOrder();
                     break;

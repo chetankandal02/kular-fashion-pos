@@ -12,6 +12,7 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Customer Name</th>
                                 <th>Sale Items</th>
                                 <th>Return Items</th>
                                 <th>Grand Total</th>
@@ -22,6 +23,7 @@
                         <tbody>
                             <tr v-for="(sale, index) in holdSales" :key="sale.index">
                                 <td>{{ index + 1 }}</td>
+                                <td>{{ sale.basicInfo.customerName || 'Unknown' }}</td>
                                 <td>{{ sale.orderItems?.length || 0 }}</td>
                                 <td>{{ sale.returnItems?.length || 0 }}</td>
                                 <td>£{{ sale.basicInfo.grandTotal.toFixed(2) }}</td>

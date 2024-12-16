@@ -107,7 +107,7 @@ export default {
             this.orderItems = [];
             localStorage.removeItem('orderItems');
         },
-        holdSale() {
+        holdSale(customerName) {
             let returnItems = localStorage.getItem('returnItems');
             let orderItems = localStorage.getItem('orderItems');
 
@@ -143,6 +143,7 @@ export default {
             }
 
             tempHoldSale.basicInfo = {
+                customerName: customerName,
                 timestamp: Date.now(),
                 orderItemsTotal: orderItemsTotal,
                 returnItemsTotal: returnItemsTotal,
