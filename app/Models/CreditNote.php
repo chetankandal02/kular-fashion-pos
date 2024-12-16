@@ -1,18 +1,17 @@
 <?php
-
 namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
-class GiftVoucher extends Model
+class CreditNote extends Model
 {
     protected $guarded = [];
 
     protected static function booted()
     {
-        static::creating(function ($giftVoucher) {
-            $lastBarcode = GiftVoucher::where('barcode', 'like', '100%')
+        static::creating(function ($creditNote) {
+            $lastBarcode = CreditNote::where('barcode', 'like', '600%')
                 ->orderBy('barcode', 'desc')
                 ->value('barcode');
 
@@ -20,17 +19,17 @@ class GiftVoucher extends Model
                 $lastNumericPart = substr($lastBarcode, 0, 6);
                 $newNumericPart = str_pad($lastNumericPart + 1, 6, '0', STR_PAD_LEFT);
             } else {
-                $newNumericPart = '100000';
+                $newNumericPart = '600000';
             }
 
             $datePart = Carbon::now()->format('dmy');
-
             $barcodeWithoutCheckDigit = $newNumericPart . $datePart;
             $checkDigit = calculateCheckDigit($barcodeWithoutCheckDigit);
 
-            $giftVoucher->barcode = $barcodeWithoutCheckDigit . $checkDigit;
+            $creditNote->barcode = $barcodeWithoutCheckDigit . $checkDigit;
         });
 
+        
         function calculateCheckDigit($barcode) {
             $sum = 0;
             $reverseBarcode = strrev($barcode);

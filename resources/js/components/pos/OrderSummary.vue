@@ -86,9 +86,9 @@
                     </button>
                 </div>
                 <div class="col-12 mb-2 pe-1" v-else-if="amountToBePaid() < 0">
-                    <button class="btn btn-success w-100" @click="handleActionClick('Credit Notes')">
+                    <button class="btn btn-success w-100" @click="handleActionClick('Credit Note')">
                         <i class="mdi mdi-notebook-edit-outline font-size-14 me-1"></i>
-                        Credit Notes
+                        Credit Note
                     </button>
                 </div>
                 <div class="col-12 mb-2 pe-1" v-else>
@@ -104,7 +104,7 @@
     <ReturnSaleModal @returnItemConfirmed="returnItem" />
     <HoldSaleModal @holdSaleConfirmed="holdSale" />
     <CancelSaleModal @cancelSaleConfirmed="cancelSale" />
-    <TenderModal :paymentInfo="paymentInfo" :amountToBePaid="String(amountToBePaid())"
+    <TenderModal v-if="!isPaymentCompleted" :paymentInfo="paymentInfo" :amountToBePaid="String(amountToBePaid())"
         @capturePaymentConfirmed="capturePayment" />
     <GiftVoucherModal />
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
@@ -117,6 +117,7 @@ import CancelSaleModal from './CancelSaleModal.vue';
 import TenderModal from './TenderModal.vue';
 import GiftVoucherModal from './GiftVoucherModal.vue';
 import FinishSaleModal from './FinishSaleModal.vue';
+import axios from 'axios';
 
 export default {
     components: {
@@ -131,10 +132,11 @@ export default {
         orderItems: Array,
         returnItems: Array,
     },
-    emits: ['cancelSale', 'returnItem', 'finishSale', 'placeOrder', 'holdSale', 'capturePaymentConfirmed', 'returnItem'],
+    emits: ['cancelSale', 'returnItem', 'finishSale', 'placeOrder', 'creditNote', 'holdSale', 'capturePaymentConfirmed', 'returnItem'],
     data() {
         return {
-            paymentInfo: localStorage.getItem('paymentInfo') ? JSON.parse(localStorage.getItem('paymentInfo')) : []
+            paymentInfo: localStorage.getItem('paymentInfo') ? JSON.parse(localStorage.getItem('paymentInfo')) : [],
+            isPaymentCompleted: false
         };
     },
     methods: {
@@ -157,6 +159,19 @@ export default {
         finishSale() {
             this.$emit('finishSale');
         },
+        async creditNote() {
+            const response = await axios.post('/api/credit-note', {
+                amount: this.amountToBePaid(),
+                auth_user_id: window.config.userId
+            });
+
+            if (response.data.success) {
+                this.capturePayment({
+                    method: 'Credit Note',
+                    amount: this.amountToBePaid()
+                });
+            }
+        },
         capturePayment(payment) {
             const existingPayment = this.paymentInfo.find(item => item.method === payment.method);
 
@@ -168,8 +183,22 @@ export default {
 
             localStorage.setItem('paymentInfo', JSON.stringify(this.paymentInfo));
 
-            if(this.amountToBePaid()==0){
+            if (this.amountToBePaid() == 0) {
                 this.$emit('placeOrder');
+            }
+
+            if (this.amountToBePaid() <= 0) {
+                if (bootstrap.Modal.getInstance($('#tenderModal'))) {
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance($('#tenderModal')).hide();
+                    }, 750);
+                }
+
+                if (bootstrap.Modal.getInstance($('#tenderMethodModal'))) {
+                    bootstrap.Modal.getInstance($('#tenderMethodModal')).hide();
+                }
+                
+                //this.isPaymentCompleted = true;
             }
         },
         handleActionClick(actionName) {
@@ -180,8 +209,8 @@ export default {
                 case 'Layway':
                     this.laywayOrder();
                     break;
-                case 'Credit Notes':
-                    this.creditNotes();
+                case 'Credit Note':
+                    this.creditNote();
                     break;
                 case 'EOD':
                     this.endOfDay();

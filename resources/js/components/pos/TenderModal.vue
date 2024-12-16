@@ -59,18 +59,12 @@ export default {
     methods: {
         selectMethod(method){
             this.selectedMethod = method;
-            
-            $('.modal-backdrop').remove();
-            $('#tenderModal').hide();
+            bootstrap.Modal.getInstance($('#tenderModal')).hide();
 
             const tenderMethodModal = new bootstrap.Modal(document.getElementById('tenderMethodModal'));
             tenderMethodModal.show();
         },
         onPaymentDone(payment) {
-            $('.modal-backdrop').remove();
-            $('#tenderMethodModal').hide();
-            $('#tenderModal').show();
-
             this.$emit('capturePaymentConfirmed', payment);
         }
     }
