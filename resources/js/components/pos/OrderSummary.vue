@@ -187,6 +187,8 @@ export default {
             localStorage.setItem('paymentInfo', JSON.stringify(this.paymentInfo));
 
             if (this.amountToBePaid() <= 0) {
+                $('.modal-backdrop').remove();
+                
                 setTimeout(() => {
                     if (bootstrap.Modal.getInstance($('#tenderModal'))) {
                         bootstrap.Modal.getInstance($('#tenderModal')).hide();
@@ -232,7 +234,6 @@ export default {
             return this.paymentInfo.reduce((total, payment) => {
                 if (payment.method === 'Euro') {
                     let amountInPound = parseFloat(payment.amount) * parseFloat(euroToPound) || 0;
-                    console.log(amountInPound)
                     return total + amountInPound;
                 }
 
