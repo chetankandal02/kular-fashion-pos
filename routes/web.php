@@ -3,6 +3,7 @@
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChangePriceReasonController;
+use App\Http\Controllers\PrinterController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,3 +20,4 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
 
 Route::get('/validate-item/{barcode}', [ProductController::class, 'productValidate']);
 Route::get('/change-price-reasons', [ChangePriceReasonController::class, 'index']);
+Route::get('/test-print', [PrinterController::class, 'printTestReceipt']);
