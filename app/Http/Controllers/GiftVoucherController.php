@@ -5,9 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\GiftVoucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Services\ReceiptService;
 
 class GiftVoucherController extends Controller
 {
+    protected $receiptService;
+
+    public function __construct(ReceiptService $receiptService)
+    {
+        $this->receiptService = $receiptService;
+    }
+
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -28,11 +36,19 @@ class GiftVoucherController extends Controller
             'generated_by' => $request->auth_user_id
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Gift voucher generated successfully!',
-            'gift_voucher' => $giftVoucher
-        ], 201);
+        try {
+            $this->receiptService->printGiftVoucher($giftVoucher->toArray());
+            return response()->json([
+                'success' => true,
+                'message' => 'Gift voucher generated successfully!',
+                'gift_voucher' => $giftVoucher
+            ], 201);
+         } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to print gift voucher!',
+            ], 200);
+        }
     }
 
     public function apply(Request $request){
