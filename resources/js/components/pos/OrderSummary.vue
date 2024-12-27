@@ -173,7 +173,6 @@ export default {
                     method: 'Credit Note',
                     amount: this.amountToBePaid()
                 });
-                console.log(this.amountToBePaid())
             }
         },
         capturePayment(payment) {

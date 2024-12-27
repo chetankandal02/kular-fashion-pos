@@ -50,6 +50,13 @@ class ReceiptService
         $this->printer->text(str_repeat($character, $lineWidth) . "\n");
     }
 
+    public function printLetterHead(){
+        $this->printer->text("Kular Fashion\n");
+        $this->printer->text("19-21 Ferryquary Street\n");
+        $this->printer->text("Tel. 028 7126 1326\n");
+        $this->printer->text("www.kularfashion.com\n");
+    }
+
     public function formatMoney($amount){
         return '£' . number_format($amount, 2);
     }
@@ -60,10 +67,7 @@ class ReceiptService
 
         $this->printLogo();
         $this->printer->setJustification(Printer::JUSTIFY_CENTER);
-        $this->printer->text("Kular Fashion\n");
-        $this->printer->text("19-21 Ferryquary Street\n");
-        $this->printer->text("Tel. 028 7126 1326\n");
-        $this->printer->text("www.kularfashion.com\n");
+        $this->printLetterHead();
 
         $this->printFullWidthLine('=');
         $this->printer->setEmphasis(true);
@@ -80,6 +84,30 @@ class ReceiptService
         $this->printer->text(str_pad('         Authorized By:', 30) . "\n\n\n\n");
         $this->printFullWidthLine('.');
 
+        $this->printer->cut();
+        $this->printer->close();
+    }
+
+    public function printCreditNote($creditNote){
+        $barcode = $creditNote['barcode'];
+
+        $this->printLogo();
+        $this->printer->setJustification(Printer::JUSTIFY_CENTER);
+
+        $this->printFullWidthLine('=');
+        $this->printer->setEmphasis(true);
+        $this->printer->text("CREDIT NOTE\n");
+        $this->printer->text($barcode . "\n");
+        $this->printBarcode($barcode);
+        $this->printer->setEmphasis(false);
+        $this->printFullWidthLine('=');
+                
+        $this->printer->setJustification(Printer::JUSTIFY_LEFT);
+        $this->printer->text(str_pad('         Date', 30) . date('d/m/Y')."\n");
+        $this->printer->text(str_pad('         Time', 30) . date('H:i:s')."\n");
+        $this->printer->text(str_pad('         Value', 30) . $this->formatMoney($creditNote['amount'])."\n");
+        $this->printer->text(str_pad('         Authorized By:', 30) . "\n\n\n\n");
+        $this->printFullWidthLine('.');
         $this->printer->cut();
         $this->printer->close();
     }
