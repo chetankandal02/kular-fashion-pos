@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Brand;
+use App\Models\Branch;
 use App\Models\ProductType;
 
 class FrontendController extends Controller
@@ -14,5 +15,12 @@ class FrontendController extends Controller
         $productTypes = ProductType::latest()->whereNull('deleted_at')->get();
 
         return view('index', compact('brands', 'productTypes'));
+    }
+
+    public function branch()
+    {
+        $branches = Branch::where('status','Active')->get();
+
+        return response()->json($branches);
     }
 }
