@@ -24,7 +24,7 @@
                 <h5>
                     <span v-if="payment.method === 'Euro'">€</span>
                     <span v-else>£</span>
-                    {{ payment.amount.toFixed(2) }}
+                    {{ payment.amount }}
                 </h5>
             </div>
 
@@ -173,6 +173,7 @@ export default {
                     method: 'Credit Note',
                     amount: this.amountToBePaid()
                 });
+                console.log(this.amountToBePaid())
             }
         },
         capturePayment(payment) {
@@ -199,7 +200,7 @@ export default {
                     bootstrap.Modal.getInstance($('#tenderMethodModal')).hide();
                 }
 
-                if (this.amountToBePaid() < 0) {
+                if (parseFloat(this.amountToBePaid()) < 0) {
                     this.creditNote();
                 }
 

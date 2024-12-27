@@ -19,6 +19,7 @@ import OrderItemsTable from '../components/pos/OrderItemsTable.vue';
 import OrderSummary from '../components/pos/OrderSummary.vue';
 import { EventBus } from '@/eventBus';
 import { watch } from 'vue';
+import axios from 'axios';
 
 export default {
     components: {
@@ -59,8 +60,14 @@ export default {
             this.returnItems.push(item);
             localStorage.setItem('returnItems', JSON.stringify(this.returnItems));
         },
-        placeOrder(){
-            console.log('Place Order')
+        async placeOrder(){
+            const response = await axios.post('/api/place-order', {
+                orderItems: this.orderItems,
+                returnItems: this.returnItems,
+                paymentInfo: this.paymentInfo
+            });
+
+            console.log('Place Order',response)
         },
         addToCart(item, storageKey = 'orderItems') {
             if (storageKey == 'orderItems') {
