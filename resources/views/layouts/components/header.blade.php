@@ -40,7 +40,7 @@
                     <span>On Hold Sales</span>
                 </button>
                 
-                <button type="button" class="btn header-item waves-effect" data-bs-toggle="modal" data-bs-target="#transferInventoryModal">
+                <button type="button" class="btn header-item waves-effect" data-bs-toggle="modal" data-bs-target="#transferInventoryModal" :data-current-user-store="{{ auth()->user()->branch_id }}">
                     <span>Transfer Inventory</span>
                 </button>
             </div>
