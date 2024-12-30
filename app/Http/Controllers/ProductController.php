@@ -80,21 +80,43 @@ class ProductController extends Controller
 
             if ($generated_code == $barcode) {
                 $productData = [
-                    'quantity_id'   => $product->id,
+                    'id' => $product->id,
                     'product_id'   => $product->product->id,
                     'code' => $product->product->article_code,
                     'description' => $product->product->short_description,
+                    'product_quantity_id' => $product->id,
                     'color' => $product->colors->colorDetail->color_name,
+                    'color_id' => $product->colors->colorDetail->id,
                     'size' => $product->sizes->sizeDetail->size,
+                    'size_id' => $product->sizes->sizeDetail->id,
                     'brand' => $product->product->brand->name,
+                    'brand_id' => $product->product->brand->id,
                     'price' => (float) $product->sizes->mrp,
                     'available_quantity'=> $product->quantity,
+                    'manufacture_barcode' => $product->manufacture_barcode,
+                    'barcode' => $barcode,
                 ];
 
                 return response()->json(['success' => true, 'message' => 'Product barcode is valid.', 'product' => $productData], 200);
             }
         }
         return response()->json(['success' => false, 'message' => 'Product barcode is invalid.']);
+    }
+
+    public function addManufactureBarcode(Request $request){
+        $targetedItem = ProductQuantity::find($request->id);
+        if(!$targetedItem){
+            return response()->json([
+                'success' => false
+            ]);
+        }
+        
+        $targetedItem->manufacture_barcode = $request->barcode;
+        $targetedItem->save();
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 
    
