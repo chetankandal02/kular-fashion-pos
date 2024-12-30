@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CreditNoteController;
 use App\Http\Controllers\GiftVoucherController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,3 +16,5 @@ Route::post('/gift-voucher/apply', [GiftVoucherController::class, 'apply']);
 
 Route::post('/credit-note', [CreditNoteController::class, 'create']);
 Route::post('/credit-note/apply', [CreditNoteController::class, 'apply']);
+
+Route::post('/place-order', [OrderController::class, 'create']);

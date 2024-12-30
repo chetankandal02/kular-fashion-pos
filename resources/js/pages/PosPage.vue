@@ -64,7 +64,8 @@ export default {
             const response = await axios.post('/api/place-order', {
                 orderItems: this.orderItems,
                 returnItems: this.returnItems,
-                paymentInfo: this.paymentInfo
+                paymentInfo: this.paymentInfo,
+                salesPersonId: window.config.userId
             });
 
             console.log('Place Order',response)

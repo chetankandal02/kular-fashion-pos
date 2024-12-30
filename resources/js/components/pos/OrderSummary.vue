@@ -24,7 +24,7 @@
                 <h5>
                     <span v-if="payment.method === 'Euro'">€</span>
                     <span v-else>£</span>
-                    {{ payment.amount }}
+                    {{ payment.amount.toFixed(2) }}
                 </h5>
             </div>
 
@@ -171,13 +171,14 @@ export default {
             if (response.data.success) {
                 this.capturePayment({
                     method: 'Credit Note',
-                    amount: this.amountToBePaid()
+                    amount: parseFloat(this.amountToBePaid())
                 });
             }
         },
         capturePayment(payment) {
             const existingPayment = this.paymentInfo.find(item => item.method === payment.method);
 
+            console.log('hehhe', payment);
             if (existingPayment) {
                 existingPayment.amount += payment.amount;
             } else {

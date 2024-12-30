@@ -80,6 +80,7 @@ class ProductController extends Controller
 
             if ($generated_code == $barcode) {
                 $productData = [
+                    'quantity_id'   => $product->id,
                     'product_id'   => $product->product->id,
                     'code' => $product->product->article_code,
                     'description' => $product->product->short_description,
