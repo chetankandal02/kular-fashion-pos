@@ -10,59 +10,17 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\ReceiptService;
 
 class OrderController extends Controller
 {
-    protected function processItems($items)
+    protected $receiptService;
+    
+    public function __construct(ReceiptService $receiptService)
     {
-        return collect($items)->groupBy('id')->map(function ($group) {
-            $firstItem = $group->first();
-            return [
-                'product_id' => $firstItem['product_id'],
-                'quantity_id' => $firstItem['id'],
-                'code' => $firstItem['code'],
-                'description' => $firstItem['description'],
-                'color' => $firstItem['color'],
-                'size' => $firstItem['size'],
-                'brand' => $firstItem['brand'],
-                'price' => $firstItem['price'],
-                'barcode' => $firstItem['barcode'],
-                'quantity' => $group->count(),
-            ];
-        });
+        $this->receiptService = $receiptService;
     }
-
-    protected function createOrderItem($orderItem, $params)
-    {
-        $productId = $orderItem['product_id'];
-        $product = Product::with('brand')->find($productId);
-        $colorDetail = Color::find($orderItem['color_id']);
-
-        OrderItem::create([
-            'order_id'  => $params['order_id'],
-            'product_id' => $product->id,
-            'size_id' => $orderItem['size_id'],
-            'size' => $orderItem['size'],
-            'color_id' => $orderItem['color_id'],
-            'color_name' => $orderItem['color'],
-            'color_code' => $product->id,
-            'ui_color_code' => $colorDetail->ui_color_code,
-            'brand_id' => $product->brand_id,
-            'brand_name' => $product->brand->name,
-            'article_code' => $product->article_code,
-            'barcode' => $orderItem['barcode'],
-            'original_price' => $product->mrp,
-            'changed_price' => isset($orderItem['changedPrice']['amount']) ? $orderItem['changedPrice']['amount'] : $product->mrp,
-            'changed_price_reason_id' => isset($orderItem['changedPrice']['reasonId']) ? $orderItem['changedPrice']['reasonId'] : null,
-            'changed_price_reason' => isset($orderItem['changedPrice']['reason']) ? $orderItem['changedPrice']['reason'] : '',
-            'quantity' => 1,
-            'description' => $product->id,
-            'flag' => $params['flag'],
-            'sales_person_id' => $params['sales_person_id'],
-            'branch_id' => $params['branch_id'],
-        ]);
-    }
-
+    
     public function create(Request $request)
     {
         /* DB::beginTransaction();
@@ -107,7 +65,6 @@ class OrderController extends Controller
                 'source' => 'POS'
             ]);
 
-            
             foreach ($orderItems as $orderItem) {
                 $params = [
                     'order_id'=> $order->id,
@@ -119,7 +76,6 @@ class OrderController extends Controller
                 $this->createOrderItem($orderItem, $params);
             }
 
-            
             foreach ($returnItems as $returnItem) {
                 $params = [
                     'order_id'=> $order->id,
@@ -146,12 +102,22 @@ class OrderController extends Controller
                     'original_amount' => $convertedAmount ?? $paymentMethod['amount']
                 ]);
             }
-        
-            return response()->json([
-                'success' => true,
-                'message' => 'Order created successfully!',
-                'order' => $order
-            ], 201);
+            
+            try {
+                $this->receiptService->printOrderReceipt($order->id);
+                 return response()->json([
+                    'success' => true,
+                    'message' => 'Order created successfully!',
+                    'order' => $order
+                ], 201);
+             } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to print order receipt!',
+                ], 200);
+            }
+            
+            
         /* } catch (\Exception $e) {
             DB::rollBack();
     
@@ -160,5 +126,39 @@ class OrderController extends Controller
                 'message' => 'Failed to create order: ' . $e->getMessage()
             ], 500);
         } */
+    }
+
+    protected function createOrderItem($orderItem, $params)
+    {
+        $productId = $orderItem['product_id'];
+        $product = Product::with('brand', 'supplier')->find($productId);
+        $colorDetail = Color::find($orderItem['color_id']);
+
+        OrderItem::create([
+            'order_id'  => $params['order_id'],
+            'product_id' => $product->id,
+            'size_id' => $orderItem['size_id'],
+            'size' => $orderItem['size'],
+            'color_id' => $orderItem['color_id'],
+            'color_name' => $orderItem['color'],
+            'color_code' => $product->id,
+            'ui_color_code' => $colorDetail->ui_color_code,
+            'brand_id' => $product->brand_id,
+            'brand_name' => $product->brand->name,
+            'supplier_id' => $product->supplier->id ?? null,
+            'supplier_short_code' => $product->supplier->short_code ?? null,
+            'supplier_name' => $product->supplier->supplier_name ?? null,
+            'article_code' => $product->article_code,
+            'barcode' => $orderItem['barcode'],
+            'original_price' => $product->mrp,
+            'changed_price' => isset($orderItem['changedPrice']['amount']) ? $orderItem['changedPrice']['amount'] : $product->mrp,
+            'changed_price_reason_id' => isset($orderItem['changedPrice']['reasonId']) ? $orderItem['changedPrice']['reasonId'] : null,
+            'changed_price_reason' => isset($orderItem['changedPrice']['reason']) ? $orderItem['changedPrice']['reason'] : '',
+            'quantity' => 1,
+            'description' => '',
+            'flag' => $params['flag'],
+            'sales_person_id' => $params['sales_person_id'],
+            'branch_id' => $params['branch_id'],
+        ]);
     }
 }
