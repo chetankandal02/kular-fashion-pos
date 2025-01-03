@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\ProductQuantity;
+use App\Models\StoreInventory;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -67,7 +69,8 @@ class ProductController extends Controller
     }
 
     public function productValidate($barcode)
-    {
+    {   
+        $branch_id = Auth::user()->branch_id;
         $products = ProductQuantity::with('product.brand','product.department', 'sizes.sizeDetail', 'colors.colorDetail')->get();
         foreach($products as $product)
         {
@@ -79,6 +82,18 @@ class ProductController extends Controller
             $generated_code = $article_code . $checkCode;
 
             if ($generated_code == $barcode) {
+                $available_quantity = 0;
+                if($branch_id === 1){
+                    $available_quantity = $product->quantity;
+                } else {
+                    $inventory = StoreInventory::where([
+                        'store_id'             => $branch_id,
+                        'product_quantity_id'  => $product->id,
+                    ])->first();
+                    
+                    $available_quantity = $inventory ? $inventory->quantity : 0;
+                }
+
                 $productData = [
                     'id' => $product->id,
                     'product_id'   => $product->product->id,
@@ -92,7 +107,7 @@ class ProductController extends Controller
                     'brand' => $product->product->brand->name,
                     'brand_id' => $product->product->brand->id,
                     'price' => (float) $product->sizes->mrp,
-                    'available_quantity'=> $product->quantity,
+                    'available_quantity'=> $available_quantity,
                     'manufacture_barcode' => $product->manufacture_barcode,
                     'barcode' => $barcode,
                 ];
@@ -118,6 +133,4 @@ class ProductController extends Controller
             'success' => true
         ]);
     }
-
-   
 }

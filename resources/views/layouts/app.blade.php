@@ -74,7 +74,7 @@
     <script>
         window.config = {
             userId: '{{ Auth::id() }}',
-            currentUserStore: {{ auth()->user()->branch_id }},
+            currentUserStore: {{ auth()->user()->branch_id ?? 'null' }},
             euro_to_pound: '{{ setting("euro_to_pound") }}'
         }
     </script>

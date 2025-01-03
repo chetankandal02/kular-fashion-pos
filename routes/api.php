@@ -4,6 +4,7 @@ use App\Http\Controllers\CreditNoteController;
 use App\Http\Controllers\GiftVoucherController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\InventoryTransferController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,4 +22,4 @@ Route::post('/credit-note/apply', [CreditNoteController::class, 'apply']);
 
 Route::post('/place-order', [OrderController::class, 'create']);
 Route::get('/branches', [FrontendController::class, 'branch']);
-Route::post('products/add-manufacture-barcode', [ProductController::class, 'addManufactureBarcode']);
+Route::post('/products/add-manufacture-barcode', [ProductController::class, 'addManufactureBarcode']);

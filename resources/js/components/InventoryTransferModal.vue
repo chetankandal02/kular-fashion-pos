@@ -1,5 +1,6 @@
 <template>
-    <div class="modal fade" id="transferInventoryModal" tabindex="-1" aria-labelledby="transferInventoryModalLabel" aria-hidden="true" @shown.bs.modal="onModalShow">
+    <div class="modal fade" id="transferInventoryModal" tabindex="-1" aria-labelledby="transferInventoryModalLabel"
+        aria-hidden="true" @shown.bs.modal="onModalShow">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -18,12 +19,13 @@
                                 </option>
                             </select>
                         </div>
-                        
+
                         <div class="col-3">
                             <label>To</label>
                             <select class="form-control" v-model="toStore" :disabled="!fromStore">
                                 <option disabled value="">Select a store</option>
-                                <option v-for="(branch, index) in branches" :key="index" :value="branch.id" :disabled="branch.id === fromStore">
+                                <option v-for="(branch, index) in branches" :key="index" :value="branch.id"
+                                    :disabled="branch.id === fromStore">
                                     {{ branch.name }}
                                 </option>
                             </select>
@@ -33,8 +35,12 @@
                         <div class="col-md-6">
                             <BarCodeBox :item-to-be-add="itemToBeAdd" @transfer-item="transferItem" />
                         </div>
+
+                        <div class="col-md-6">
+                            <button class="btn btn-primary" :disabled="!toStore || !fromStore || !items.length"
+                                @click="transferInventory">Transfer Items</button>
+                        </div>
                     </div>
-                        <AddManufactureBarcodeModal :item="itemToBeAdd" @item-scanned="itemScanned" />
 
                     <table class="table table-striped table-bordered">
                         <thead>
@@ -71,6 +77,9 @@
             </div>
         </div>
     </div>
+
+    <AddManufactureBarcodeModal :item="itemToBeAdd" @item-scanned="itemScanned" />
+
 </template>
 
 <script>
@@ -139,7 +148,7 @@ export default {
         //     localStorage.setItem('transferItems', JSON.stringify(updatedItems));
         //     this.items = updatedItems;
         // },
-        itemScanned(scanned_barcode){
+        itemScanned(scanned_barcode) {
             this.itemToBeAdd.manufacture_barcode = scanned_barcode;
             this.transferItem(this.itemToBeAdd);
             this.itemToBeAdd = {};
@@ -160,7 +169,7 @@ export default {
 
             const existingProductIndex = products.findIndex(product => product.barcode === item.barcode);
 
-            if (existingProductIndex !== -1) {                
+            if (existingProductIndex !== -1) {
                 if (products[existingProductIndex].quantity < 1) {
                     Swal.fire({
                         title: 'Error!',
@@ -173,7 +182,7 @@ export default {
                 products[existingProductIndex].quantity += 1;
 
             } else {
-                if(item.available_quantity < 1){
+                if (item.available_quantity < 1) {
                     Swal.fire({
                         title: 'Error!',
                         text: 'Item maximum quantity exceed',
@@ -191,9 +200,35 @@ export default {
 
             this.items = products;
         },
-
         onModalShow() {
-            this.toStore = ''; // Reset 'To' store when the modal is shown
+            this.toStore = ''
+        },
+        async transferInventory() {
+            const response = await axios.post('/transfer-inventory', {
+                items: this.items,
+                fromStore: this.fromStore,
+                toStore: this.toStore
+            });
+
+            if (response.data.success) {
+                this.items = [];
+                localStorage.removeItem('transferItems');
+                $('#transferInventoryModal').modal('hide');
+
+                Swal.fire({
+                    title: 'Success!',
+                    text: response.data.message,
+                    icon: 'success',
+                    confirmButtonText: 'Great!'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Something wnt wrong',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                });
+            }
         }
     }
 };
