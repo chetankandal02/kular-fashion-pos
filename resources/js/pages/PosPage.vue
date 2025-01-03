@@ -7,8 +7,9 @@
         </div>
         <!-- Right Column: Order Summary -->
         <div class="col-lg-4">
-            <OrderSummary :order-items="orderItems" :return-items="returnItems" :payment-info="paymentInfo" @return-item="returnItem"
-                @cancel-sale="cancelSale" @finish-sale="placeOrder" @hold-sale="holdSale" @place-order="placeOrder" />
+            <OrderSummary :order-items="orderItems" :return-items="returnItems" :payment-info="paymentInfo"
+                @return-item="returnItem" @cancel-sale="cancelSale" @finish-sale="placeOrder" @hold-sale="holdSale"
+                @place-order="placeOrder" />
         </div>
     </div>
 </template>
@@ -60,7 +61,7 @@ export default {
             this.returnItems.push(item);
             localStorage.setItem('returnItems', JSON.stringify(this.returnItems));
         },
-        async placeOrder(){
+        async placeOrder() {
             const response = await axios.post('/api/place-order', {
                 orderItems: this.orderItems,
                 returnItems: this.returnItems,
@@ -68,7 +69,18 @@ export default {
                 salesPersonId: window.config.userId
             });
 
-            console.log('Place Order',response)
+            if (response.data.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Order placed successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'Great!'
+                });
+
+                this.cancelSale();
+            } else {
+                alert(response.data.message || 'Something went wrong!')
+            }
         },
         addToCart(item, storageKey = 'orderItems') {
             if (storageKey == 'orderItems') {
@@ -160,9 +172,9 @@ export default {
                 }
             }
 
-            if(paymentInfo){
+            if (paymentInfo) {
                 paymentInfo = JSON.parse(paymentInfo);
-                if(paymentInfo.length > 0){
+                if (paymentInfo.length > 0) {
                     tempHoldSale.paymentInfo = paymentInfo;
                 }
             }

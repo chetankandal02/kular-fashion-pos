@@ -178,7 +178,6 @@ export default {
         capturePayment(payment) {
             const existingPayment = this.paymentInfo.find(item => item.method === payment.method);
 
-            console.log('hehhe', payment);
             if (existingPayment) {
                 existingPayment.amount += payment.amount;
             } else {

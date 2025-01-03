@@ -25,7 +25,7 @@ export default {
       this.$emit('finish-sale-confirmed');
       const myModalEl = document.getElementById('finishSaleModal');
       const modal = bootstrap.Modal.getInstance(myModalEl);
-      //modal.hide();
+      modal.hide();
     }
   }
 };

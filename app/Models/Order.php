@@ -15,9 +15,9 @@ class Order extends Model
     {
         static::creating(function ($order) {
             $lastOrder = self::orderBy('id', 'desc')->first();
-            $nextOrderNumber = $lastOrder ? (int) substr($lastOrder->order_code, -5) + 1 : 1;
+            $nextOrderNumber = $lastOrder ? (int) substr($lastOrder->code, -5) + 1 : 1;
 
-            $order->order_code = 'ORD-' . str_pad($nextOrderNumber, 5, '0', STR_PAD_LEFT);
+            $order->code = 'ORD-' . str_pad($nextOrderNumber, 5, '0', STR_PAD_LEFT);
         });
     }
 }
