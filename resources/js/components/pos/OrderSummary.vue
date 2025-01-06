@@ -52,7 +52,7 @@
 
                 <!-- Layway Button -->
                 <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
-                    <button class="btn btn-secondary w-100" @click="handleActionClick('Layway')">
+                    <button class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#laywayModal">
                         <i class="mdi mdi-account-cash font-size-14 me-1"></i>
                         Layway
                     </button>
@@ -76,7 +76,7 @@
 
                 <!-- EOD Button -->
                 <div class="col-6 mb-2 pe-1">
-                    <button class="btn btn-info w-100" @click="handleActionClick('EOD')">
+                    <button class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#eodModal">
                         <i class="mdi mdi-printer font-size-14 me-1"></i>
                         EOD
                     </button>
@@ -112,6 +112,8 @@
         @capturePaymentConfirmed="capturePayment" />
     <GiftVoucherModal />
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
+    <LaywayModal></LaywayModal>
+    <EODModal></EODModal>
 </template>
 
 <script>
@@ -121,6 +123,8 @@ import CancelSaleModal from './CancelSaleModal.vue';
 import TenderModal from './TenderModal.vue';
 import GiftVoucherModal from './GiftVoucherModal.vue';
 import FinishSaleModal from './FinishSaleModal.vue';
+import LaywayModal from './LaywayModal.vue';
+import EODModal from './EODModal.vue';
 import axios from 'axios';
 
 export default {
@@ -130,7 +134,9 @@ export default {
         CancelSaleModal,
         TenderModal,
         GiftVoucherModal,
-        FinishSaleModal
+        FinishSaleModal,
+        LaywayModal,
+        EODModal
     },
     props: {
         orderItems: Array,
@@ -214,14 +220,8 @@ export default {
         },
         handleActionClick(actionName) {
             switch (actionName) {
-                case 'Layway':
-                    this.laywayOrder();
-                    break;
                 case 'Credit Note':
                     this.creditNote();
-                    break;
-                case 'EOD':
-                    this.endOfDay();
                     break;
                 default:
                     console.log(`Unknown action: ${actionName}`);
