@@ -112,8 +112,9 @@
         @capturePaymentConfirmed="capturePayment" />
     <GiftVoucherModal />
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
-    <LaywayModal></LaywayModal>
     <EODModal></EODModal>
+    <LaywayModal :grandTotal="parseFloat(grandTotal(false))" :pendingBalance="amountToBePaid(false)" 
+/>
 </template>
 
 <script>
