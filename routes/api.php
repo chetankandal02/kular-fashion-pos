@@ -25,4 +25,4 @@ Route::post('/place-order', [OrderController::class, 'create']);
 Route::get('/branches', [FrontendController::class, 'branch']);
 Route::post('/products/add-manufacture-barcode', [ProductController::class, 'addManufactureBarcode']);
 
-Route::post('/layaway', [LayawayController::class, 'store']);
+Route::post('/customer', [LayawayController::class, 'store']);

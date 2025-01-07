@@ -21,6 +21,10 @@
               <label for="contact_number">Contact Number</label>
               <input type="text" class="form-control" v-model="form.contact_number" />
             </div>
+            <div class="col-sm-4">
+              <label for="down_payment">Down Payment</label>
+              <input type="number" class="form-control" v-model="form.down_payment" />
+            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -34,28 +38,65 @@
 
 <script>
 import axios from 'axios';
+import Swal from 'sweetalert2';
+
 export default {
+  props: {
+    grandTotal: Number,
+    pendingBalance: Number,
+  },
   data() {
     return {
       form: {
         customer_name: '',
         customer_email: '',
-        contact_number: ''
+        contact_number: '',
+        down_payment: 0
       },
     };
   },
   methods: {
     async submitForm() {
-        const response = await axios.post('/api/layaway', this.form);
-        const customerId = response.data.customer_id;
-        console.log('Customer ID:', customerId);
+      const formData = {
+        customer_name: this.form.customer_name,
+        customer_email: this.form.customer_email,
+        contact_number: this.form.contact_number,
+        down_payment: this.form.down_payment,
+        grand_total: this.grandTotal,
+      };
 
-        this.form = {
-          customer_name: '',
-          customer_email: '',
-          contact_number: ''
-        };
-        this.closeModal();
+      try {
+        const response = await axios.post('/api/customer', formData);
+
+        if (response.data.success) {
+          const customerId = response.data.customer_id;
+
+          this.form = {
+            customer_name: '',
+            customer_email: '',
+            contact_number: '',
+            down_payment: 0,
+          };
+          this.closeModal();
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Customer already exists with the same email or phone number.',
+          }).then(() => {
+            this.form = {
+              customer_name: '',
+              customer_email: '',
+              contact_number: '',
+              down_payment: 0,
+            };
+            this.closeModal();
+          });
+        }
+      } catch (error) {
+        console.error('Error during API call:', error);
+        this.errorMessage = 'There was an issue processing your request. Please try again later.';
+      }
     },
     closeModal() {
       const modalElement = document.getElementById('laywayModal');
