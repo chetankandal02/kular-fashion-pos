@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Color;
+use App\Models\CreditNote;
+use App\Models\GiftVoucher;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderPayment;
@@ -11,6 +13,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Services\ReceiptService;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -159,6 +163,89 @@ class OrderController extends Controller
             'flag' => $params['flag'],
             'sales_person_id' => $params['sales_person_id'],
             'branch_id' => $params['branch_id'],
+        ]);
+    }
+
+    public function getSales(Request $request)
+    {
+        $query = Order::with(['salesPerson', 'user', 'orderItems'])->whereNull('deleted_at');
+        if ($request->has('article_code') && !empty($request->article_code)) {
+            $query->whereHas('orderItems', function ($q) use ($request) {
+                $q->where('article_code', 'like', "%" . $request->article_code . "%");
+            });
+        }
+
+        if ($request->has('sales_start_date') && !empty($request->sales_start_date)) {
+            $startDate = \Carbon\Carbon::parse($request->sales_start_date)->startOfDay();
+            $query->where('created_at', '>=', $startDate);
+        }
+
+        if ($request->has('sales_end_date') && !empty($request->sales_end_date)) {
+            $endDate = \Carbon\Carbon::parse($request->sales_end_date)->endOfDay();
+            $query->where('created_at', '<=', $endDate);
+        }
+
+        if ($request->has('search') && !empty($request->input('search.value'))) {
+            $search = $request->input('search.value');
+            $query->where(function($q) use ($search) {
+                $q->where('total_items', 'like', "%{$search}%")
+                ->orWhere('total_amount', 'like', "%{$search}%")
+                ->orWhereHas('user', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('salesPerson', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        $sales = $query->orderBy('id', 'desc')
+                        ->paginate($request->input('length', 10));
+        $data = $sales->map(function ($sale) {
+            return [
+                'id' => $sale->id,
+                'code' => $sale->code,
+                'customer_name' => $sale->user ? $sale->user->name : 'N/A',
+                'sales_person_name' => $sale->salesPerson ? $sale->salesPerson->name : 'N/A',
+                'total_items' => $sale->total_items,
+                'total_amount' => $sale->total_amount,
+            ];
+        });
+
+        return response()->json([
+            'draw' => $request->input('draw'),
+            'recordsTotal' => $sales->total(),
+            'recordsFiltered' => $sales->total(),
+            'data' => $data,
+        ]);
+    }
+
+    public function getTodaysSales(Request $request)
+    {
+        $today = Carbon::now();
+
+        $salesData = OrderItem::where('sales_person_id', $request->salesPersonId)->whereDate('created_at', $today)->get();
+        $giftVoucherRedeemeds = OrderPayment::whereDate('created_at', $today)
+            ->whereHas('order', function ($query) use ($request) {
+                $query->where('sales_person_id', $request->salesPersonId);
+            })->get();
+        $giftVoucherSold = GiftVoucher::where('generated_by', $request->salesPersonId)->whereDate('created_at', $today)->get();
+        $creditNotesIssue = DB::table('credit_notes')->where('generated_by', $request->salesPersonId)->whereDate('created_at', $today)->whereNull('deleted_at')->get();
+
+        $totals = [
+            'saleItems' => $salesData->where('flag', 'SALE')->count(),
+            'saleReturns' => $salesData->where('flag', 'RETURN')->count(),
+            'miscSales' => number_format($salesData->where('flag', 'SALE')->sum('changed_price'), 2),
+            'miscReturns' => number_format($salesData->where('flag', 'RETURN')->sum('changed_price'), 2),
+            'giftVouchersSold' => $giftVoucherSold->count(),
+            'giftVouchersRedeemed' => number_format($giftVoucherRedeemeds->where('method', '!=', 'Credit Note')->sum('original_amount'), 2),
+            'creditNotesIssued' => $creditNotesIssue->count(),
+            'creditNotesRedeemed' => number_format($giftVoucherRedeemeds->where('method', 'Credit Note')->sum('original_amount'), 2)
+        ];
+
+        return response()->json([
+            'salesData' => $salesData,
+            'totals' => $totals,
         ]);
     }
 }

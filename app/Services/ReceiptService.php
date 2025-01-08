@@ -5,10 +5,16 @@ namespace App\Services;
 use App\Models\Branch;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
+use App\Models\OrderItem;
+use App\Models\GiftVoucher;
+use App\Models\OrderPayment;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\EscposImage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ReceiptService
 {
@@ -126,6 +132,9 @@ class ReceiptService
             if($branch->location){
                 $this->printer->text($branch->location."\n");
             }
+            $orderReceiptFooter = $branch->order_receipt_footer ?? setting("order_receipt_footer");
+            $orderReceiptHeader = $branch->order_receipt_header ?? setting("order_receipt_header");
+            $this->printer->text($orderReceiptHeader."\n");
 
             if($branch->contact){
                 $this->printer->text("Tel. ".$branch->contact."\n");
@@ -161,7 +170,7 @@ class ReceiptService
             $this->printer->text("Duplicate\n");
             $this->printer->setEmphasis(false);
             $this->printFullWidthLine('-');
-            $this->printer->text("Kular will offer an exchange or store credit for any items returned within 15 days of purchase\n\n");
+            $this->printer->text($orderReceiptFooter."\n");
             $this->printer->cut();
             $this->printer->close();
         } else {
@@ -179,5 +188,65 @@ class ReceiptService
         foreach($paymentMethods as $method){
             $this->printer->text(str_pad($method->method, 30) . '£'.$method->amount."\n");
         }
+    }
+
+    public function printEod($salesPersonId)
+    {
+        $user = User::with('branch')->where('id',$salesPersonId)->first();
+        $storeName = $user->branch->name;
+        $orderReceiptHeader = $user->branch->order_receipt_header ?? setting("order_receipt_header");
+        $date = Carbon::now();
+        $today = Carbon::now()->format('Y-m-d H:i:s');
+        $salesData = OrderItem::where('sales_person_id', $salesPersonId)->whereDate('created_at', $date)->get();
+        $saleItems =  $salesData->where('flag', 'SALE')->count();
+        $saleReturns = $salesData->where('flag', 'RETURN')->count();
+        $miscSales = number_format($salesData->where('flag', 'SALE')->sum('changed_price'), 2);
+        $miscReturns = number_format($salesData->where('flag', 'RETURN')->sum('changed_price'), 2);
+        $giftVoucherSold = GiftVoucher::where('generated_by', $salesPersonId)->whereDate('created_at', $date)->get();
+        $creditNotesIssue = DB::table('credit_notes')->where('generated_by', $salesPersonId)->whereDate('created_at', $date)->whereNull('deleted_at')->get();
+        $giftVoucherRedeemeds = OrderPayment::whereDate('created_at', $date)
+            ->whereHas('order', function ($query) use ($salesPersonId) {
+                $query->where('sales_person_id', $salesPersonId);
+            })->get();
+        $giftVouchersSold = $giftVoucherSold->count();
+        $giftVouchersRedeemed = number_format($giftVoucherRedeemeds->where('method', '!=', 'Credit Note')->sum('original_amount'), 2);
+        $creditNotesIssued = $creditNotesIssue->count();
+        $creditNotesRedeemed = number_format($giftVoucherRedeemeds->where('method', 'Credit Note')->sum('original_amount'), 2);
+
+        $this->printLogo();
+        $this->printer->setJustification(Printer::JUSTIFY_CENTER);
+
+        $this->printFullWidthLine('=');
+        $this->printer->text($storeName . "\n");
+        $this->printer->text($orderReceiptHeader . "\n");
+        $this->printer->text('Phone Number: 445454' . "\n");
+        $this->printer->text('Email: asdas@sds.dd' . "\n");
+        $this->printer->text($today . "\n");
+        // $this->printBarcode($storeName);
+        $this->printFullWidthLine('=');
+        $this->printer->setEmphasis(true);
+        $this->printer->text("SALE OF GOODS\n");
+        $this->printer->setEmphasis(false);
+
+        $this->printer->setJustification(Printer::JUSTIFY_LEFT);
+        $this->printer->text(str_pad('       Sale Items', 35) . $saleItems."\n");
+        $this->printer->text(str_pad('       Sale Return Items', 35) . $saleReturns."\n");
+        $this->printer->text(str_pad('       Misc Sales', 35) . '£'.$miscSales."\n");
+        $this->printer->text(str_pad('       Misc Returns', 35) . '£'.$miscReturns."\n");
+        $this->printFullWidthLine('=');
+
+        $this->printer->setJustification(Printer::JUSTIFY_CENTER);
+        $this->printer->setEmphasis(true);
+        $this->printer->text("Vouchers Exchange\n");
+        $this->printer->setEmphasis(false);
+        $this->printer->setJustification(Printer::JUSTIFY_LEFT);
+        $this->printer->text(str_pad('       Gift Vouchers Sold', 35) . $giftVouchersSold."\n");
+        $this->printer->text(str_pad('       Gift Vouchers Redeemed', 35) . '£'.$giftVouchersRedeemed."\n");
+        $this->printer->text(str_pad('       Credit Notes Issued', 35) . $creditNotesIssued."\n");
+        $this->printer->text(str_pad('       Credit Notes Redeemed', 35) . '£'.$creditNotesRedeemed."\n\n\n");
+        
+        $this->printFullWidthLine('.');
+        $this->printer->cut();
+        $this->printer->close();
     }
 }
