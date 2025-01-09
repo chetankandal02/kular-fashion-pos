@@ -75,7 +75,9 @@
         window.config = {
             userId: '{{ Auth::id() }}',
             currentUserStore: {{ auth()->user()->branch_id ?? 'null' }},
-            euro_to_pound: '{{ setting("euro_to_pound") }}'
+            euro_to_pound: '{{ setting("euro_to_pound") }}',
+            currentStoreName: @json(auth()->user()->branch ? auth()->user()->branch->name : "Default Store"),  // Store Name
+            orderReceiptHeader: @json(auth()->user()->branch ? auth()->user()->branch->order_receipt_header ?? setting("order_receipt_header") : setting("order_receipt_header")), 
         }
     </script>
 </body>

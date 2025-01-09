@@ -9,6 +9,9 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-6 col-md-4 mb-3">
+                        <x-form-input name="article_code" label="Article Code:"></x-form-input>
+                    </div>
+                    <div class="col-6 col-md-4 mb-3">
                         <x-form-input name="sales_start_date" label="Start Date:"></x-form-input>
                     </div>
                     <div class="col-6 col-md-4 mb-3">
@@ -16,10 +19,11 @@
                     </div>
                 </div>
                 
-                <table class="table table-striped table-bordered">
+                <table class="table table-striped table-bordered" id="sales-list" style="width: 100%;">
                     <thead>
                         <tr>
                             <th>#</th>
+                            <th>Code</th>
                             <th>Customer Name</th>
                             <th>Sales Person</th>
                             <th>Items</th>
@@ -27,27 +31,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>John Doe</td>
-                            <td>Chetan</td>
-                            <td>2</td>
-                            <td>£249</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Jane Smith</td>
-                            <td>Pummy</td>
-                            <td>5</td>
-                            <td>£499</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Mark Johnson</td>
-                            <td>Chetan</td>
-                            <td>6</td>
-                            <td>£549</td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>
@@ -70,6 +54,43 @@
                     altFormat: 'F j, Y'
                 });
             }
+        });
+
+        var table = $('#sales-list').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '{{ route('get.orders') }}',
+                data: function (d) {
+                    d.article_code = $('#article_code').val();
+                    d.sales_start_date = $('#sales_start_date').val();
+                    d.sales_end_date = $('#sales_end_date').val();
+                    d.page = Math.floor(d.start / d.length) + 1;
+                }
+            },
+            columns: [
+                { title: "#", data: 'id'},
+                { title: "Code", data: 'code'},
+                { title: "Customer Name", data: 'customer_name' },
+                { title: "Sales Person", data: 'sales_person_name' },
+                { title: "Items", data: 'total_items' },
+                { 
+                    title: "Amount", 
+                    data: 'total_amount',
+                    render: function(data, type, row) {
+                        return '€' + parseFloat(data).toFixed(2);
+                    }
+                },
+            ],
+            order: [[0, 'desc']]
+        });
+
+        $('#article_code').on('keyup', function() {
+            table.ajax.reload();
+        });
+
+        $('#sales_start_date, #sales_end_date').on('change', function() {
+            table.ajax.reload();
         });
     });
 </script>
