@@ -45,26 +45,28 @@
                     <table class="table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th class="align-middle">Article Code</th>
-                                <th class="align-middle">Description</th>
-                                <th class="align-middle">Color</th>
-                                <th class="align-middle">Size</th>
-                                <th class="align-middle">Brand</th>
-                                <th class="align-middle">Price</th>
-                                <th class="align-middle">Quantity</th>
-                                <th class="align-middle">Action</th>
+                                <th class="align-middle p-1">#</th>
+                                <th class="align-middle p-1">Article Code</th>
+                                <th class="align-middle p-1">Description</th>
+                                <th class="align-middle p-1">Color</th>
+                                <th class="align-middle p-1">Size</th>
+                                <th class="align-middle p-1">Brand</th>
+                                <th class="align-middle p-1">Price</th>
+                                <th class="align-middle p-1">Quantity</th>
+                                <th class="align-middle p-1">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="(item, index) in items" :key="item.code">
-                                <td>{{ item.code }}</td>
-                                <td>{{ item.description }}</td>
-                                <td>{{ item.color }}</td>
-                                <td>{{ item.size }}</td>
-                                <td>{{ item.brand }}</td>
-                                <td>{{ item.price }}</td>
-                                <td>{{ item.quantity }}</td>
-                                <td>
+                                <td class="p-1">{{ items.length - index }}</td>
+                                <td class="p-1">{{ item.code }}</td>
+                                <td class="p-1">{{ item.description }}</td>
+                                <td class="p-1">{{ item.color }}</td>
+                                <td class="p-1">{{ item.size }}</td>
+                                <td class="p-1">{{ item.brand }}</td>
+                                <td class="p-1">{{ item.price }}</td>
+                                <td class="p-1">{{ item.quantity }}</td>
+                                <td class="p-1">
                                     <button class="btn btn-danger btn-sm" @click="deleteItem(index)">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
@@ -95,12 +97,14 @@ export default {
     },
     name: 'InventoryTransferModal',
     data() {
+        const storedItems = localStorage.getItem('transferItems') ? JSON.parse(localStorage.getItem('transferItems')) : [];
+        const sortedItems = storedItems.sort((a, b) => b.sno - a.sno);
         return {
             branches: [],
             fromStore: window.config.currentUserStore,
             toStore: '',
             itemToBeAdd: {},
-            items: localStorage.getItem('transferItems') ? JSON.parse(localStorage.getItem('transferItems')) : []
+            items: sortedItems
         };
     },
     created() {
@@ -167,34 +171,55 @@ export default {
                 products = JSON.parse(localStorage.getItem('transferItems'));
             }
 
-            const existingProductIndex = products.findIndex(product => product.barcode === item.barcode);
+            // const existingProductIndex = products.findIndex(product => product.barcode === item.barcode);
+            // if (existingProductIndex !== -1) {
+            //     console.log(existingProductIndex);
+            //     if (products[existingProductIndex].quantity < 1) {
+            //         Swal.fire({
+            //             title: 'Error!',
+            //             text: 'Item maximum quantity exceed',
+            //             icon: 'error',
+            //             confirmButtonText: 'Okay'
+            //         });
+            //         return;
+            //     }
+            //     products[existingProductIndex].quantity += 1;
 
-            if (existingProductIndex !== -1) {
-                if (products[existingProductIndex].quantity < 1) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Item maximum quantity exceed',
-                        icon: 'error',
-                        confirmButtonText: 'Okay'
-                    });
-                    return;
-                }
-                products[existingProductIndex].quantity += 1;
+            // } else {
+            //     if (item.available_quantity < 1) {
+            //         Swal.fire({
+            //             title: 'Error!',
+            //             text: 'Item maximum quantity exceed',
+            //             icon: 'error',
+            //             confirmButtonText: 'Okay'
+            //         });
+            //         return;
+            //     }
 
-            } else {
-                if (item.available_quantity < 1) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Item maximum quantity exceed',
-                        icon: 'error',
-                        confirmButtonText: 'Okay'
-                    });
-                    return;
-                }
+            //     item.quantity = 1;
+            //     products.push(item);
+            // }
 
-                item.quantity = 1;
-                products.push(item);
+            const totalQuantity = products
+                .filter(product => product.barcode === item.barcode)
+                .reduce((sum, product) => sum + product.quantity, 0);
+
+            if (totalQuantity + 1 > item.available_quantity) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Item maximum quantity exceeded',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                });
+                return;
             }
+
+            let highestSno = products.length > 0 ? Math.max(...products.map(product => product.sno)) : 0;
+            item.quantity = 1; 
+            item.scanned_barcode = item.scanned_barcode || item.manufacture_barcode; 
+            item.sno = highestSno + 1;
+            products.push(item);
+            products.sort((a, b) => b.sno - a.sno);
 
             localStorage.setItem('transferItems', JSON.stringify(products));
 
