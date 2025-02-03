@@ -7,6 +7,7 @@ use App\Http\Controllers\PrinterController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InventoryTransferController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -19,6 +20,9 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/', [FrontendController::class, 'index'])->name('/');
     Route::get('/get-products', [ProductController::class, 'getProducts'])->name('get.products');
     Route::get('/get-orders', [OrderController::class, 'getSales'])->name('get.orders');
+    Route::resources([
+        'profile'   => ProfileController::class,
+    ]);
 });
 
 Route::get('/validate-item/{barcode}', [ProductController::class, 'productValidate']);
