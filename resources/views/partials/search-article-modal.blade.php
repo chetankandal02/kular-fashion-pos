@@ -77,7 +77,10 @@
                     { title: "Department", data: 'department.name' },
                     { title: "Brand", data: 'brand.name' },
                 ],
-                order: [[0, 'desc']]
+                order: [[0, 'desc']],
+                drawCallback: function(settings) {
+                $('#search-article-modal th, #search-article-modal td').addClass('p-1');
+            }
             });
             $('#search_by_brand').on('change', function() {
                 table.ajax.reload();

@@ -82,7 +82,10 @@
                     }
                 },
             ],
-            order: [[0, 'desc']]
+            order: [[0, 'desc']],
+            drawCallback: function(settings) {
+                $('#sales-list th, #sales-list td').addClass('p-1');
+            }
         });
 
         $('#article_code').on('keyup', function() {
