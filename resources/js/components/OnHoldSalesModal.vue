@@ -11,28 +11,28 @@
                     <table class="table table-striped table-bordered" v-if="holdSales.length > 0">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Customer Name</th>
-                                <th>Sale Items</th>
-                                <th>Return Items</th>
-                                <th>Grand Total</th>
-                                <th>Date & Time</th>
-                                <th>Action</th>
+                                <th class="p-1">#</th>
+                                <th class="p-1">Customer Name</th>
+                                <th class="p-1">Sale Items</th>
+                                <th class="p-1">Return Items</th>
+                                <th class="p-1">Grand Total</th>
+                                <th class="p-1">Date & Time</th>
+                                <th class="p-1">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="(sale, index) in holdSales" :key="sale.index">
-                                <td>{{ index + 1 }}</td>
-                                <td>{{ sale.basicInfo.customerName || 'Unknown' }}</td>
-                                <td>{{ sale.orderItems?.length || 0 }}</td>
-                                <td>{{ sale.returnItems?.length || 0 }}</td>
-                                <td>£{{ sale.basicInfo.grandTotal.toFixed(2) }}</td>
-                                <td>{{ this.formatDateTime(sale.basicInfo.timestamp) }}</td>
-                                <td>
-                                    <button class="btn btn-primary btn-sm me-2" @click="handlePickHoldSale(index)">
+                                <td class="p-1">{{ index + 1 }}</td>
+                                <td class="p-1">{{ sale.basicInfo.customerName || 'Unknown' }}</td>
+                                <td class="p-1">{{ sale.orderItems?.length || 0 }}</td>
+                                <td class="p-1">{{ sale.returnItems?.length || 0 }}</td>
+                                <td class="p-1">£{{ sale.basicInfo.grandTotal.toFixed(2) }}</td>
+                                <td class="p-1">{{ this.formatDateTime(sale.basicInfo.timestamp) }}</td>
+                                <td class="p-1">
+                                    <button class="btn btn-primary btn-sm me-2 py-0 px-1" @click="handlePickHoldSale(index)">
                                         <i class="fas fa-hand-holding-usd"></i>
                                     </button>
-                                    <button class="btn btn-danger btn-sm" @click="handleDeleteHoldSale(index)">
+                                    <button class="btn btn-danger btn-sm py-0 px-1" @click="handleDeleteHoldSale(index)">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </td>

@@ -18,7 +18,7 @@ class InventoryTransferController extends Controller
         $toStoreId = $request->toStore;
         $items = $request->items;
 
-        $inventory = InventoryTransfer::create([
+        $inventoryTransfer = InventoryTransfer::create([
             'sent_from'     => $fromStoreId,
             'sent_to'       => $toStoreId,
             'sent_by'       => Auth::id()
@@ -36,15 +36,29 @@ class InventoryTransferController extends Controller
             }
             $productQuantity->save();
 
-            InventoryItem::create([
-                'inventroy_transfer_id' => $inventory->id,
+            $existingInventoryItem = InventoryItem::where([
+                'inventroy_transfer_id' => $inventoryTransfer->id,
                 'product_id'            => $value['product_id'],
                 'product_quantity_id'   => $productQuantityId,
                 'product_color_id'      => $value['color_id'],
                 'product_size_id'       => $value['size_id'],
                 'brand_id'              => $value['brand_id'],
-                'quantity'              => $quantity,
-            ]);
+            ])->first();
+
+            if ($existingInventoryItem) {
+                $existingInventoryItem->quantity += $quantity;
+                $existingInventoryItem->save();
+            } else {
+                InventoryItem::create([
+                    'inventroy_transfer_id' => $inventoryTransfer->id,
+                    'product_id'            => $value['product_id'],
+                    'product_quantity_id'   => $productQuantityId,
+                    'product_color_id'      => $value['color_id'],
+                    'product_size_id'       => $value['size_id'],
+                    'brand_id'              => $value['brand_id'],
+                    'quantity'              => $quantity,
+                ]);
+            }
 
             if ($toStoreId > 1) {
                 $inventory = StoreInventory::where([

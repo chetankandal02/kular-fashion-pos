@@ -7,30 +7,30 @@
                     <table class="table align-middle table-nowrap mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="align-middle">Article Code</th>
-                                <th class="align-middle">Description</th>
-                                <th class="align-middle">Color</th>
-                                <th class="align-middle">Size</th>
-                                <th class="align-middle">Brand</th>
-                                <th class="align-middle">Price</th>
-                                <th class="align-middle">Action</th>
+                                <th class="align-middle p-1">Article Code</th>
+                                <th class="align-middle p-1">Description</th>
+                                <th class="align-middle p-1">Color</th>
+                                <th class="align-middle p-1">Size</th>
+                                <th class="align-middle p-1">Brand</th>
+                                <th class="align-middle p-1">Price</th>
+                                <th class="align-middle p-1">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="(item, index) in returnItems" :key="item.code + item.size">
-                                <td><a href="javascript: void(0);" class="text-body fw-bold">{{ item.code }}</a></td>
-                                <td>{{ item.description }}</td>
-                                <td>{{ item.color }}</td>
-                                <td>{{ item.size }}</td>
-                                <td>{{ item.brand }}</td>
-                                <td>{{ formatPrice(item.changedPrice ? item.changedPrice.amount : item.price) }}</td>
-                                <td>
+                                <td class="p-1"><a href="javascript: void(0);" class="text-body fw-bold">{{ item.code }}</a></td>
+                                <td class="p-1">{{ item.description }}</td>
+                                <td class="p-1">{{ item.color }}</td>
+                                <td class="p-1">{{ item.size }}</td>
+                                <td class="p-1">{{ item.brand }}</td>
+                                <td class="p-1">{{ formatPrice(item.changedPrice ? item.changedPrice.amount : item.price) }}</td>
+                                <td class="p-1">
                                     <button @click="editItemPriceModal(item, index, 'returnItems')" type="button"
-                                        class="btn btn-sm btn-primary waves-effect waves-light me-2">
+                                        class="btn btn-sm btn-primary waves-effect waves-light me-2 py-0 px-1">
                                         <i class="bx bx-edit fs-5"></i>
                                     </button>
                                     <button @click="removeReturnItem(index)" type="button"
-                                        class="btn btn-sm btn-danger waves-effect waves-light">
+                                        class="btn btn-sm btn-danger waves-effect waves-light py-0 px-1">
                                         <i class="bx bx-trash-alt fs-5"></i>
                                     </button>
                                 </td>
@@ -42,16 +42,16 @@
 
             <h4 class="card-title mb-2">Order Items</h4>
             <div class="table-responsive">
-                <table class="table align-middle table-nowrap mb-0">
+                <table class="table align-middle table-striped table-nowrap mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="align-middle">Article Code</th>
-                            <th class="align-middle">Description</th>
-                            <th class="align-middle">Color</th>
-                            <th class="align-middle">Size</th>
-                            <th class="align-middle">Brand</th>
-                            <th class="align-middle">Price</th>
-                            <th class="align-middle">Action</th>
+                            <th class="align-middle p-1">Article Code</th>
+                            <th class="align-middle p-1">Description</th>
+                            <th class="align-middle p-1">Color</th>
+                            <th class="align-middle p-1">Size</th>
+                            <th class="align-middle p-1">Brand</th>
+                            <th class="align-middle p-1">Price</th>
+                            <th class="align-middle p-1">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -59,19 +59,19 @@
                             <td colspan="7" class="text-center">No items added for sale</td>
                         </tr>
                         <tr v-for="(item, index) in orderItems" :key="index">
-                            <td><a href="javascript: void(0);" class="text-body fw-bold">{{ item.code }}</a></td>
-                            <td>{{ item.description }}</td>
-                            <td>{{ item.color }}</td>
-                            <td>{{ item.size }}</td>
-                            <td>{{ item.brand }}</td>
-                            <td>{{ formatPrice(item.changedPrice ? item.changedPrice.amount : item.price) }}</td>
-                            <td>
+                            <td class="p-1"><a href="javascript: void(0);" class="text-body fw-bold">{{ item.code }}</a></td>
+                            <td class="p-1">{{ item.description }}</td>
+                            <td class="p-1">{{ item.color }}</td>
+                            <td class="p-1">{{ item.size }}</td>
+                            <td class="p-1">{{ item.brand }}</td>
+                            <td class="p-1">{{ formatPrice(item.changedPrice ? item.changedPrice.amount : item.price) }}</td>
+                            <td class="p-1">
                                 <button @click="editItemPriceModal(item, index)" type="button"
-                                    class="btn btn-sm btn-primary waves-effect waves-light me-2">
+                                    class="btn btn-sm btn-primary waves-effect waves-light me-2 py-0 px-1">
                                     <i class="bx bx-edit fs-5"></i>
                                 </button>
                                 <button @click="removeItem(index)" type="button"
-                                    class="btn btn-sm btn-danger waves-effect waves-light">
+                                    class="btn btn-sm btn-danger waves-effect waves-light py-0 px-1">
                                     <i class="bx bx-trash-alt fs-5"></i>
                                 </button>
                             </td>
