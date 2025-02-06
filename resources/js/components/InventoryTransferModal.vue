@@ -10,7 +10,7 @@
 
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-3">
+                        <div class="col-2">
                             <label>From</label>
                             <select class="form-control" v-model="fromStore" disabled>
                                 <option disabled value="">Select a store</option>
@@ -20,7 +20,7 @@
                             </select>
                         </div>
 
-                        <div class="col-3">
+                        <div class="col-2">
                             <label>To</label>
                             <select class="form-control" v-model="toStore" :disabled="!fromStore">
                                 <option disabled value="">Select a store</option>
@@ -30,19 +30,16 @@
                                 </option>
                             </select>
                         </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-6">
+                        <div class="col-4">
                             <BarCodeBox :item-to-be-add="itemToBeAdd" @transfer-item="transferItem" />
                         </div>
-
-                        <div class="col-md-6">
-                            <button class="btn btn-primary" :disabled="!toStore || !fromStore || !items.length"
+                        <div class="col-4">
+                            <button class="btn btn-primary mt-4" :disabled="!toStore || !fromStore || !items.length"
                                 @click="transferInventory">Transfer Items</button>
                         </div>
                     </div>
 
-                    <table class="table table-striped table-bordered">
+                    <table class="table table-striped table-bordered mt-2">
                         <thead>
                             <tr>
                                 <th class="align-middle p-1">#</th>

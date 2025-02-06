@@ -3,7 +3,7 @@
         <div class="d-flex">
             <!-- LOGO -->
             <div class="navbar-brand-box">
-                <a href="#" class="logo logo-dark">
+                <a href="{{ route('/') }}" class="logo logo-dark">
                     <span class="logo-sm">
                         <img src="assets/images/logo.png" alt="" height="22">
                     </span>
@@ -12,7 +12,7 @@
                     </span>
                 </a>
 
-                <a href="#" class="logo logo-light">
+                <a href="{{ route('/') }}" class="logo logo-light">
                     <span class="logo-sm">
                         <img src="assets/images/logo.png" alt="" height="22">
                     </span>
@@ -57,7 +57,7 @@
                 <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <img class="rounded-circle header-profile-user" src="assets/images/user.jpg" alt="Header Avatar">
-                    <span class="d-none d-xl-inline-block ms-1">Pummy</span>
+                    <span class="d-none d-xl-inline-block ms-1">{{ Auth::user()->name }}</span>
                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end">
