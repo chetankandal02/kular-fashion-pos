@@ -23,11 +23,12 @@
         @include('layouts.components.header')
 
         <div class="main-content">
-            <div class="page-content mt-5">
+            <div class="page-content mt-2">
                 <div class="container-fluid">
                     @yield('content')
 
                     <on-hold-sales-modal></on-hold-sales-modal>
+                    <search-article-modal :brands="{{ json_encode($brands) }}" :product-types="{{ json_encode($productTypes) }}"></search-article-modal>
                     <inventory-transfer-modal></inventory-transfer-modal>
 
                     <!-- Virtual Keypad -->
@@ -78,6 +79,7 @@
             euro_to_pound: '{{ setting("euro_to_pound") }}',
             currentStoreName: @json(auth()->user()->branch ? auth()->user()->branch->name : "Default Store"),  // Store Name
             orderReceiptHeader: @json(auth()->user()->branch ? auth()->user()->branch->order_receipt_header ?? setting("order_receipt_header") : setting("order_receipt_header")), 
+            storeDetail: @json(auth()->user()->branch), 
         }
     </script>
 </body>

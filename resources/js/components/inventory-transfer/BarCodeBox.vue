@@ -33,7 +33,6 @@ export default {
                 const { product } = response.data;
                 if (product) {
                     this.$emit('transfer-item', product);
-                    console.log(product);
                 } else {
                     Swal.fire({
                         title: 'Error!',

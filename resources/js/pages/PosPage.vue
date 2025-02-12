@@ -2,7 +2,12 @@
     <div class="row">
         <!-- Left Column: Search and Order Items -->
         <div class="col-lg-8">
-            <BarCodeBox @add-to-cart="addToCart" />
+            <div class="row">
+                <div class="col-md-5">
+                    <BarCodeBox @add-to-cart="addToCart" />
+                </div>
+            </div>
+            
             <OrderItemsTable :order-items="orderItems" :return-items="returnItems" @remove-from-cart="removeFromCart" />
         </div>
         <!-- Right Column: Order Summary -->

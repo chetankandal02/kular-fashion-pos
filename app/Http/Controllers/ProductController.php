@@ -12,7 +12,7 @@ class ProductController extends Controller
 {
     public function getProducts(Request $request)
     {
-        $query = Product::with(['brand', 'department', 'productType'])->whereNull('deleted_at');
+        $query = Product::with(['brand', 'colors.colorDetail', 'sizes.sizeDetail', 'department', 'productType'])->whereNull('deleted_at');
     
         if ($request->has('search') && !empty($request->input('search.value'))) {
             $search = $request->input('search.value');
@@ -40,7 +40,7 @@ class ProductController extends Controller
         }
 
         $products = $query->orderBy('id', 'desc') // Changed to 'desc' for descending order
-                        ->paginate($request->input('length', 10));
+            ->paginate($request->input('length', 10));
 
         $data = [
             'draw' => $request->input('draw'),

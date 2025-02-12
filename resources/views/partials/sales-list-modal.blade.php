@@ -28,6 +28,7 @@
                             <th>Sales Person</th>
                             <th>Items</th>
                             <th>Amount</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -79,6 +80,15 @@
                     data: 'total_amount',
                     render: function(data, type, row) {
                         return '€' + parseFloat(data).toFixed(2);
+                    }
+                },
+                { 
+                    title: "Action", 
+                    data: null,
+                    render: function(data, type, row) {
+                        return `<button class="btn btn-primary btn-sm me-2 py-0 px-1" @click="handlePickHoldSale(data)">
+                            <i class="fas fa-eye"></i>
+                        </button>`
                     }
                 },
             ],

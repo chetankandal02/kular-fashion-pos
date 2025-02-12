@@ -10,8 +10,8 @@
           <div class="text-center">
             <h6>{{ currentStoreName }}</h6>
             <h6 v-html="nl2br(orderReceiptHeader)"></h6>
-            <h6>Phone Number: 445454</h6>
-            <h6>Email: asdas@sds.dd</h6>
+            <h6 v-if="storeDetail.contact">Phone Number: {{storeDetail.contact}}</h6>
+            <h6 v-if="storeDetail.email">Email: {{storeDetail.email}}</h6>
             <h6>{{ currentDate }}</h6>
             <div class="border-divider mb-2"></div>
             <h5>SALE OF GOODS</h5>
@@ -74,6 +74,7 @@ export default {
     return {
       currentStoreName: window.config.currentStoreName,
       orderReceiptHeader: window.config.orderReceiptHeader,
+      storeDetail: window.config.storeDetail,
       currentDate: this.formatDate(new Date()),
       salesData: {
         saleItems: 0,

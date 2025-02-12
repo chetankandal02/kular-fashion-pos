@@ -9,6 +9,16 @@ use App\Models\ProductType;
 
 class Product extends Model
 {
+    public function colors()
+    {
+        return $this->hasMany(ProductColor::class);
+    }
+
+    public function sizes()
+    {
+        return $this->hasMany(ProductSize::class);
+    }
+
     public function department()
     {
         return $this->belongsTo(Department::class);
