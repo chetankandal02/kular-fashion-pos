@@ -28,21 +28,7 @@
             </button>
 
             <div class="dropdown dropdown-mega d-none d-lg-block ms-2">
-                <button type="button" class="btn header-item waves-effect" data-bs-toggle="modal" data-bs-target="#searchArticalModal">
-                    <span>Search Article</span>
-                </button>
-            
-                <button type="button" class="btn header-item waves-effect" data-bs-toggle="modal" data-bs-target="#salesListModal">
-                    <span>Sales List</span>
-                </button>
-                
-                <button type="button" class="btn header-item waves-effect" data-bs-toggle="modal" data-bs-target="#onHoldSalesModal">
-                    <span>On Hold Sales</span>
-                </button>
-                
-                <button type="button" class="btn header-item waves-effect" data-bs-toggle="modal" data-bs-target="#transferInventoryModal" :data-current-user-store="{{ auth()->user()->branch_id }}">
-                    <span>Transfer Inventory</span>
-                </button>
+                <header-menus></header-menus>
             </div>
         </div>
 
