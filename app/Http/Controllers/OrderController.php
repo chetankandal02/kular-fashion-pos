@@ -32,8 +32,8 @@ class OrderController extends Controller
         /* DB::beginTransaction();
 
         try { */
-        $saledPersonId = $request->salesPersonId;
-        $branchId = User::find($saledPersonId)->branch_id ?? null;
+        $salesPersonId = $request->salesPersonId;
+        $branchId = User::find($salesPersonId)->branch_id ?? null;
         $totalSaleItems = count($request->input('orderItems', []));
         $totalReturnItems = count($request->input('returnItems', []));
 
@@ -87,7 +87,7 @@ class OrderController extends Controller
         $totalPaidAmount = array_sum(array_column($request->paymentInfo, 'amount'));
 
         $order = Order::create([
-            'sales_person_id' => $saledPersonId,
+            'sales_person_id' => $salesPersonId,
             'branch_id' => $branchId,
             'total_items' => $totalSaleItems + $totalReturnItems,
             'total_return_items' => $totalReturnItems,
@@ -101,7 +101,7 @@ class OrderController extends Controller
             $params = [
                 'order_id' => $order->id,
                 'flag' => 'SALE',
-                'sales_person_id' => $saledPersonId,
+                'sales_person_id' => $salesPersonId,
                 'branch_id' => $branchId
             ];
 
@@ -112,7 +112,7 @@ class OrderController extends Controller
             $params = [
                 'order_id' => $order->id,
                 'flag' => 'RETURN',
-                'sales_person_id' => $saledPersonId,
+                'sales_person_id' => $salesPersonId,
                 'branch_id' => $branchId
             ];
 

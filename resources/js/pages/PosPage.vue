@@ -60,6 +60,17 @@ export default {
                 }
             }
         );
+
+        watch(
+            () => EventBus.quickAddArticle?.timestamp,
+            (newTimestamp) => {
+                console.log('..',newTimestamp)
+                if (newTimestamp) {
+                    const article = EventBus.quickAddArticle.article;
+                    this.addToCart(article)
+                }
+            }
+        );
     },
     methods: {
         returnItem(item) {

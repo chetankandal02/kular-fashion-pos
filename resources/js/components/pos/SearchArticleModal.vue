@@ -57,7 +57,8 @@
           <div v-if="selectedProduct && selectedProduct.sizes">
             <div class="row">
               <div v-for="size in selectedProduct.sizes" :key="size.id" class="col-md-2 text-center">
-                <div class="size-box" :class="{ selected: size.id === selectedSize }" @click="selectedSize = size.id">{{ size.size_detail.size }}</div>
+                <div class="size-box" :class="{ selected: size.id === selectedSize }" @click="selectedSize = size.id">{{
+                  size.size_detail.size }}</div>
               </div>
             </div>
           </div>
@@ -80,7 +81,9 @@
           <div v-if="selectedProduct && selectedProduct.colors">
             <div class="row">
               <div v-for="color in selectedProduct.colors" :key="color.id" class="col-md-3 text-center">
-                <div class="size-box d-block m-auto" :class="{ selected: color.id === selectedColor }" @click="selectedColor = color.id" v-bind:style="{ backgroundColor: color.color_detail.ui_color_code }"></div>
+                <div class="color-box d-block m-auto" :class="{ selected: color.id === selectedColor }"
+                  @click="selectedColor = color.id"
+                  v-bind:style="{ backgroundColor: color.color_detail.ui_color_code }"></div>
                 <label class="form-check-label" :for="color">{{ color.color_detail.color_name }}</label>
               </div>
             </div>
@@ -94,6 +97,9 @@
 </template>
 
 <script>
+import axios from 'axios';
+import { EventBus } from '@/eventBus';
+
 export default {
   props: {
     brands: {
@@ -114,10 +120,30 @@ export default {
     };
   },
   methods: {
-    confirmColorSelection(){
+    async confirmColorSelection() {
       $('#colorSelectionModal').modal('hide');
+
+      const response = await axios.post('/quick-validate-item', {
+        id: this.selectedProduct.id,
+        sizeId: this.selectedSize,
+        colorId: this.selectedColor,
+      });
+
+      if (response.data.success) {
+        EventBus.quickAddArticle = {
+          article: response.data.product,
+          timestamp: Date.now(),
+        };
+      } else {
+        Swal.fire({
+          title: 'Error!',
+          text: response.data.message,
+          icon: 'error',
+          confirmButtonText: 'Okay'
+        });
+      }
     },
-    confirmSizeSelection(){
+    confirmSizeSelection() {
       $('#sizeSelectionModal').modal('hide');
       $('#colorSelectionModal').modal('show');
     },
@@ -186,6 +212,8 @@ export default {
       });
     },
     pickProduct(product) {
+      this.selectedSize = null;
+      this.selectedColor = null;
       this.selectedProduct = product;
       $('#searchArticalModal').modal('hide');
       $('#sizeSelectionModal').modal('show');
