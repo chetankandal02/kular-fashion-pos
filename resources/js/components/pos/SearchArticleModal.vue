@@ -123,17 +123,40 @@ export default {
     async confirmColorSelection() {
       $('#colorSelectionModal').modal('hide');
 
-      const response = await axios.post('/quick-validate-item', {
+      const response = await axios.post('/api/quick-validate-item', {
         id: this.selectedProduct.id,
         sizeId: this.selectedSize,
         colorId: this.selectedColor,
+        userId: window.config.userId
       });
 
       if (response.data.success) {
-        EventBus.quickAddArticle = {
-          article: response.data.product,
-          timestamp: Date.now(),
-        };
+        const article = response.data.product;
+
+        if (article.available_quantity === 0) {
+          Swal.fire({
+            title: 'Error!',
+            text: 'Product is out of stock. Do you still want to add this project?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Add Project',
+            cancelButtonText: 'No, Cancel'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              EventBus.quickAddArticle = {
+                article: article,
+                timestamp: Date.now(),
+              };
+            }
+          });
+        } else {
+          EventBus.quickAddArticle = {
+            article: article,
+            timestamp: Date.now(),
+          };
+        }
+
+
       } else {
         Swal.fire({
           title: 'Error!',

@@ -26,4 +26,6 @@ Route::get('/branches', [FrontendController::class, 'branch']);
 Route::post('/products/add-manufacture-barcode', [ProductController::class, 'addManufactureBarcode']);
 
 Route::post('/customer', [LayawayController::class, 'store']);
-Route::post('sales/today', [OrderController::class, 'getTodaysSales']);
+Route::post('/sales/today', [OrderController::class, 'getTodaysSales']);
+
+Route::post('/quick-validate-item', [ProductController::class, 'quickValidateItem']);

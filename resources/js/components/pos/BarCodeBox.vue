@@ -33,9 +33,15 @@ export default {
                     } else {
                         Swal.fire({
                             title: 'Error!',
-                            text: 'Product is out of stock',
-                            icon: 'error',
-                            confirmButtonText: 'Okay'
+                            text: 'Product is out of stock. Do you still want to add this project?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, Add Project',
+                            cancelButtonText: 'No, Cancel'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.$emit('add-to-cart', product);
+                            }
                         });
                     }
                 } else {

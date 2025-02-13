@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductQuantity;
 use App\Models\Size;
 use App\Models\StoreInventory;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
@@ -122,7 +123,7 @@ class ProductController extends Controller
 
     public function quickValidateItem(Request $request)
     {
-        $branch_id = Auth::user()->branch_id;
+        $branch_id = User::find($request->userId)->branch_id;
 
         $product = ProductQuantity::where('product_id', $request->id)->where('product_size_id', $request->sizeId)->where('product_color_id', $request->colorId)->with('product.brand', 'product.department', 'sizes.sizeDetail', 'colors.colorDetail')->first();
         
