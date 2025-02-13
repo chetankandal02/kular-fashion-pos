@@ -26,6 +26,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
 });
 
 Route::get('/validate-item/{barcode}', [ProductController::class, 'productValidate']);
+Route::get('/sale-detail/{saleId}', [OrderController::class, 'saleDetail']);
 Route::post('/quick-validate-item', [ProductController::class, 'quickValidateItem']);
 Route::get('/change-price-reasons', [ChangePriceReasonController::class, 'index']);
 Route::get('/test-print', [PrinterController::class, 'printTestReceipt']);

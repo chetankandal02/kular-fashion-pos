@@ -187,7 +187,7 @@ class OrderController extends Controller
             'changed_price_reason_id' => isset($orderItem['changedPrice']['reasonId']) ? $orderItem['changedPrice']['reasonId'] : null,
             'changed_price_reason' => isset($orderItem['changedPrice']['reason']) ? $orderItem['changedPrice']['reason'] : '',
             'quantity' => 1,
-            'description' => '',
+            'description' => $product->short_description,
             'flag' => $params['flag'],
             'sales_person_id' => $params['sales_person_id'],
             'branch_id' => $params['branch_id'],
@@ -230,6 +230,8 @@ class OrderController extends Controller
         $sales = $query->orderBy('id', 'desc')
             ->paginate($request->input('length', 10));
         $data = $sales->map(function ($sale) {
+            $priceChanged = $sale->total_amount !== $sale->paid_amount;
+
             return [
                 'id' => $sale->id,
                 'code' => $sale->code,
@@ -237,6 +239,7 @@ class OrderController extends Controller
                 'sales_person_name' => $sale->salesPerson ? $sale->salesPerson->name : 'N/A',
                 'total_items' => $sale->total_items,
                 'total_amount' => $sale->total_amount,
+                'price_changed' => $priceChanged,
             ];
         });
 
@@ -274,6 +277,13 @@ class OrderController extends Controller
         return response()->json([
             'salesData' => $salesData,
             'totals' => $totals,
+        ]);
+    }
+
+    public function saleDetail($saleId){
+        $sale = Order::with('orderItems', 'paymentMethods', 'salesPerson')->find($saleId);
+        return response()->json([
+            'sale' => $sale,
         ]);
     }
 }

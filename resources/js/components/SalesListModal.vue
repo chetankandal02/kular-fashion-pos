@@ -1,0 +1,228 @@
+<template>
+    <div class="modal fade" id="salesListModal" tabindex="-1" aria-labelledby="salesListModalLabel">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="salesListModalLabel">Sales List</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6 col-md-4 mb-3">
+                            <x-form-input name="article_code" label="Article Code:"></x-form-input>
+                        </div>
+                        <div class="col-6 col-md-4 mb-3">
+                            <x-form-input name="sales_start_date" label="Start Date:"></x-form-input>
+                        </div>
+                        <div class="col-6 col-md-4 mb-3">
+                            <x-form-input name="sales_end_date" label="End Date:"></x-form-input>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered table-sm" id="sales-list" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Code</th>
+                                <th>Customer Name</th>
+                                <th>Sales Person</th>
+                                <th>Items</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="saleDetailModal" tabindex="-1" aria-labelledby="salesDetailModalLabel">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="salesDetailModalLabel">Sales Detail</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body" v-if="saleDetails">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5 class="fs-6">Sale ID: <strong>#{{ saleDetails.code }}</strong></h5>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="fs-6">Sale Date: {{ formatDateTime(saleDetails.created_at) }}</h5>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="fs-6">Sold By: {{ saleDetails.sales_person.name }}</h5>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="fs-6">Total Sale Items: {{ saleDetails.total_items -
+                                saleDetails.total_return_items }}</h5>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 class="fs-6">Total Return Items: {{ saleDetails.total_return_items }}</h5>
+                        </div>
+                        <div class="col-md-4">
+                            <h4 class="fs-6">Total Amount: £{{ saleDetails.total_amount }}</h4>
+                        </div>
+                        <div class="col-md-4">
+                            <h4 class="fs-6">Total Paid Amount: £{{ saleDetails.paid_amount }}</h4>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h5>Payment Methods:</h5>
+                    <div class="row">
+                        <div class="col-md-4" v-for="(paymentMethod, index) in saleDetails.payment_methods" :key="index">
+                            <h5 class="fs-6">Paid By: {{ paymentMethod.method }}: £{{ paymentMethod.original_amount }} </h5>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <table class="table table-sm mt-2">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Article Code</th>
+                                <th>Description</th>
+                                <th>Color</th>
+                                <th>Size</th>
+                                <th>Brand</th>
+                                <th>Amount</th>
+                                <th>Changed Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item, index) in saleDetails.order_items" :key="index">
+                                <td>{{ index + 1 }}</td>
+                                <td>{{ item.article_code }}</td>
+                                <td>{{ item.description }}</td>
+                                <td>{{ item.color_name }}</td>
+                                <td>{{ item.size }}</td>
+                                <td>{{ item.brand_name }}</td>
+                                <td>£{{ item.original_price }}</td>
+                                <td>£{{ item.changed_price }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+    data() {
+        return {
+            table: null,
+            saleDetails: null
+        };
+    },
+    mounted() {
+        if (localStorage.getItem('orderItems')) {
+            this.orderItems = JSON.parse(localStorage.getItem('orderItems'));
+        }
+
+        if (localStorage.getItem('returnItems')) {
+            this.returnItems = JSON.parse(localStorage.getItem('returnItems'));
+        }
+    },
+    methods: {
+        initializeDataTable() {
+            const vm = this;
+
+            this.table = $('#sales-list').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "/get-orders",
+                    data: function (d) {
+                        d.article_code = $('#article_code').val();
+                        d.sales_start_date = $('#sales_start_date').val();
+                        d.sales_end_date = $('#sales_end_date').val();
+                        d.page = Math.floor(d.start / d.length) + 1;
+                    }
+                },
+                columns: [
+                    { title: "#", data: 'id' },
+                    { title: "Code", data: 'code' },
+                    { title: "Customer Name", data: 'customer_name' },
+                    { title: "Sales Person", data: 'sales_person_name' },
+                    { title: "Items", data: 'total_items' },
+                    {
+                        title: "Amount",
+                        data: 'total_amount',
+                        render: function (data, type, row) {
+                            return '£' + parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        title: "Action",
+                        data: null,
+                        render: function (data, type, row) {
+                            return `<button class="btn btn-primary btn-sm me-2 py-0 px-1 view-sale-details" data-sale-id='${row.id}'>
+                            <i class="fas fa-eye"></i>
+                        </button>`
+                        }
+                    },
+                ],
+                order: [[0, 'desc']],
+                drawCallback: function (settings) {
+                    $('.view-sale-details').on('click', (event) => {
+                        const saleId = $(event.currentTarget).attr('data-sale-id');
+                        vm.viewSaleDetail(saleId);
+                    });
+                },
+                createdRow: function (row, data, dataIndex) {
+                    if (data.price_changed === true) {
+                        $(row).find('td').addClass('bg-warning');
+                    }
+                }
+            });
+        },
+        formatDateTime(timestamp) {
+            let now = new Date(timestamp);
+            let day = now.getDate();
+            let month = now.getMonth() + 1;
+            let year = now.getFullYear();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let seconds = now.getSeconds();
+
+            let period = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            let formattedDate = (day < 10 ? '0' + day : day) + '-' + month + '-' + year;
+
+            let formattedTime = hours + ':' + minutes + ':' + seconds + ' ' + period;
+
+            return formattedDate + ' ' + formattedTime;
+        },
+        async viewSaleDetail(saleId) {
+            //$('#salesListModal').modal('hide');
+            $('#saleDetailModal').modal('show');
+
+            const response = await axios.get(`/sale-detail/${saleId}`);
+            this.saleDetails = response.data.sale;
+        }
+    },
+    mounted() {
+        this.initializeDataTable();
+    }
+};
+</script>
+
+<style scoped></style>

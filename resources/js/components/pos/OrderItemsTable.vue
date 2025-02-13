@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <h4 class="card-title mb-2">Order Items</h4>
+            <h4 class="card-title mb-2">Sale Items</h4>
             <div class="table-responsive">
                 <table class="table align-middle table-striped table-nowrap mb-0">
                     <thead class="table-light">

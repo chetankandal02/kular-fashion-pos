@@ -17,7 +17,7 @@ class Order extends Model
             $lastOrder = self::orderBy('id', 'desc')->first();
             $nextOrderNumber = $lastOrder ? (int) substr($lastOrder->code, -5) + 1 : 1;
 
-            $order->code = 'ORD-' . str_pad($nextOrderNumber, 5, '0', STR_PAD_LEFT);
+            $order->code = 'ODR-' . str_pad($nextOrderNumber, 5, '0', STR_PAD_LEFT);
         });
     }
 
