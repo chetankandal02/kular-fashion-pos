@@ -17,7 +17,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
 Route::middleware(['auth', 'auth.session'])->group(function () {
-    Route::get('/', [FrontendController::class, 'index'])->name('/');
+    Route::get('/', [FrontendController::class, 'index'])->name('home');
     Route::get('/get-products', [ProductController::class, 'getProducts'])->name('get.products');
     Route::get('/get-orders', [OrderController::class, 'getSales'])->name('get.orders');
     Route::resources([

@@ -38,12 +38,12 @@
                             </div>
                         </div>
 
-                        <div class="row mt-3">
+                        {{-- <div class="row mt-3">
                             <div class="col-md-6">
                                 <x-form-input type="password" name="password" label="New Password"
                                     placeholder="Enter New password (Leave blank to keep current password)" />
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="mt-4">
                             <button type="submit" class="btn btn-primary">Update Profile</button>

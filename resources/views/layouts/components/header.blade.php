@@ -3,7 +3,7 @@
         <div class="d-flex">
             <!-- LOGO -->
             <div class="navbar-brand-box">
-                <a href="{{ route('/') }}" class="logo logo-dark">
+                <a href="{{ route('home') }}" class="logo logo-dark">
                     <span class="logo-sm">
                         <img src="assets/images/logo.png" alt="" height="22">
                     </span>
@@ -12,7 +12,7 @@
                     </span>
                 </a>
 
-                <a href="{{ route('/') }}" class="logo logo-light">
+                <a href="{{ route('home') }}" class="logo logo-light">
                     <span class="logo-sm">
                         <img src="assets/images/logo.png" alt="" height="22">
                     </span>
@@ -27,12 +27,20 @@
                 <i class="fa fa-fw fa-bars"></i>
             </button>
 
+            @if(Route::currentRouteName()==='home')
             <header-menus></header-menus>
+            @else
+            <div class="dropdown dropdown-mega d-none d-lg-block ms-2">
+                <button onclick="window.location.href='{{ route('home') }}'" class="btn header-item waves-effect">
+                    <span>Dashboard</span>
+                </button>
+            </div>
+            @endif
         </div>
 
         <div class="d-flex">
             <div class="dropdown d-none d-lg-inline-block ms-1">
-                <button type="button" class="btn header-item noti-icon waves-effect" data-bs-toggle="fullscreen">
+                <button type="button" class="btn header-item noti-icon waves-effect" id="fullscreen-btn">
                     <i class="bx bx-fullscreen"></i>
                 </button>
             </div>

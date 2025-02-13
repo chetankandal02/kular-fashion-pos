@@ -27,9 +27,11 @@
                 <div class="container-fluid">
                     @yield('content')
 
-                    <on-hold-sales-modal></on-hold-sales-modal>
-                    <search-article-modal :brands="{{ json_encode($brands) }}" :product-types="{{ json_encode($productTypes) }}"></search-article-modal>
-                    <inventory-transfer-modal></inventory-transfer-modal>
+                    @if(Route::currentRouteName()==='home')
+                        <on-hold-sales-modal></on-hold-sales-modal>
+                        <search-article-modal :brands="{{ json_encode($brands) }}" :product-types="{{ json_encode($productTypes) }}"></search-article-modal>
+                        <inventory-transfer-modal></inventory-transfer-modal>
+                    @endif
 
                     <!-- Virtual Keypad -->
                     <div id="keypad" class="keypad">
@@ -67,7 +69,8 @@
     <script src="assets/libs/metismenu/metisMenu.min.js"></script>
     <script src="assets/libs/node-waves/waves.min.js"></script>
     <script src="assets/js/app.js"></script>
-    {{-- <script src="assets/js/script.js"></script> --}}
+    <script src="assets/js/script.js"></script>
+    <script src="assets/libs/simplebar/simplebar.min.js"></script>
     <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
 
     @stack('scripts')
