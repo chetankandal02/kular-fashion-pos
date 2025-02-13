@@ -2,21 +2,24 @@
     <div class="modal fade" id="salesListModal" tabindex="-1" aria-labelledby="salesListModalLabel">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header py-2 px-3">
                     <h5 class="modal-title" id="salesListModalLabel">Sales List</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <div class="modal-body">
+                <div class="modal-body py-1">
                     <div class="row">
-                        <div class="col-6 col-md-4 mb-3">
-                            <x-form-input name="article_code" label="Article Code:"></x-form-input>
+                        <div class="col-6 col-md-4 mb-1">
+                            <label for="article_code" class="mb-0">Article Code:</label>
+                            <input id="article_code" class="form-control h-50" />
                         </div>
-                        <div class="col-6 col-md-4 mb-3">
-                            <x-form-input name="sales_start_date" label="Start Date:"></x-form-input>
+                        <div class="col-6 col-md-4 mb-1">
+                            <label for="article_code" class="mb-0">From Date:</label>
+                            <input id="sales_start_date" class="form-control h-50" />
                         </div>
-                        <div class="col-6 col-md-4 mb-3">
-                            <x-form-input name="sales_end_date" label="End Date:"></x-form-input>
+                        <div class="col-6 col-md-4 mb-1">
+                            <label for="article_code" class="mb-0">To Date:</label>
+                            <input id="sales_end_date" class="form-control h-50" />
                         </div>
                     </div>
 
@@ -29,6 +32,7 @@
                                 <th>Sales Person</th>
                                 <th>Items</th>
                                 <th>Amount</th>
+                                <th>Date & Time</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -55,34 +59,36 @@
                             <h5 class="fs-6">Sale ID: <strong>#{{ saleDetails.code }}</strong></h5>
                         </div>
                         <div class="col-md-4">
-                            <h5 class="fs-6">Sale Date: {{ formatDateTime(saleDetails.created_at) }}</h5>
+                            <h5 class="fs-6">Sale Date: <strong>{{ formatDateTime(saleDetails.created_at) }}</strong>
+                            </h5>
                         </div>
                         <div class="col-md-4">
-                            <h5 class="fs-6">Sold By: {{ saleDetails.sales_person.name }}</h5>
+                            <h5 class="fs-6">Sold By: <strong>{{ saleDetails.sales_person.name }}</strong></h5>
                         </div>
                         <div class="col-md-4">
-                            <h5 class="fs-6">Total Sale Items: {{ saleDetails.total_items -
-                                saleDetails.total_return_items }}</h5>
+                            <h5 class="fs-6">Total Sale Items: <strong>{{ saleDetails.total_items -
+                                saleDetails.total_return_items }}</strong></h5>
                         </div>
                         <div class="col-md-4">
-                            <h5 class="fs-6">Total Return Items: {{ saleDetails.total_return_items }}</h5>
+                            <h5 class="fs-6">Total Return Items: <strong>{{ saleDetails.total_return_items }}</strong>
+                            </h5>
                         </div>
                         <div class="col-md-4">
-                            <h4 class="fs-6">Total Amount: £{{ saleDetails.total_amount }}</h4>
-                        </div>
-                        <div class="col-md-4">
-                            <h4 class="fs-6">Total Paid Amount: £{{ saleDetails.paid_amount }}</h4>
+                            <h4 class="fs-6">Total Amount: <strong>£{{ saleDetails.total_amount }}</strong></h4>
                         </div>
                     </div>
 
-                    <hr>
+                    <hr class="m-1">
                     <h5>Payment Methods:</h5>
                     <div class="row">
-                        <div class="col-md-4" v-for="(paymentMethod, index) in saleDetails.payment_methods" :key="index">
-                            <h5 class="fs-6">Paid By: {{ paymentMethod.method }}: £{{ paymentMethod.original_amount }} </h5>
+                        <div class="col-md-4" v-for="(paymentMethod, index) in saleDetails.payment_methods"
+                            :key="index">
+                            <h5 class="fs-6 mb-0">{{ paymentMethod.method }}: 
+                                <strong>£{{ paymentMethod.original_amount}}</strong> 
+                            </h5>
                         </div>
                     </div>
-                    <hr>
+                    <hr class="m-1">
 
                     <table class="table table-sm mt-2">
                         <thead>
@@ -164,6 +170,7 @@ export default {
                             return '£' + parseFloat(data).toFixed(2);
                         }
                     },
+                    { title: 'Date & Time', data: 'date_time' },
                     {
                         title: "Action",
                         data: null,
@@ -182,11 +189,16 @@ export default {
                     });
                 },
                 createdRow: function (row, data, dataIndex) {
-                    if (data.price_changed === true) {
+                    if (data.is_price_changed === true) {
                         $(row).find('td').addClass('bg-warning');
                     }
                 }
             });
+        },
+        reloadDataTable() {
+            if (this.table) {
+                this.table.ajax.reload();
+            }
         },
         formatDateTime(timestamp) {
             let now = new Date(timestamp);
@@ -221,6 +233,32 @@ export default {
     },
     mounted() {
         this.initializeDataTable();
+
+        $('#article_code').on('keyup', () => {
+            this.reloadDataTable();
+        });
+
+        $('#sales_start_date, #sales_end_date').on('change', () => {
+            this.reloadDataTable();
+        });
+
+        $('[data-bs-target="#salesListModal"]').on('click', () => {
+            this.reloadDataTable();
+        });
+
+        $('#sales_start_date').flatpickr({
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'F j, Y',
+            onChange: function(selectedDates, dateStr, instance) {
+                $('#sales_end_date').flatpickr({
+                    minDate: dateStr,
+                    dateFormat: 'Y-m-d',
+                    altInput: true,
+                    altFormat: 'F j, Y'
+                });
+            }
+        });
     }
 };
 </script>

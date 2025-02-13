@@ -154,7 +154,7 @@ export default {
     background: #f1f1f1;
     border: 1px solid #ccc;
     border-radius: 8px;
-    width: 200px;
+    width: 274px;
     position: absolute;
     top: 40px;
     left: 20px;

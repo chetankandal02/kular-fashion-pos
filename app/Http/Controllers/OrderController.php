@@ -230,7 +230,17 @@ class OrderController extends Controller
         $sales = $query->orderBy('id', 'desc')
             ->paginate($request->input('length', 10));
         $data = $sales->map(function ($sale) {
-            $priceChanged = $sale->total_amount !== $sale->paid_amount;
+            $isPriceChanged = false;
+
+            foreach ($sale->orderItems as $orderItem) {
+                if (
+                    (!is_null($orderItem->changed_price_reason_id) ||
+                    !is_null($orderItem->changed_price_reason)) &&
+                    $orderItem->original_price != $orderItem->changed_price
+                ) {
+                    $isPriceChanged = true;
+                }
+            }
 
             return [
                 'id' => $sale->id,
@@ -239,7 +249,8 @@ class OrderController extends Controller
                 'sales_person_name' => $sale->salesPerson ? $sale->salesPerson->name : 'N/A',
                 'total_items' => $sale->total_items,
                 'total_amount' => $sale->total_amount,
-                'price_changed' => $priceChanged,
+                'is_price_changed' => $isPriceChanged,
+                'date_time' => $sale->created_at->format('d-m-Y H:i:s'),
             ];
         });
 
