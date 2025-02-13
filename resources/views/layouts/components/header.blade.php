@@ -27,9 +27,7 @@
                 <i class="fa fa-fw fa-bars"></i>
             </button>
 
-            <div class="dropdown dropdown-mega d-none d-lg-block ms-2">
-                <header-menus></header-menus>
-            </div>
+            <header-menus></header-menus>
         </div>
 
         <div class="d-flex">

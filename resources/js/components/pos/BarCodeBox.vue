@@ -1,5 +1,5 @@
 <template>
-    <div class="search-box mb-2">
+    <div class="search-box mt-3">
         <VirtualNumberKeyboard ref="virtualKeyboard" variant="barcode" :inputValue="query" @on-change="validateItem" />
     </div>
 </template>

@@ -2,11 +2,11 @@
     <div class="row">
         <!-- Left Column: Search and Order Items -->
         <div class="col-lg-8">
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-md-5">
                     <BarCodeBox @add-to-cart="addToCart" />
                 </div>
-            </div>
+            </div> -->
             
             <OrderItemsTable :order-items="orderItems" :return-items="returnItems" @remove-from-cart="removeFromCart" />
         </div>
@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import BarCodeBox from '../components/pos/BarCodeBox.vue';
 import OrderItemsTable from '../components/pos/OrderItemsTable.vue';
 import OrderSummary from '../components/pos/OrderSummary.vue';
 import { EventBus } from '@/eventBus';
@@ -29,7 +28,6 @@ import axios from 'axios';
 
 export default {
     components: {
-        BarCodeBox,
         OrderItemsTable,
         OrderSummary,
     },
@@ -64,10 +62,18 @@ export default {
         watch(
             () => EventBus.quickAddArticle?.timestamp,
             (newTimestamp) => {
-                console.log('..',newTimestamp)
                 if (newTimestamp) {
                     const article = EventBus.quickAddArticle.article;
-                    this.addToCart(article)
+                    this.addToCart(article);
+                }
+            }
+        );
+
+        watch(
+            () => EventBus.scanBarcode?.timestamp,
+            (newTimestamp) => {
+                if (newTimestamp) {
+                    this.addToCart(EventBus.scanBarcode.item);
                 }
             }
         );

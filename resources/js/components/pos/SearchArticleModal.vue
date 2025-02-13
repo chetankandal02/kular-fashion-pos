@@ -10,7 +10,7 @@
           <div class="row">
             <div class="col-md-4 mb-3">
               <label for="search_by_brand">Brand</label>
-              <select v-model="brandId" id="search_by_brand" class="form-control">
+              <select id="search_by_brand" class="form-control">
                 <option value="">Select brand</option>
                 <option v-for="brand in brands" :key="brand.id" :value="brand.id">
                   {{ brand.name }}
@@ -19,7 +19,7 @@
             </div>
             <div class="col-md-4 mb-3">
               <label for="search_by_product_type">Product Type</label>
-              <select v-model="productTypeId" id="search_by_product_type" class="form-control">
+              <select id="search_by_product_type" class="form-control">
                 <option value="">Select Product Type</option>
                 <option v-for="productType in productTypes" :key="productType.id" :value="productType.id">
                   {{ productType.product_type_name }}

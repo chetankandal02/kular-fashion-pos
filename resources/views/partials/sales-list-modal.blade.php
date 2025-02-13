@@ -61,7 +61,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: '{{ route('get.orders') }}',
+                url: "{{ route('get.orders') }}",
                 data: function (d) {
                     d.article_code = $('#article_code').val();
                     d.sales_start_date = $('#sales_start_date').val();
@@ -86,7 +86,7 @@
                     title: "Action", 
                     data: null,
                     render: function(data, type, row) {
-                        return `<button class="btn btn-primary btn-sm me-2 py-0 px-1" @click="handlePickHoldSale(data)">
+                        return `<button class="btn btn-primary btn-sm me-2 py-0 px-1">
                             <i class="fas fa-eye"></i>
                         </button>`
                     }
@@ -103,6 +103,10 @@
         });
 
         $('#sales_start_date, #sales_end_date').on('change', function() {
+            table.ajax.reload();
+        });
+
+        $('[data-bs-target="#salesListModal"]').on('click', function() {
             table.ajax.reload();
         });
     });
