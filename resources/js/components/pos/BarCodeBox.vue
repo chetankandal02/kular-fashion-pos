@@ -32,7 +32,7 @@ export default {
                         this.$emit('add-to-cart', product);
                     } else {
                         Swal.fire({
-                            title: 'Error!',
+                            title: 'Warning!',
                             text: 'Product is out of stock. Do you still want to add this project?',
                             icon: 'warning',
                             showCancelButton: true,

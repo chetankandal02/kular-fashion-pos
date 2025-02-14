@@ -94,6 +94,51 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="stocksDetailModal" tabindex="-1" aria-labelledby="stocksDetailModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="stocksDetailModalLabel">Stocks Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div v-if="stocksDetail && stocksDetail.product">
+            <div class="mb-3" v-for="(branch, index) in stocksDetail.branches" :key="index">
+              <div class="d-flex justify-content-between">
+                <h6><strong>{{ branch.name }}</strong></h6>
+              </div>
+              <!-- {{ stocksDetail.product.colors }} -->
+              <div class="table-responsive">
+                <table class="table mb-0 table-bordered">
+                  <tbody>
+                    <tr>
+                      <th scope="row" class="p-1">Size</th>
+                      <th class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">{{ size.size_detail.size }}</th>
+                    </tr>
+
+                    <tr v-for="(color, index) in stocksDetail.product.colors" :key="index">
+                      <th class="d-flex p-1">
+                        <div class="me-1 d-color-code" style="background:  red"></div>
+                        <h6 class="m-0"> {{ color.color_detail.color_name }} ({{ color.color_detail.color_code }})</h6>
+                      </th>
+                      <td class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index"><strong>{{ size.size_detail.size }} </strong> /
+                        {{ size.size_detail.size }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -117,6 +162,7 @@ export default {
       selectedProduct: null,
       selectedSize: null,
       selectedColor: null,
+      stocksDetail: null
     };
   },
   methods: {
@@ -135,7 +181,7 @@ export default {
 
         if (article.available_quantity === 0) {
           Swal.fire({
-            title: 'Error!',
+            title: 'Warning!',
             text: 'Product is out of stock. Do you still want to add this project?',
             icon: 'warning',
             showCancelButton: true,
@@ -219,6 +265,9 @@ export default {
                 <button class="btn btn-primary btn-sm py-0 px-1 pick-product-for-sale" data-product='${JSON.stringify(tempArticle)}'>
                   <i class="fas fa-hand-holding-usd"></i>
                 </button>
+                <button class="btn btn-primary btn-sm py-0 px-1 view-stock" data-product-id="${row.id}">
+                  <i class="fas fa-eye"></i>
+                </button>
               `;
             },
           },
@@ -231,6 +280,11 @@ export default {
             const product = JSON.parse($(event.currentTarget).attr('data-product'));
             vm.pickProduct(product);
           });
+
+          $('.view-stock').on('click', (event) => {
+            const productId = $(event.currentTarget).attr('data-product-id');
+            vm.viewStocks(productId);
+          });
         },
       });
     },
@@ -240,6 +294,15 @@ export default {
       this.selectedProduct = product;
       $('#searchArticalModal').modal('hide');
       $('#sizeSelectionModal').modal('show');
+    },
+    async viewStocks(productId) {
+      const stocks = await axios.get(`/api/product-stocks/${productId}`);
+      this.stocksDetail = {
+        branches: stocks.data.branches,
+        product: stocks.data.product
+      }
+
+      $('#stocksDetailModal').modal('show');
     },
     reloadDataTable() {
       if (this.table) {

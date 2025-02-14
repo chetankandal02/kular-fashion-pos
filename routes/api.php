@@ -29,3 +29,4 @@ Route::post('/customer', [LayawayController::class, 'store']);
 Route::post('/sales/today', [OrderController::class, 'getTodaysSales']);
 
 Route::post('/quick-validate-item', [ProductController::class, 'quickValidateItem']);
+Route::get('/product-stocks/{product}', [ProductController::class, 'stocksDetail']);

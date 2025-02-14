@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\Color;
 use Illuminate\Http\Request;
 use App\Models\Product;
@@ -169,6 +170,16 @@ class ProductController extends Controller
         ];
 
         return response()->json(['success' => true, 'message' => 'Product found successfullly!', 'product' => $productData], 200);
+    }
+
+    public function stocksDetail(Product $product){
+        $product = Product::with(['sizes.sizeDetail', 'colors.colorDetail', 'quantities'])->find($product->id);
+
+        $branches = Branch::with(['inventory' => function($query) use ($product) {
+            $query->where('product_id', $product->id);
+        }])->get();
+
+        return response()->json(['success' => true, 'product' => $product, 'branches' => $branches], 200);
     }
 
     public function addManufactureBarcode(Request $request)

@@ -99,6 +99,9 @@
 
                             return `<button class="btn btn-primary btn-sm py-0 px-1 pick-product-for-sale" data-product='${JSON.stringify(tempArticle)}'>
                                 <i class="fas fa-hand-holding-usd"></i>
+                            </button>
+                            <button class="btn btn-primary btn-sm py-0 px-1 view-stock">
+                                <i class="fas fa-eye"></i>
                             </button>`
                         }
                     },

@@ -19,6 +19,10 @@ class Product extends Model
         return $this->hasMany(ProductSize::class);
     }
 
+    public function quantities(){
+        return $this->hasMany(ProductQuantity::class);
+    }
+
     public function department()
     {
         return $this->belongsTo(Department::class);
