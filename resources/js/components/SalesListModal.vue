@@ -206,7 +206,7 @@ export default {
             let now = new Date(timestamp);
             let day = now.getDate();
             let month = now.getMonth() + 1;
-            let year = now.getFullYear();
+            let year = now.toLocaleDateString('en', {year: '2-digit'});
             let hours = now.getHours();
             let minutes = now.getMinutes();
             let seconds = now.getSeconds();
