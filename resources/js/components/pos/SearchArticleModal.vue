@@ -120,11 +120,18 @@
 
                     <tr v-for="(color, index) in stocksDetail.product.colors" :key="index">
                       <th class="d-flex p-1">
-                        <div class="me-1 d-color-code" style="background:  red"></div>
+                        <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }"></div>
                         <h6 class="m-0"> {{ color.color_detail.color_name }} ({{ color.color_detail.color_code }})</h6>
                       </th>
-                      <td class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index"><strong>{{ size.size_detail.size }} </strong> /
-                        {{ size.size_detail.size }}
+                      <td class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">
+                        <div v-if="branch.id===1">
+                          <strong>{{ stocksDetail.product.quantities.find(item => item.product_size_id === size.id && item.product_color_id === color.color_id)?.quantity || 0 }}</strong> /
+                          {{ stocksDetail.product.quantities.find(item => item.product_size_id === size.id && item.product_color_id === color.color_id)?.total_quantity || 0 }}
+                        </div>
+                        <div v-else>
+                          <strong>{{ branch.inventory.find(item => item.product_size_id === size.size_id && item.product_color_id === color.color_detail.id)?.quantity || 0 }}</strong> /
+                          {{ branch.inventory.find(item => item.product_size_id === size.size_id && item.product_color_id === color.color_detail.id)?.total_quantity || 0 }}
+                        </div>
                       </td>
                     </tr>
                   </tbody>
@@ -301,6 +308,8 @@ export default {
         branches: stocks.data.branches,
         product: stocks.data.product
       }
+
+      console.log('stocksDetail', this.stocksDetail);
 
       $('#stocksDetailModal').modal('show');
     },
