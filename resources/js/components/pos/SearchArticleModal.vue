@@ -309,8 +309,6 @@ export default {
         product: stocks.data.product
       }
 
-      console.log('stocksDetail', this.stocksDetail);
-
       $('#stocksDetailModal').modal('show');
     },
     reloadDataTable() {

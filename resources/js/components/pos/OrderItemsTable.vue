@@ -23,7 +23,7 @@
                                 <td class="p-1">{{ item.color }}</td>
                                 <td class="p-1">{{ item.size }}</td>
                                 <td class="p-1">{{ item.brand }}</td>
-                                <td class="p-1">{{ formatPrice(item.changedPrice ? item.changedPrice.amount : item.price) }}</td>
+                                <td class="p-1 text-danger">-{{ formatPrice(item.changedPrice ? item.changedPrice.amount : item.price) }}</td>
                                 <td class="p-1">
                                     <button @click="editItemPriceModal(item, index, 'returnItems')" type="button"
                                         class="btn btn-sm btn-primary waves-effect waves-light me-2 py-0 px-1">

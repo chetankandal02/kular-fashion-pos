@@ -79,16 +79,18 @@
                     </div>
 
                     <hr class="m-1">
-                    <h5>Payment Methods:</h5>
-                    <div class="row">
-                        <div class="col-md-4" v-for="(paymentMethod, index) in saleDetails.payment_methods"
-                            :key="index">
-                            <h5 class="fs-6 mb-0">{{ paymentMethod.method }}: 
-                                <strong>£{{ paymentMethod.original_amount}}</strong> 
-                            </h5>
+                    <div v-if="saleDetails.payment_methods.length > 0">
+                        <h5>Payment Methods:</h5>
+                        <div class="row">
+                            <div class="col-md-4" v-for="(paymentMethod, index) in saleDetails.payment_methods"
+                                :key="index">
+                                <h5 class="fs-6 mb-0">{{ paymentMethod.method }}:
+                                    <strong>£{{ paymentMethod.original_amount }}</strong>
+                                </h5>
+                            </div>
                         </div>
+                        <hr class="m-1">
                     </div>
-                    <hr class="m-1">
 
                     <table class="table table-sm mt-2">
                         <thead>
@@ -111,8 +113,8 @@
                                 <td>{{ item.color_name }}</td>
                                 <td>{{ item.size }}</td>
                                 <td>{{ item.brand_name }}</td>
-                                <td>£{{ item.original_price }}</td>
-                                <td>£{{ item.changed_price }}</td>
+                                <td :class="{'text-danger': item.flag !== 'SALE'}"><span v-if="item.flag !== 'SALE'">-</span>£{{ item.original_price }}</td>
+                                <td :class="{'text-danger': item.flag !== 'SALE'}"><span v-if="item.flag !== 'SALE'">-</span>£{{ item.changed_price }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -250,7 +252,7 @@ export default {
             dateFormat: 'Y-m-d',
             altInput: true,
             altFormat: 'F j, Y',
-            onChange: function(selectedDates, dateStr, instance) {
+            onChange: function (selectedDates, dateStr, instance) {
                 $('#sales_end_date').flatpickr({
                     minDate: dateStr,
                     dateFormat: 'Y-m-d',
