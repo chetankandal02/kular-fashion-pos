@@ -8,13 +8,25 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-2">
+                            <button class="btn btn-dark btn-lg w-100" @click="printLastOrderReceipt">
+                                <i class="mdi mdi-printer font-size-20 me-1"></i>
+                                Last Receipt
+                            </button>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <button class="btn btn-secondary btn-lg w-100" @click="printLastGiftReceipt">
+                                <i class="mdi mdi-printer font-size-20 me-1"></i>
+                                Gift Receipt
+                            </button>
+                        </div>
+                        <div class="col-md-6 mb-2">
                             <button class="btn btn-info btn-lg w-100" data-bs-toggle="modal" data-bs-target="#eodModal">
                                 <i class="mdi mdi-cash-multiple font-size-20 me-1"></i>
                                 Running Total
                             </button>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-2">
                             <button class="btn btn-success btn-lg w-100" data-bs-toggle="modal" data-bs-target="#eodModal">
                                 <i class="mdi mdi-printer font-size-20 me-1"></i>
                                 EOD
@@ -33,18 +45,42 @@
 </template>
 
 <script>
+import axios from 'axios';
 import EODModal from './EODModal.vue';
 
 export default {
     components: {
         EODModal
     },
-    data() {
-        return {
-
-        };
-    },
     methods: {
+        async printLastOrderReceipt(){
+            const response = await axios.post('/api/print-last-sale-receipt');
+
+            if (response.data.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Last receipt printed successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'Great!'
+                });
+            } else {
+                alert(response.data.message || 'Something went wrong!')
+            }
+        },
+        async printLastGiftReceipt(){
+            const response = await axios.post('/api/print-last-gift-voucher-receipt');
+
+            if (response.data.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Gift voucher receipt printed successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'Great!'
+                });
+            } else {
+                alert(response.data.message || 'Something went wrong!')
+            }
+        },
         closeModal() {
             const modal = bootstrap.Modal.getInstance($('#menuModal'));
             modal.hide();
