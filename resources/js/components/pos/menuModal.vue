@@ -9,14 +9,14 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <button class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#eodModal">
-                                <i class="mdi mdi-cash-multiple font-size-14 me-1"></i>
-                                Till Now
+                            <button class="btn btn-info btn-lg w-100" data-bs-toggle="modal" data-bs-target="#eodModal">
+                                <i class="mdi mdi-cash-multiple font-size-20 me-1"></i>
+                                Running Total
                             </button>
                         </div>
                         <div class="col-md-6">
-                            <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#eodModal">
-                                <i class="mdi mdi-printer font-size-14 me-1"></i>
+                            <button class="btn btn-success btn-lg w-100" data-bs-toggle="modal" data-bs-target="#eodModal">
+                                <i class="mdi mdi-printer font-size-20 me-1"></i>
                                 EOD
                             </button>
                         </div>
