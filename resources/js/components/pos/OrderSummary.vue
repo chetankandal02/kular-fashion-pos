@@ -76,10 +76,14 @@
 
                 <!-- EOD Button -->
                 <div class="col-6 mb-2 pe-1">
-                    <button class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#eodModal">
+                    <button class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#menuModal">
+                        <i class="mdi mdi-menu font-size-14 me-1"></i>
+                        Menu
+                    </button>
+                    <!-- <button class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#eodModal">
                         <i class="mdi mdi-printer font-size-14 me-1"></i>
                         EOD
-                    </button>
+                    </button> -->
                 </div>
 
                 <!-- Tender Button -->
@@ -112,6 +116,7 @@
         @capturePaymentConfirmed="capturePayment" />
     <GiftVoucherModal />
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
+    <MenuModal></MenuModal>
     <EODModal></EODModal>
     <LaywayModal :grandTotal="parseFloat(grandTotal(false))" :pendingBalance="amountToBePaid(false)" 
 />
@@ -126,6 +131,7 @@ import GiftVoucherModal from './GiftVoucherModal.vue';
 import FinishSaleModal from './FinishSaleModal.vue';
 import LaywayModal from './LaywayModal.vue';
 import EODModal from './EODModal.vue';
+import MenuModal from './menuModal.vue';
 import axios from 'axios';
 
 export default {
@@ -137,7 +143,8 @@ export default {
         GiftVoucherModal,
         FinishSaleModal,
         LaywayModal,
-        EODModal
+        EODModal,
+        MenuModal
     },
     props: {
         orderItems: Array,
