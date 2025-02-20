@@ -173,7 +173,7 @@ class OrderController extends Controller
             'size' => $orderItem['size'],
             'color_id' => $orderItem['color_id'],
             'color_name' => $orderItem['color'],
-            'color_code' => $product->id,
+            'color_code' => $colorDetail->code,
             'ui_color_code' => $colorDetail->ui_color_code,
             'brand_id' => $product->brand_id,
             'brand_name' => $product->brand->name,

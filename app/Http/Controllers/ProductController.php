@@ -79,7 +79,7 @@ class ProductController extends Controller
         $products = ProductQuantity::with('product.brand', 'product.department', 'sizes.sizeDetail', 'colors.colorDetail')->get();
         foreach ($products as $product) {
             $article_code = $product->product->article_code;
-            $color_code = $product->colors->colorDetail->color_code;
+            $color_code = $product->colors->colorDetail->code;
             $size_code = $product->sizes->sizeDetail->new_code;
             $article_code = $article_code . $color_code . $size_code;
             $checkCode = $this->generateCheckDigit($article_code);
@@ -104,7 +104,7 @@ class ProductController extends Controller
                     'code' => $product->product->article_code,
                     'description' => $product->product->short_description,
                     'product_quantity_id' => $product->id,
-                    'color' => $product->colors->colorDetail->color_name,
+                    'color' => $product->colors->colorDetail->name,
                     'color_id' => $product->colors->colorDetail->id,
                     'size' => $product->sizes->sizeDetail->size,
                     'size_id' => $product->sizes->sizeDetail->id,
@@ -145,7 +145,7 @@ class ProductController extends Controller
         }
 
         $article_code = $product->product->article_code;
-        $color_code = $product->colors->colorDetail->color_code;
+        $color_code = $product->colors->colorDetail->code;
         $size_code = $product->sizes->sizeDetail->new_code;
         $article_code = $article_code . $color_code . $size_code;
         $checkCode = $this->generateCheckDigit($article_code);
@@ -157,7 +157,7 @@ class ProductController extends Controller
             'code' => $product->product->article_code,
             'description' => $product->product->short_description,
             'product_quantity_id' => $product->id,
-            'color' => $product->colors->colorDetail->color_name,
+            'color' => $product->colors->colorDetail->name,
             'color_id' => $product->colors->colorDetail->id,
             'size' => $product->sizes->sizeDetail->size,
             'size_id' => $product->sizes->sizeDetail->id,

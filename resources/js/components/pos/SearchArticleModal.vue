@@ -84,7 +84,7 @@
                 <div class="color-box d-block m-auto" :class="{ selected: color.id === selectedColor }"
                   @click="selectedColor = color.id"
                   v-bind:style="{ backgroundColor: color.color_detail.ui_color_code }"></div>
-                <label class="form-check-label" :for="color">{{ color.color_detail.color_name }}</label>
+                <label class="form-check-label" :for="color">{{ color.color_detail.name }}</label>
               </div>
             </div>
           </div>
@@ -121,7 +121,7 @@
                     <tr v-for="(color, index) in stocksDetail.product.colors" :key="index">
                       <th class="d-flex p-1">
                         <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }"></div>
-                        <h6 class="m-0"> {{ color.color_detail.color_name }} ({{ color.color_detail.color_code }})</h6>
+                        <h6 class="m-0"> {{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
                       </th>
                       <td class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">
                         <div v-if="branch.id===1">
