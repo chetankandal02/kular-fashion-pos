@@ -154,7 +154,7 @@ export default {
             this.transferItem(this.itemToBeAdd);
             this.itemToBeAdd = {};
         },
-        transferItem(item) {
+        transferItem(item, forceAdd = false) {
             if (!item.manufacture_barcode) {
                 this.itemToBeAdd = item;
 
@@ -168,47 +168,27 @@ export default {
                 products = JSON.parse(localStorage.getItem('transferItems'));
             }
 
-            // const existingProductIndex = products.findIndex(product => product.barcode === item.barcode);
-            // if (existingProductIndex !== -1) {
-            //     console.log(existingProductIndex);
-            //     if (products[existingProductIndex].quantity < 1) {
-            //         Swal.fire({
-            //             title: 'Error!',
-            //             text: 'Item maximum quantity exceed',
-            //             icon: 'error',
-            //             confirmButtonText: 'Okay'
-            //         });
-            //         return;
-            //     }
-            //     products[existingProductIndex].quantity += 1;
-
-            // } else {
-            //     if (item.available_quantity < 1) {
-            //         Swal.fire({
-            //             title: 'Error!',
-            //             text: 'Item maximum quantity exceed',
-            //             icon: 'error',
-            //             confirmButtonText: 'Okay'
-            //         });
-            //         return;
-            //     }
-
-            //     item.quantity = 1;
-            //     products.push(item);
-            // }
-
             const totalQuantity = products
                 .filter(product => product.barcode === item.barcode)
                 .reduce((sum, product) => sum + product.quantity, 0);
 
-            if (totalQuantity + 1 > item.available_quantity) {
+            if (totalQuantity + 1 > item.available_quantity && !forceAdd) {
                 Swal.fire({
-                    title: 'Error!',
-                    text: 'Item maximum quantity exceeded',
-                    icon: 'error',
-                    confirmButtonText: 'Okay'
+                    title: 'Warning!',
+                    text: 'Product is out of stock. Do you still want to add this project?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Add Project',
+                    cancelButtonText: 'No, Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.transferItem(item, true);
+                    }
                 });
-                return;
+
+                if(!this.forceAdd){
+                    return;
+                }
             }
 
             let highestSno = products.length > 0 ? Math.max(...products.map(product => product.sno)) : 0;
