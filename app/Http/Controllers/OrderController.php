@@ -44,24 +44,32 @@ class OrderController extends Controller
             foreach ($returnItems as $returnItem) {
                 if ($branchId > 1) {
                     $storeInventory = StoreInventory::where('store_id', $branchId)->where('product_quantity_id', $returnItem['product_quantity_id'])->first();
-                    $storeInventory->quantity = $storeInventory->quantity + 1;
-                    $storeInventory->save();
+                    if($storeInventory){
+                        $storeInventory->quantity = $storeInventory->quantity + 1;
+                        $storeInventory->save();
+                    }
                 } else {
                     $productQuantity = ProductQuantity::find($returnItem['product_quantity_id']);
-                    $productQuantity->quantity = $productQuantity->quantity + 1;
-                    $productQuantity->save();
+                    if($productQuantity){
+                        $productQuantity->quantity = $productQuantity->quantity + 1;
+                        $productQuantity->save();    
+                    }
                 }
             }
             
             foreach ($orderItems as $orderItem) {
                 if ($branchId > 1) {
                     $storeInventory = StoreInventory::where('store_id', $branchId)->where('product_quantity_id', $orderItem['product_quantity_id'])->first();
-                    $storeInventory->quantity = $storeInventory->quantity - 1;
-                    $storeInventory->save();
+                    if($storeInventory){
+                        $storeInventory->quantity = $storeInventory->quantity - 1;
+                        $storeInventory->save();    
+                    }
                 } else {
                     $productQuantity = ProductQuantity::find($orderItem['product_quantity_id']);
-                    $productQuantity->quantity = $productQuantity->quantity - 1;
-                    $productQuantity->save();
+                    if($productQuantity){
+                        $productQuantity->quantity = $productQuantity->quantity - 1;
+                        $productQuantity->save();
+                    }
                 }
             }
         }
@@ -164,31 +172,33 @@ class OrderController extends Controller
     {
         $productId = $orderItem['product_id'];
         $product = Product::with('brand', 'supplier')->find($productId);
-        $colorDetail = Color::find($orderItem['color_id']);
+        if($product){
+            $colorDetail = Color::find($orderItem['color_id']);
 
-        OrderItem::create([
-            'order_id'  => $params['order_id'],
-            'product_id' => $product->id,
-            'size_id' => $orderItem['size_id'],
-            'size' => $orderItem['size'],
-            'color_id' => $orderItem['color_id'],
-            'color_name' => $orderItem['color'],
-            'color_code' => $colorDetail->code,
-            'ui_color_code' => $colorDetail->ui_color_code,
-            'brand_id' => $product->brand_id,
-            'brand_name' => $product->brand->name,
-            'article_code' => $product->article_code,
-            'barcode' => $orderItem['barcode'],
-            'original_price' => $product->mrp,
-            'changed_price' => isset($orderItem['changedPrice']['amount']) ? $orderItem['changedPrice']['amount'] : $product->mrp,
-            'changed_price_reason_id' => isset($orderItem['changedPrice']['reasonId']) ? $orderItem['changedPrice']['reasonId'] : null,
-            'changed_price_reason' => isset($orderItem['changedPrice']['reason']) ? $orderItem['changedPrice']['reason'] : '',
-            'quantity' => 1,
-            'description' => $product->short_description,
-            'flag' => $params['flag'],
-            'sales_person_id' => $params['sales_person_id'],
-            'branch_id' => $params['branch_id'],
-        ]);
+            OrderItem::create([
+                'order_id'  => $params['order_id'],
+                'product_id' => $product->id,
+                'size_id' => $orderItem['size_id'],
+                'size' => $orderItem['size'],
+                'color_id' => $orderItem['color_id'],
+                'color_name' => $orderItem['color'],
+                'color_code' => $colorDetail->code,
+                'ui_color_code' => $colorDetail->ui_color_code,
+                'brand_id' => $product->brand_id,
+                'brand_name' => $product->brand->name,
+                'article_code' => $product->article_code,
+                'barcode' => $orderItem['barcode'],
+                'original_price' => $product->mrp,
+                'changed_price' => isset($orderItem['changedPrice']['amount']) ? $orderItem['changedPrice']['amount'] : $product->mrp,
+                'changed_price_reason_id' => isset($orderItem['changedPrice']['reasonId']) ? $orderItem['changedPrice']['reasonId'] : null,
+                'changed_price_reason' => isset($orderItem['changedPrice']['reason']) ? $orderItem['changedPrice']['reason'] : '',
+                'quantity' => 1,
+                'description' => $product->short_description,
+                'flag' => $params['flag'],
+                'sales_person_id' => $params['sales_person_id'],
+                'branch_id' => $params['branch_id'],
+            ]);
+        }
     }
 
     public function getSales(Request $request)
