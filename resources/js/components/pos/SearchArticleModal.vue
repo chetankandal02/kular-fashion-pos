@@ -125,12 +125,12 @@
                       </th>
                       <td class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">
                         <div v-if="branch.id===1">
-                          <strong>{{ stocksDetail.product.quantities.find(item => item.product_size_id === size.size_id && item.product_color_id === color.id)?.quantity || 0 }}</strong> /
-                          {{ stocksDetail.product.quantities.find(item => item.product_size_id === size.size_id && item.product_color_id === color.id)?.total_quantity || 0 }}
+                          <strong>{{ stocksDetail.product.quantities.find(item => item.product_size_id === size.id && item.product_color_id === color.id)?.quantity || 0 }}</strong> /
+                          {{ stocksDetail.product.quantities.find(item => item.product_size_id === size.id && item.product_color_id === color.id)?.total_quantity || 0 }}
                         </div>
                         <div v-else>
-                          <strong>{{ branch.inventory.find(item => item.product_size_id === size.size_id && item.product_color_id === color.id)?.quantity || 0 }}</strong> /
-                          {{ branch.inventory.find(item => item.product_size_id === size.size_id && item.product_color_id === color.id)?.total_quantity || 0 }}
+                          <strong>{{ branch.inventory.find(item => item.product_size_id === size.id && item.product_color_id === color.id)?.quantity || 0 }}</strong> /
+                          {{ branch.inventory.find(item => item.product_size_id === size.id && item.product_color_id === color.id)?.total_quantity || 0 }}
                         </div>
                       </td>
                     </tr>
