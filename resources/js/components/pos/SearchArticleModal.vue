@@ -22,7 +22,7 @@
               <select id="search_by_product_type" class="form-control">
                 <option value="">Select Product Type</option>
                 <option v-for="productType in productTypes" :key="productType.id" :value="productType.id">
-                  {{ productType.product_type_name }}
+                  {{ productType.name }}
                 </option>
               </select>
             </div>
@@ -208,8 +208,6 @@ export default {
             timestamp: Date.now(),
           };
         }
-
-
       } else {
         Swal.fire({
           title: 'Error!',
@@ -224,6 +222,10 @@ export default {
       $('#colorSelectionModal').modal('show');
     },
     initializeDataTable() {
+      $('#search_by_product_type').chosen({
+      width: "100%"
+    });
+    
       const vm = this;
 
       this.table = $('#search-article-modal').DataTable({
