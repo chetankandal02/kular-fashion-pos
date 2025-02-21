@@ -11,8 +11,8 @@ class FrontendController extends Controller
 {
     public function index()
     {
-        $brands = Brand::latest()->whereNull('deleted_at')->get();
-        $productTypes = ProductType::latest()->whereNull('deleted_at')->get();
+        $brands = Brand::orderBy('name', 'ASC')->get();
+        $productTypes = ProductType::orderBy('name', 'ASC')->get();
 
         return view('index', compact('brands', 'productTypes'));
     }

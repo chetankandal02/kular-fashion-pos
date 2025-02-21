@@ -101,7 +101,8 @@ export default {
 
                 this.cancelSale();
             } else {
-                alert(response.data.message || 'Something went wrong!')
+                alert(response.data.message || 'Something went wrong!');
+                this.cancelSale();
             }
         },
         addToCart(item, storageKey = 'orderItems') {
