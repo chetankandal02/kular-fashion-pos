@@ -57,12 +57,12 @@
           <div v-if="selectedProduct && selectedProduct.sizes">
             <div class="row">
               <div v-for="size in selectedProduct.sizes" :key="size.id" class="col-md-2 text-center">
-                <div class="size-box" :class="{ selected: size.id === selectedSize }" @click="selectedSize = size.id">{{
+                <div class="size-box mb-3" :class="{ selected: size.size_id === selectedSize }" @click="selectedSize = size.size_id">{{
                   size.size_detail.size }}</div>
               </div>
             </div>
           </div>
-          <button class="btn btn-primary mt-3" @click="confirmSizeSelection" :disabled="!selectedSize">Confirm
+          <button class="btn btn-primary" @click="confirmSizeSelection" :disabled="!selectedSize">Confirm
             Selection</button>
         </div>
       </div>
