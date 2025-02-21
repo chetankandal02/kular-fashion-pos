@@ -98,7 +98,7 @@ export default {
         this.salesData = response.data.totals;
     },
     nl2br(text) {
-      return text.replace(/\n/g, '<br>');
+      return text?.replace(/\n/g, '<br>');
     },
     handlePrint() {
       this.printEod();

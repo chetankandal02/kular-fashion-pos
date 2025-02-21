@@ -22,7 +22,7 @@
               <select id="search_by_product_type" class="form-control">
                 <option value="">Select Product Type</option>
                 <option v-for="productType in productTypes" :key="productType.id" :value="productType.id">
-                  {{ productType.product_type_name }}
+                  {{ productType.name }}
                 </option>
               </select>
             </div>
@@ -121,16 +121,16 @@
                     <tr v-for="(color, index) in stocksDetail.product.colors" :key="index">
                       <th class="d-flex p-1">
                         <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }"></div>
-                        <h6 class="m-0"> {{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
+                        <h6 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
                       </th>
                       <td class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">
                         <div v-if="branch.id===1">
-                          <strong>{{ stocksDetail.product.quantities.find(item => item.product_size_id === size.id && item.product_color_id === color.color_id)?.quantity || 0 }}</strong> /
-                          {{ stocksDetail.product.quantities.find(item => item.product_size_id === size.id && item.product_color_id === color.color_id)?.total_quantity || 0 }}
+                          <strong>{{ stocksDetail.product.quantities.find(item => item.product_size_id === size.size_id && item.product_color_id === color.id)?.quantity || 0 }}</strong> /
+                          {{ stocksDetail.product.quantities.find(item => item.product_size_id === size.size_id && item.product_color_id === color.id)?.total_quantity || 0 }}
                         </div>
                         <div v-else>
-                          <strong>{{ branch.inventory.find(item => item.product_size_id === size.size_id && item.product_color_id === color.color_detail.id)?.quantity || 0 }}</strong> /
-                          {{ branch.inventory.find(item => item.product_size_id === size.size_id && item.product_color_id === color.color_detail.id)?.total_quantity || 0 }}
+                          <strong>{{ branch.inventory.find(item => item.product_size_id === size.size_id && item.product_color_id === color.id)?.quantity || 0 }}</strong> /
+                          {{ branch.inventory.find(item => item.product_size_id === size.size_id && item.product_color_id === color.id)?.total_quantity || 0 }}
                         </div>
                       </td>
                     </tr>
@@ -208,8 +208,6 @@ export default {
             timestamp: Date.now(),
           };
         }
-
-
       } else {
         Swal.fire({
           title: 'Error!',
@@ -224,6 +222,10 @@ export default {
       $('#colorSelectionModal').modal('show');
     },
     initializeDataTable() {
+      $('#search_by_product_type').chosen({
+      width: "100%"
+    });
+
       const vm = this;
 
       this.table = $('#search-article-modal').DataTable({
