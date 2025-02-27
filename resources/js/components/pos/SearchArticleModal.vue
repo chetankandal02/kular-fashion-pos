@@ -336,9 +336,18 @@ export default {
       $('#sizeSelectionModal').modal('show');
     },
     async viewStocks(productId) {
+      const reorderBranches = (branches) => {
+        let defaultBranchId = window.config.currentUserStore || 1;
+        
+        const defaultBranch = branches.find(branch => branch.id === defaultBranchId);
+        const otherBranches = branches.filter(branch => branch.id !== defaultBranchId);
+        return [defaultBranch, ...otherBranches];
+      };
+
       const stocks = await axios.get(`/api/product-stocks/${productId}`);
+
       this.stocksDetail = {
-        branches: stocks.data.branches,
+        branches: reorderBranches(stocks.data.branches),
         product: stocks.data.product
       }
 

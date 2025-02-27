@@ -42,14 +42,29 @@ class OrderController extends Controller
 
         if ($branchId) {
             foreach ($returnItems as $returnItem) {
+                $productQuantityId = $returnItem['product_quantity_id'];
+
                 if ($branchId > 1) {
                     $storeInventory = StoreInventory::where('store_id', $branchId)->where('product_quantity_id', $returnItem['product_quantity_id'])->first();
                     if($storeInventory){
                         $storeInventory->quantity = $storeInventory->quantity + 1;
                         $storeInventory->save();
+                    } else {
+                        $productQuantity = ProductQuantity::find($productQuantityId);
+
+                        StoreInventory::create([
+                            'store_id'              => $branchId,
+                            'product_id'            => $productQuantity->product_id,
+                            'product_quantity_id'   => $productQuantityId,
+                            'product_color_id'      => $productQuantity->product_color_id,
+                            'product_size_id'       => $productQuantity->product_size_id,
+                            'brand_id'              => $productQuantity->product->brand_id ?? null,
+                            'quantity'              => 1,
+                            'total_quantity'        => 0
+                        ]);
                     }
                 } else {
-                    $productQuantity = ProductQuantity::find($returnItem['product_quantity_id']);
+                    $productQuantity = ProductQuantity::find($productQuantityId);
                     if($productQuantity){
                         $productQuantity->quantity = $productQuantity->quantity + 1;
                         $productQuantity->save();    
@@ -58,14 +73,28 @@ class OrderController extends Controller
             }
             
             foreach ($orderItems as $orderItem) {
+                $productQuantityId = $orderItem['product_quantity_id'];
                 if ($branchId > 1) {
                     $storeInventory = StoreInventory::where('store_id', $branchId)->where('product_quantity_id', $orderItem['product_quantity_id'])->first();
                     if($storeInventory){
                         $storeInventory->quantity = $storeInventory->quantity - 1;
                         $storeInventory->save();    
+                    } else {
+                        $productQuantity = ProductQuantity::find($productQuantityId);
+
+                        StoreInventory::create([
+                            'store_id'              => $branchId,
+                            'product_id'            => $productQuantity->product_id,
+                            'product_quantity_id'   => $productQuantityId,
+                            'product_color_id'      => $productQuantity->product_color_id,
+                            'product_size_id'       => $productQuantity->product_size_id,
+                            'brand_id'              => $productQuantity->product->brand_id ?? null,
+                            'quantity'              => -1,
+                            'total_quantity'        => 0
+                        ]);
                     }
                 } else {
-                    $productQuantity = ProductQuantity::find($orderItem['product_quantity_id']);
+                    $productQuantity = ProductQuantity::find($productQuantityId);
                     if($productQuantity){
                         $productQuantity->quantity = $productQuantity->quantity - 1;
                         $productQuantity->save();

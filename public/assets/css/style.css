@@ -100,6 +100,10 @@ input[type="number"] {
     cursor: pointer;
 }
 
+.size-box.selected{
+    background-color: #e6e2e2;
+}
+
 .color-box.selected, .size-box.selected{
     border: 2px solid #000;
 }

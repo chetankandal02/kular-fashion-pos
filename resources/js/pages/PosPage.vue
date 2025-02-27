@@ -92,14 +92,14 @@ export default {
             });
 
             if (response.data.success) {
-                Swal.fire({
+                /* Swal.fire({
                     title: 'Success!',
                     text: 'Order placed successfully.',
                     icon: 'success',
                     confirmButtonText: 'Great!'
-                });
+                }); */
 
-                this.cancelSale();
+                //this.cancelSale();
             } else {
                 alert(response.data.message || 'Something went wrong!');
                 this.cancelSale();
