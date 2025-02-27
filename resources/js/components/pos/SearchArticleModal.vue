@@ -108,8 +108,8 @@
           <div v-if="stocksDetail && stocksDetail.product">
             <div class="mb-2" v-for="(branch, index) in stocksDetail.branches" :key="index">
               <div>
-                <div class="d-flex justify-content-between">
-                  <h6><strong>{{ branch.name }}</strong></h6>
+                <div class="text-center">
+                  <h5 class="mb-0"><strong>{{ branch.name }}</strong></h5>
                 </div>
 
                 <div class="table-responsive">
@@ -145,8 +145,8 @@
             </div>
 
             <div class="table-responsive mb-4">
-              <div class="d-flex justify-content-between">
-                <h6 class="text-success"><strong>Goods In</strong></h6>
+              <div class="text-center">
+                <h5 class="text-success mb-0"><strong>Goods In</strong></h5>
               </div>
 
               <table class="table mb-0 table-bordered">
