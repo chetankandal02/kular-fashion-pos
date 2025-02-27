@@ -108,34 +108,6 @@
           <div v-if="stocksDetail && stocksDetail.product">
             <div class="mb-2" v-for="(branch, index) in stocksDetail.branches" :key="index">
               <div>
-                <div class="table-responsive mb-4" v-if="branch.id === 1">
-                  <div class="d-flex justify-content-between">
-                    <h6 class="text-success"><strong>Goods In</strong></h6>
-                  </div>
-
-                  <table class="table mb-0 table-bordered">
-                    <tbody>
-                      <tr>
-                        <th scope="row" class="p-1">Size</th>
-                        <th class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">{{
-                          size.size_detail.size }}</th>
-                      </tr>
-
-                      <tr v-for="(color, index) in stocksDetail.product.colors" :key="index">
-                        <th class="d-flex p-1">
-                          <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }">
-                          </div>
-                          <h6 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
-                        </th>
-                        <td class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">
-                          {{stocksDetail.product.quantities.find(item => item.product_size_id === size.id &&
-                            item.product_color_id === color.id)?.total_quantity || 0}}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
                 <div class="d-flex justify-content-between">
                   <h6><strong>{{ branch.name }}</strong></h6>
                 </div>
@@ -170,6 +142,34 @@
                   </table>
                 </div>
               </div>
+            </div>
+
+            <div class="table-responsive mb-4">
+              <div class="d-flex justify-content-between">
+                <h6 class="text-success"><strong>Goods In</strong></h6>
+              </div>
+
+              <table class="table mb-0 table-bordered">
+                <tbody>
+                  <tr>
+                    <th scope="row" class="p-1">Size</th>
+                    <th class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">{{
+                      size.size_detail.size }}</th>
+                  </tr>
+
+                  <tr v-for="(color, index) in stocksDetail.product.colors" :key="index">
+                    <th class="d-flex p-1">
+                      <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }">
+                      </div>
+                      <h6 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
+                    </th>
+                    <td class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">
+                      {{stocksDetail.product.quantities.find(item => item.product_size_id === size.id &&
+                        item.product_color_id === color.id)?.total_quantity || 0}}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
 
           </div>
