@@ -300,24 +300,25 @@ class OrderController extends Controller
 
     public function getTodaysSales(Request $request)
     {
-        $today = Carbon::now();
+        $today = Carbon::today();
 
         $salesData = OrderItem::where('sales_person_id', $request->salesPersonId)->whereDate('created_at', $today)->get();
         $giftVoucherRedeemeds = OrderPayment::whereDate('created_at', $today)
             ->whereHas('order', function ($query) use ($request) {
                 $query->where('sales_person_id', $request->salesPersonId);
             })->get();
-        $giftVoucherSold = GiftVoucher::where('generated_by', $request->salesPersonId)->whereDate('created_at', $today)->get();
-        $creditNotesIssue = DB::table('credit_notes')->where('generated_by', $request->salesPersonId)->whereDate('created_at', $today)->whereNull('deleted_at')->get();
+        $giftVoucherSold = GiftVoucher::where('generated_by', $request->salesPersonId)->whereDate('created_at', $today)->withTrashed()->count();
+        $creditNotesIssue = CreditNote::where('generated_by', $request->salesPersonId)->whereDate('created_at', $today)->withTrashed()->count();
+
 
         $totals = [
             'saleItems' => $salesData->where('flag', 'SALE')->count(),
             'saleReturns' => $salesData->where('flag', 'RETURN')->count(),
             'miscSales' => number_format($salesData->where('flag', 'SALE')->sum('changed_price'), 2),
             'miscReturns' => number_format($salesData->where('flag', 'RETURN')->sum('changed_price'), 2),
-            'giftVouchersSold' => $giftVoucherSold->count(),
-            'giftVouchersRedeemed' => number_format($giftVoucherRedeemeds->where('method', '!=', 'Credit Note')->sum('original_amount'), 2),
-            'creditNotesIssued' => $creditNotesIssue->count(),
+            'giftVouchersSold' => $giftVoucherSold,
+            'giftVouchersRedeemed' => number_format($giftVoucherRedeemeds->where('method', 'Gift Voucher')->sum('original_amount'), 2),
+            'creditNotesIssued' => $creditNotesIssue,
             'creditNotesRedeemed' => number_format($giftVoucherRedeemeds->where('method', 'Credit Note')->sum('original_amount'), 2)
         ];
 

@@ -11,6 +11,27 @@ class GiftVoucher extends Model
     use SoftDeletes;
     protected $guarded = [];
 
+    private static function calculateCheckDigit($barcode) {
+        $sum = 0;
+        $reverseBarcode = strrev($barcode);
+    
+        for ($i = 0; $i < strlen($reverseBarcode); $i++) {
+            $digit = (int) $reverseBarcode[$i];
+    
+            if ($i % 2 == 1) {
+                $digit *= 2;
+    
+                if ($digit > 9) {
+                    $digit -= 9;
+                }
+            }
+    
+            $sum += $digit;
+        }
+    
+        return (10 - ($sum % 10)) % 10;
+    }
+
     protected static function booted()
     {
         static::creating(function ($giftVoucher) {
@@ -28,30 +49,9 @@ class GiftVoucher extends Model
             $datePart = Carbon::now()->format('dmy');
 
             $barcodeWithoutCheckDigit = $newNumericPart . $datePart;
-            $checkDigit = calculateCheckDigit($barcodeWithoutCheckDigit);
+            $checkDigit = GiftVoucher::calculateCheckDigit($barcodeWithoutCheckDigit);
 
             $giftVoucher->barcode = $barcodeWithoutCheckDigit . $checkDigit;
         });
-
-        function calculateCheckDigit($barcode) {
-            $sum = 0;
-            $reverseBarcode = strrev($barcode);
-        
-            for ($i = 0; $i < strlen($reverseBarcode); $i++) {
-                $digit = (int) $reverseBarcode[$i];
-        
-                if ($i % 2 == 1) {
-                    $digit *= 2;
-        
-                    if ($digit > 9) {
-                        $digit -= 9;
-                    }
-                }
-        
-                $sum += $digit;
-            }
-        
-            return (10 - ($sum % 10)) % 10;
-        }
     }
 }
