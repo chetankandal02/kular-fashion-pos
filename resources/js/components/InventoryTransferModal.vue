@@ -216,6 +216,7 @@ export default {
                 this.items = [];
                 localStorage.removeItem('transferItems');
                 $('#transferInventoryModal').modal('hide');
+                $('.modal-backdrop').remove();
 
                 Swal.fire({
                     title: 'Success!',
