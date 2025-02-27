@@ -70,7 +70,7 @@ class InventoryTransferController extends Controller
             } else if ($toStoreId === 1) {
                 $productQuantity->update([
                     'quantity' => $productQuantity->quantity + $quantity,
-                    'total_quantity' => $productQuantity->total_quantity + $quantity,
+                    //'total_quantity' => $productQuantity->total_quantity + $quantity,
                 ]);
             }
 
