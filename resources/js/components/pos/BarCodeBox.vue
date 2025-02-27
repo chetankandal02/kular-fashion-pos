@@ -28,7 +28,12 @@ export default {
                 const response = await axios.get(`/validate-item/${barcode}`);
                 const { product } = response.data;
                 if (product) {
-                    if(product.available_quantity > 0){
+                    let saleItems = localStorage.getItem('orderItems') || '[]';
+                    saleItems = JSON.parse(saleItems);
+
+                    const addedItemTotal = saleItems.filter(item => item.id === product.id).reduce((sum, item) => sum + 1, 0);
+
+                    if((product.available_quantity - addedItemTotal) > 0){
                         this.$emit('add-to-cart', product);
                     } else {
                         Swal.fire({
