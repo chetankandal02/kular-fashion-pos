@@ -10,6 +10,11 @@
           <div class="row">
             <div class="col-sm-4">
               <label for="customer_name">Customer Name</label>
+              <select name="customer" id="customer">
+                <option value="">Select Customer</option>
+                <option value="">Select Customer</option>
+                <option value="">Select Customer</option>
+              </select>
               <input type="text" class="form-control" v-model="form.customer_name" />
             </div>
             <div class="col-sm-4">
@@ -53,6 +58,12 @@ export default {
         down_payment: 0
       },
     };
+  },
+  mounted() {
+    $('#customer').select2({
+      width: '100%',
+      dropdownParent: $('#layawayModal')
+    });
   },
   methods: {
     async submitForm() {
