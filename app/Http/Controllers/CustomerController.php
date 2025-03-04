@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
 {
@@ -33,5 +34,37 @@ class CustomerController extends Controller
         ];
 
         return response()->json($data);
+    }
+
+    public function store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'customer_name' => 'required|string|max:50',
+            'customer_email' => 'required|email|max:100|unique:customers,email',
+            'contact_number' => 'required|string|max:15|unique:customers,phone_number',
+            'company_name' => 'nullable|string|max:75',
+            'address' => 'required|string|max:255',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $customer =  Customer::create([
+            'name' => $request->customer_name,
+            'email' => $request->customer_email,
+            'phone_number' => $request->contact_number,
+            'company_name' => $request->company_name,
+            'address' => $request->address
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'New Customer created successfully!',
+            'customer' => $customer
+        ], 201);
     }
 }

@@ -59,7 +59,7 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
           <button type="button" class="btn btn-success" v-if="!isCreatingCustomer" :disabled="!customerId"
-            @click="submitForm">Proceed</button>
+            @click="createLayaway">Proceed</button>
           <button type="button" class="btn btn-success" v-else @click="createCustomer">Save</button>
         </div>
       </div>
@@ -149,17 +149,15 @@ export default {
         order: [[0, 'desc']],
       });
     },
-    async submitForm() {
+    async createLayaway() {
       const formData = {
-        customer: this.form.customer,
-        customer_email: this.form.customer_email,
-        contact_number: this.form.contact_number,
+        customerId: this.customerId,
         down_payment: this.form.down_payment,
         grand_total: this.grandTotal,
       };
 
       try {
-        const response = await axios.post('/api/customer', formData);
+        const response = await axios.post('/api/layaway', formData);
 
         if (response.data.success) {
           const customerId = response.data.customer_id;
@@ -243,7 +241,7 @@ export default {
       };
 
       try {
-        const response = await axios.post('/api/customer', formData);
+        const response = await axios.post('/api/customers', formData);
         if (response.data.success) {
           Swal.fire({
             icon: 'success',
@@ -261,7 +259,6 @@ export default {
           });
         }
       } catch (error) {
-        console.error('Error during API call:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
