@@ -118,7 +118,7 @@
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
     <MenuModal></MenuModal>
     <EODModal></EODModal>
-    <LayawayModal :grandTotal="parseFloat(grandTotal(false))" :pendingBalance="amountToBePaid(false)" />
+    <LayawayModal :grandTotal="parseFloat(grandTotal(false))" :pendingBalance="parseFloat(amountToBePaid(false))" />
 </template>
 
 <script>

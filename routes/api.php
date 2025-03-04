@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\CreditNoteController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\GiftVoucherController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\FrontendController;
-use App\Http\Controllers\InventoryTransferController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\LayawayController;
 use Illuminate\Http\Request;
@@ -14,6 +14,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+
+Route::get('/customers', [CustomerController::class, 'getCustomers']);
 
 Route::post('/gift-voucher', [GiftVoucherController::class, 'create']);
 Route::post('/print-last-gift-voucher-receipt', [GiftVoucherController::class, 'printLastReceipt']);
