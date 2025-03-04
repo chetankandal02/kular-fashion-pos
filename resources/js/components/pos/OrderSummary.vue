@@ -112,7 +112,7 @@
     <ReturnSaleModal @returnItemConfirmed="returnItem" />
     <HoldSaleModal @holdSaleConfirmed="holdSale" />
     <CancelSaleModal @cancelSaleConfirmed="cancelSale" />
-    <TenderModal :paymentInfo="paymentInfo" :amountToBePaid="String(amountToBePaid())"
+    <TenderModal :paymentInfo="paymentInfo" :shouldPlaceOrder="true" :amountToBePaid="String(amountToBePaid())"
         @capturePaymentConfirmed="capturePayment" />
     <GiftVoucherModal />
     <FinishSaleModal @finishSaleConfirmed="finishSale" />

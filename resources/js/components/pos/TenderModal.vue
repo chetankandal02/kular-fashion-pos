@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <TenderMethodModal :amountToBePaid="String(amountToBePaid)" :selectedMethod="selectedMethod"
+    <TenderMethodModal :amountToBePaid="String(amountToBePaid)" :shouldPlaceOrder="shouldPlaceOrder" :selectedMethod="selectedMethod"
         @on-payment-done="onPaymentDone" />
 </template>
 
@@ -40,6 +40,10 @@ export default {
         amountToBePaid: {
             type: String,
             required: true
+        },
+        shouldPlaceOrder: {
+            type: Boolean,
+            default: false
         }
     },
     emits: ['capturePaymentConfirmed'],
@@ -66,7 +70,13 @@ export default {
             tenderMethodModal.show();
         },
         onPaymentDone(payment) {
-            this.$emit('capturePaymentConfirmed', payment);
+            console.log('.__.',payment, this.shouldPlaceOrder)
+
+            if(this.shouldPlaceOrder){
+                this.$emit('capturePaymentConfirmed', payment);
+            } else {
+                this.$emit('captureLayawayPayment', payment);
+            }
         }
     }
 };

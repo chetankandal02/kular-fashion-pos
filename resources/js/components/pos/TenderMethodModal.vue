@@ -35,7 +35,8 @@ import VirtualNumberKeyboard from '../VirtualNumberKeyboard.vue';
 export default {
     props: {
         selectedMethod: String,
-        amountToBePaid: String
+        amountToBePaid: String,
+        shouldPlaceOrder: Boolean
     },
     components: {
         VirtualNumberKeyboard

@@ -3,15 +3,18 @@
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
         <div class="modal-header">
-          <button class="btn" v-if="isCreatingCustomer" @click="isCreatingCustomer = false">
+          <button class="btn" v-if="isCreatingCustomer || customerId" @click="isCreatingCustomer = false, customerId = null">
             <i class="fa fa-arrow-left me-2"></i>Back
           </button>
-          <h5 class="modal-title" id="layawayModalLabel">{{ isCreatingCustomer ? `Create a new Customer` : `Layaway` }}
+          <h5 class="modal-title" id="layawayModalLabel">
+            <span v-if="isCreatingCustomer">Create a new Customer</span>
+            <span v-else-if="customerId">Layaway</span>
+            <span v-else>Choose Customer</span>
           </h5>
           <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div v-if="!isCreatingCustomer">
+          <div :class="{ 'd-none': isCreatingCustomer || customerId }">
             <button class="btn btn-primary mb-2" @click="isCreatingCustomer = true"><i
                 class="fa fa-user-plus me-2"></i>Create a new customer</button>
             <table class="table table-striped table-bordered table-sm w-100" id="search-customers-modal">
@@ -27,7 +30,16 @@
               </thead>
             </table>
           </div>
-          <div v-else>
+
+          <div :class="{ 'd-none': !customerId }">
+            <div class="col-3 mb-2 pe-1">
+              <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#tenderModal">
+                <i class="mdi mdi-cash-plus font-size-14 me-1"></i>
+                Tender
+              </button>
+            </div>
+          </div>
+          <div :class="{ 'd-none': !isCreatingCustomer }">
             <div class="row">
               <div class="col-md-4 mb-2">
                 <label for="customerName">Customer Name<span class="text-danger">*</span></label>
@@ -70,16 +82,23 @@
       </div>
     </div>
   </div>
+
+  <TenderModal :paymentInfo="[]" :amountToBePaid="String(pendingBalance)"
+    @captureLayawayPayment="capturePayment" />
 </template>
 
 <script>
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import TenderModal from './TenderModal.vue';
 
 export default {
   props: {
     grandTotal: Number,
     pendingBalance: Number,
+  },
+  components: {
+    TenderModal
   },
   data() {
     return {
@@ -97,6 +116,11 @@ export default {
   },
   async mounted() {
     this.initializeDataTable();
+  },
+  watch: {
+    isCreatingCustomer(newVal) {
+      this.reloadCustomersTable();
+    },
   },
   methods: {
     initializeDataTable() {
@@ -153,8 +177,11 @@ export default {
         },
       });
     },
-    async chooseLayawayCustomer(customerId){
+    async chooseLayawayCustomer(customerId) {
       this.customerId = customerId;
+    },
+    async capturePayment(payment) {
+      console.log('payment', payment)
     },
     async createLayaway() {
       const formData = {
@@ -298,9 +325,11 @@ export default {
         customerAddress: '',
       };
     },
-    reloadCustomersTable(){
+    reloadCustomersTable() {
       if (this.table) {
         this.table.ajax.reload();
+      } else {
+        console.error('DataTable instance is not available.');
       }
     },
     closeModal() {
