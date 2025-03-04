@@ -50,11 +50,11 @@
                     </button>
                 </div>
 
-                <!-- Layway Button -->
+                <!-- Layaway Button -->
                 <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
-                    <button class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#laywayModal">
+                    <button class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#layawayModal">
                         <i class="mdi mdi-account-cash font-size-14 me-1"></i>
-                        Layway
+                        Layaway
                     </button>
                 </div>
 
@@ -118,8 +118,7 @@
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
     <MenuModal></MenuModal>
     <EODModal></EODModal>
-    <LaywayModal :grandTotal="parseFloat(grandTotal(false))" :pendingBalance="amountToBePaid(false)" 
-/>
+    <LayawayModal :grandTotal="parseFloat(grandTotal(false))" :pendingBalance="parseFloat(amountToBePaid(false))" />
 </template>
 
 <script>
@@ -129,7 +128,7 @@ import CancelSaleModal from './CancelSaleModal.vue';
 import TenderModal from './TenderModal.vue';
 import GiftVoucherModal from './GiftVoucherModal.vue';
 import FinishSaleModal from './FinishSaleModal.vue';
-import LaywayModal from './LaywayModal.vue';
+import LayawayModal from './LayawayModal.vue';
 import EODModal from './EODModal.vue';
 import MenuModal from './menuModal.vue';
 import axios from 'axios';
@@ -142,7 +141,7 @@ export default {
         TenderModal,
         GiftVoucherModal,
         FinishSaleModal,
-        LaywayModal,
+        LayawayModal,
         EODModal,
         MenuModal
     },
