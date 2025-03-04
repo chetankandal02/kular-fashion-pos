@@ -14,7 +14,7 @@
           <div v-if="!isCreatingCustomer">
             <button class="btn btn-primary mb-2" @click="isCreatingCustomer = true"><i
                 class="fa fa-user-plus me-2"></i>Create a new customer</button>
-            <table class="table table-striped table-bordered w-100" id="search-customers-modal">
+            <table class="table table-striped table-bordered table-sm w-100" id="search-customers-modal">
               <thead>
                 <tr>
                   <th>#</th>
@@ -30,25 +30,30 @@
           <div v-else>
             <div class="row">
               <div class="col-md-4 mb-2">
-                <label for="customerName">Customer Name</label>
+                <label for="customerName">Customer Name<span class="text-danger">*</span></label>
                 <input type="text" id="customerName" class="form-control" v-model="customerForm.customerName"
                   ref="customerName" required>
                 <div class="invalid-feedback">Customer name is required.</div>
               </div>
               <div class="col-md-4">
-                <label for="customerEmail">Customer Email</label>
+                <label for="customerEmail">Customer Email<span class="text-danger">*</span></label>
                 <input type="email" id="customerEmail" class="form-control" v-model="customerForm.customerEmail"
                   ref="customerEmail" required>
                 <div class="invalid-feedback">Valid email is required.</div>
               </div>
               <div class="col-md-4">
-                <label for="customerPhoneNumber">Phone Number</label>
+                <label for="customerPhoneNumber">Phone Number<span class="text-danger">*</span></label>
                 <input type="number" id="customerPhoneNumber" class="form-control"
                   v-model="customerForm.customerPhoneNumber" ref="customerPhoneNumber" required>
                 <div class="invalid-feedback">Phone number is required.</div>
               </div>
+              <div class="col-md-4">
+                <label for="customerCompanyName">Company Name</label>
+                <input type="text" id="customerCompanyName" class="form-control"
+                  v-model="customerForm.customerCompanyName" ref="customerCompanyName" maxlength="75">
+              </div>
               <div class="col-md-6">
-                <label for="customerAddress">Address</label>
+                <label for="customerAddress">Address<span class="text-danger">*</span></label>
                 <textarea id="customerAddress" class="form-control" v-model="customerForm.customerAddress"
                   maxlength="255" ref="customerAddress" required></textarea>
                 <div class="invalid-feedback">Address is required.</div>
@@ -84,8 +89,10 @@ export default {
         customerName: '',
         customerEmail: '',
         customerPhoneNumber: '',
+        customerCompanyName: '',
         customerAddress: ''
-      }
+      },
+      table: null
     };
   },
   async mounted() {
@@ -110,44 +117,44 @@ export default {
             data: 'id',
           },
           {
-            title: 'Article Code',
-            data: 'article_code',
+            title: 'Customer Code',
+            data: 'code',
           },
           {
-            title: 'Manufacture Code',
-            data: 'manufacture_code',
+            title: 'Customer Name',
+            data: 'name',
           },
           {
-            title: 'Department',
-            data: 'department.name',
+            title: 'Customer Email',
+            data: 'email',
           },
           {
-            title: 'Brand',
-            data: 'brand.name',
+            title: 'Phone Number',
+            data: 'phone_number',
           },
           {
             title: 'Action',
             data: null,
             render: function (data, type, row) {
-              let tempArticle = {
-                id: row.id,
-                colors: row.colors,
-                sizes: row.sizes,
-              };
-
               return `
-                <button class="btn btn-primary btn-sm py-0 px-1 pick-product-for-sale" data-product='${JSON.stringify(tempArticle)}'>
-                  <i class="fas fa-hand-holding-usd"></i>
-                </button>
-                <button class="btn btn-primary btn-sm py-0 px-1 view-stock" data-product-id="${row.id}">
-                  <i class="fas fa-eye"></i>
+                <button class="btn btn-primary btn-sm py-0 px-1 pick-layaway-customer" data-customer-id='${row.id}'>
+                  <i class="fas fa-piggy-bank"></i>
                 </button>
               `;
             },
           },
         ],
         order: [[0, 'desc']],
+        drawCallback: function () {
+          $('.pick-layaway-customer').on('click', (event) => {
+            const customerId = JSON.parse($(event.currentTarget).attr('data-customer-id'));
+            vm.chooseLayawayCustomer(customerId);
+          });
+        },
       });
+    },
+    async chooseLayawayCustomer(customerId){
+      this.customerId = customerId;
     },
     async createLayaway() {
       const formData = {
@@ -236,8 +243,9 @@ export default {
       const formData = {
         name: this.customerForm.customerName,
         email: this.customerForm.customerEmail,
-        phone_number: this.customerForm.customerPhoneNumber,
+        phone_number: String(this.customerForm.customerPhoneNumber),
         address: this.customerForm.customerAddress,
+        company_name: this.customerForm.customerCompanyName,
       };
 
       try {
@@ -248,8 +256,9 @@ export default {
             title: 'Success',
             text: 'Customer created successfully!',
           }).then(() => {
-            this.resetForm();
-            //this.closeModal();
+            this.resetcustomerForm();
+            this.isCreatingCustomer = false;
+            this.reloadCustomersTable();
           });
         } else {
           Swal.fire({
@@ -259,11 +268,26 @@ export default {
           });
         }
       } catch (error) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'There was an issue processing your request. Please try again later.',
-        });
+        if (error.response && error.response.status === 422) {
+          const errors = error.response.data.errors;
+          let errorMessages = '';
+
+          for (const key in errors) {
+            errorMessages += `${errors[key].join('<br>')}<br>`;
+          }
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Validation Error',
+            html: errorMessages,
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'There was an issue processing your request. Please try again later.',
+          });
+        }
       }
     },
     resetcustomerForm() {
@@ -273,6 +297,11 @@ export default {
         customerPhoneNumber: '',
         customerAddress: '',
       };
+    },
+    reloadCustomersTable(){
+      if (this.table) {
+        this.table.ajax.reload();
+      }
     },
     closeModal() {
       const modal = bootstrap.Modal.getInstance($('#layawayModal'));

@@ -38,9 +38,9 @@ class CustomerController extends Controller
 
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
-            'customer_name' => 'required|string|max:50',
-            'customer_email' => 'required|email|max:100|unique:customers,email',
-            'contact_number' => 'required|string|max:15|unique:customers,phone_number',
+            'name' => 'required|string|max:50',
+            'email' => 'required|email|max:100|unique:customers,email',
+            'phone_number' => 'required|string|digits_between:10,15|unique:customers,phone_number',
             'company_name' => 'nullable|string|max:75',
             'address' => 'required|string|max:255',
         ]);
@@ -54,9 +54,9 @@ class CustomerController extends Controller
         }
 
         $customer =  Customer::create([
-            'name' => $request->customer_name,
-            'email' => $request->customer_email,
-            'phone_number' => $request->contact_number,
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
             'company_name' => $request->company_name,
             'address' => $request->address
         ]);
