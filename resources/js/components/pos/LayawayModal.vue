@@ -1,10 +1,9 @@
 <template>
-  <!-- Layaway Modal -->
-  <div class="modal fade" id="laywayModal" tabindex="-1" aria-labelledby="laywayModalLabel">
+  <div class="modal fade" id="layawayModal" tabindex="-1" aria-labelledby="layawayModalLabel">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="laywayModalLabel">Layaway</h5>
+          <h5 class="modal-title" id="layawayModalLabel">Layaway</h5>
           <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -99,8 +98,7 @@ export default {
       }
     },
     closeModal() {
-      const modalElement = document.getElementById('laywayModal');
-      const modal = bootstrap.Modal.getInstance(modalElement);
+      const modal = bootstrap.Modal.getInstance($('LayawayModal'));
       modal.hide();
     },
   }

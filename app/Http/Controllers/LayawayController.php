@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Customer;
-use App\Models\Layway;
-use App\Models\LaywayPayment;
+use App\Models\Layaway;
+use App\Models\LayawayPayment;
 
 class LayawayController extends Controller
 {
@@ -25,16 +25,16 @@ class LayawayController extends Controller
                 'phone_number' => $request->contact_number
             ]);
 
-            $laywayCode = $this->generateLaywayCode();
-            $layway = Layway::create([
-                'layway_code' => $laywayCode,
+            $layawayCode = $this->generatelayawayCode();
+            $layaway = Layaway::create([
+                'layaway_code' => $layawayCode,
                 'customer_id' => $customer->id,
                 'order_id'    => 1
             ]); 
 
-            if($layway) {
-                LaywayPayment::create([
-                    'layway_id'   => $layway->id,
+            if($layaway) {
+                LayawayPayment::create([
+                    'layaway_id'   => $layaway->id,
                     'customer_id' => $customer->id,
                     'balance'     => $request->grand_total - $request->down_payment,
                     'amount_paid' => $request->down_payment
@@ -52,15 +52,15 @@ class LayawayController extends Controller
         }
     }
 
-    private function generateLaywayCode()
+    private function generatelayawayCode()
     {
-        $lastLayway = Layway::orderBy('layway_code', 'desc')->first();
+        $lastlayaway = Layaway::orderBy('layaway_code', 'desc')->first();
 
-        if (!$lastLayway) {
+        if (!$lastlayaway) {
             return 'LW-000001';
         }
 
-        preg_match('/S-25-(\d+)/', $lastLayway->layway_code, $matches);
+        preg_match('/S-25-(\d+)/', $lastlayaway->layaway_code, $matches);
         $lastNumber = isset($matches[1]) ? (int) $matches[1] : 0;
         $newNumber = str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT); // Pad the number to 6 digits
 

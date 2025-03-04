@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Layway extends Model
+class LayawayPayment extends Model
 {
-    protected $guarded = [];
+    //
 }
