@@ -1,7 +1,7 @@
 <template>
     <div class="modal fade" id="transferInventoryModal" tabindex="-1" aria-labelledby="transferInventoryModalLabel"
         aria-hidden="true" @shown.bs.modal="onModalShow">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="transferInventoryModalLabel">Transfer Inventory</h5>
@@ -30,7 +30,7 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="col-4">
+                        <div class="col-2">
                             <BarCodeBox :item-to-be-add="itemToBeAdd" @transfer-item="transferItem" />
                         </div>
                         <div class="col-4">
