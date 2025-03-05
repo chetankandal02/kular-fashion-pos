@@ -33,20 +33,12 @@ export default {
     },
     data() {
         return {
-            orderItems: [],
-            returnItems: [],
+            orderItems: localStorage.getItem('orderItems') ? JSON.parse(localStorage.getItem('orderItems')) : [],
+            returnItems: localStorage.getItem('returnItems') ? JSON.parse(localStorage.getItem('returnItems')) : [],
             paymentInfo: localStorage.getItem('paymentInfo') ? JSON.parse(localStorage.getItem('paymentInfo')) : [],
         };
     },
     mounted() {
-        if (localStorage.getItem('orderItems')) {
-            this.orderItems = JSON.parse(localStorage.getItem('orderItems'));
-        }
-
-        if (localStorage.getItem('returnItems')) {
-            this.returnItems = JSON.parse(localStorage.getItem('returnItems'));
-        }
-
         watch(
             () => EventBus.pickHoldSale?.timestamp,
             (newTimestamp) => {

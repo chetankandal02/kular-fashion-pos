@@ -16,8 +16,9 @@
         </div>
         <div class="modal-body">
           <div :class="{ 'd-none': isCreatingCustomer || customerId }">
-            <button class="btn btn-primary mb-2" @click="isCreatingCustomer = true"><i
-                class="fa fa-user-plus me-2"></i>Create a new customer</button>
+            <button class="btn btn-primary mb-2" @click="isCreatingCustomer = true">
+              <i class="fa fa-user-plus me-2"></i>Create a new customer
+            </button>
             <table class="table table-striped table-bordered table-sm w-100" id="search-customers-modal">
               <thead>
                 <tr>
@@ -35,54 +36,7 @@
           <div :class="{ 'd-none': !customerId }" v-if="selectedCustomer">
             <div class="row">
               <div class="col-md-6">
-                <div>
-                  <h4 class="fw-bold">Summary</h4>
-                  <h5>Sale Total: <strong>{{ formatPrice(grandTotal) }}</strong></h5>
-                  <h5>Paid Amount: <strong>{{ formatPrice(grandTotal - pendingBalance) }}</strong></h5>
-                  <h5>Pending Balance: <strong class="text-warning">{{ formatPrice(pendingBalance) }}</strong></h5>
-                  <h5 v-if="pendingBalance - layawayForm.amount < 0" class="text-success">Change: <strong>{{
-                    formatPrice(pendingBalance - layawayForm.amount) }}</strong></h5>
-                </div>
-
-                <div class="d-flex justify-content-between mt-4">
-                  <h4 class="fw-bold">Make a Payment</h4>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-6 mb-2">
-                    <label for="layaway_payment_method">Select Method</label>
-                    <select id="layaway_payment_method" class="form-control" v-model="layawayForm.paymentMethod">
-                      <option value="cash" selected>Cash</option>
-                      <option value="card">Card</option>
-                      <option value="euro">Euro</option>
-                      <option value="credit_note">Credit Note</option>
-                      <option value="gift_voucher">Gift Voucher</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6 mb-2">
-                    <label for="layaway_payment_method">Enter Amount</label>
-                    <input type="number" class="form-control" v-model="layawayForm.amount"
-                      :class="{ 'is-invalid': !isAmountValid }">
-                    <div class="invalid-feedback" v-if="!isAmountValid">
-                      Please enter a valid positive amount.
-                    </div>
-                    <span class="font-size-12">minimum recommended amunt is {{ formatPrice((grandTotal * 20) / 100)
-                      }}</span>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-6">
-                    <label for="layaway_note">Note</label>
-                    <textarea id="layaway_note" class="form-control" v-model="layawayForm.note"></textarea>
-                  </div>
-                </div>
-
-                <div class="mt-3">
-                  <button type="button" class="btn btn-lg btn-secondary" @click="closeModal">Cancel</button>
-                  <button type="button" class="btn btn-lg btn-success ms-2" :disabled="!customerId"
-                    @click="processLayaway">Proceed</button>
-                </div>
+                <LayawayPaymentForm :customerId="customerId" />
               </div>
               <div class="col-md-6">
                 <div>
@@ -218,15 +172,11 @@
 <script>
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import TenderModal from './TenderModal.vue';
+import LayawayPaymentForm from './layaway/LayawayPaymentForm.vue';
 
 export default {
-  props: {
-    grandTotal: String,
-    pendingBalance: String,
-  },
   components: {
-    TenderModal
+    LayawayPaymentForm
   },
   data() {
     return {
@@ -241,13 +191,15 @@ export default {
         customerAddress: ''
       },
       layawayForm: {
-        paymentMethod: 'cash',
+        paymentMethod: 'Cash',
         amount: '',
+        barcode: '',
         note: ''
       },
       table: null,
-      orderItems: [],
-      returnItems: []
+      orderItems: localStorage.getItem('orderItems') ? JSON.parse(localStorage.getItem('orderItems')) : [],
+      returnItems: localStorage.getItem('returnItems') ? JSON.parse(localStorage.getItem('returnItems')) : [],
+      paymentInfo: localStorage.getItem('paymentInfo') ? JSON.parse(localStorage.getItem('paymentInfo')) : [],
     };
   },
   async mounted() {
@@ -256,14 +208,6 @@ export default {
       width: '100%',
       dropdownParent: $('#layawayModal')
     });
-
-    if (localStorage.getItem('orderItems')) {
-      this.orderItems = JSON.parse(localStorage.getItem('orderItems'));
-    }
-
-    if (localStorage.getItem('returnItems')) {
-      this.returnItems = JSON.parse(localStorage.getItem('returnItems'));
-    }
   },
   computed: {
     isAmountValid() {
@@ -274,26 +218,22 @@ export default {
     isCreatingCustomer() {
       this.reloadCustomersTable();
     },
-    'layawayForm.amount': {
-      handler() {
-        this.handlePayingAmount();
-      }
-    },
-    'layawayForm.paymentMethod': {
-      handler() {
-        this.handlePayingAmount();
-      }
-    }
   },
   methods: {
     formatPrice(price) {
       if (!price) return '£0.00';
       return `£${parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
     },
-    handlePayingAmount() {
-      if (this.layawayForm.paymentMethod === 'card' && this.layawayForm.amount > this.pendingBalance) {
-        this.layawayForm.amount = this.pendingBalance;
+    capturePayment(payment) {
+      const existingPayment = this.paymentInfo.find(item => item.method === payment.method);
+
+      if (existingPayment) {
+        existingPayment.amount += payment.amount;
+      } else {
+        this.paymentInfo.push({ method: payment.method, amount: payment.amount });
       }
+
+      localStorage.setItem('paymentInfo', JSON.stringify(this.paymentInfo));
     },
     initializeDataTable() {
       const vm = this;
@@ -352,56 +292,6 @@ export default {
     async chooseLayawayCustomer(customer) {
       this.selectedCustomer = customer;
       this.customerId = customer.id;
-    },
-    async processLayaway(param, forceProceedLayaway = false) {
-      if (Number((this.grandTotal - this.pendingBalance) + this.layawayForm.amount) < ((this.grandTotal * 20) / 100) && !forceProceedLayaway) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Warning...',
-          text: 'The amount is less than 20% of total amount.\n Do you still want to proceed with this amount?',
-          showCancelButton: true,
-          confirmButtonText: 'Yes',
-          cancelButtonText: 'No',
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.processLayaway(null, true);
-          }
-        });
-
-        return false;
-      }
-
-      const formData = {
-        customerId: this.customerId,
-        paymentMethod: this.layawayForm.paymentMethod,
-        amount: this.layawayForm.amount,
-        note: this.layawayForm.note
-      };
-
-      try {
-        const response = await axios.post('/api/layaway', formData);
-
-        if (response.data.success) {
-          this.layawayForm = {
-            paymentMethod: 'Cash',
-            amount: '',
-            note: '',
-          };
-          //this.closeModal();
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Couldn\'t proceed layaway!',
-          });
-        }
-      } catch (error) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Something went wrong!',
-        });
-      }
     },
     validateForm() {
       let isValid = true;

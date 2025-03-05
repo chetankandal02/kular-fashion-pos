@@ -14,6 +14,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::post('/layaways', [LayawayController::class, 'store']);
 
 Route::get('/customers', [CustomerController::class, 'getCustomers']);
 Route::post('/customers', [CustomerController::class, 'store']);

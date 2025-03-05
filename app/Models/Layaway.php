@@ -6,5 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class Layaway extends Model
 {
-    //
+    protected static function booted()
+    {
+        static::creating(function ($layaway) {
+            $lastLayaway = Layaway::where('code', 'like', 'LW-%')
+                ->orderByDesc('id')
+                ->first();
+
+            // If a previous code exists, increment the numeric part
+            if ($lastLayaway) {
+                $lastCode = $lastLayaway->code;
+                $number = (int) substr($lastCode, 3);
+                $newNumber = str_pad($number + 1, 6, '0', STR_PAD_LEFT);
+            } else {
+                $newNumber = '000001';
+            }
+
+            $layaway->code = 'LW-' . $newNumber;
+        });
+    }
 }
