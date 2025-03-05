@@ -36,7 +36,7 @@
           <div :class="{ 'd-none': !customerId }" v-if="selectedCustomer">
             <div class="row">
               <div class="col-md-6">
-                <LayawayPaymentForm :customerId="customerId" />
+                <LayawayPaymentForm :customerId="customerId" :orderItems="orderItems" :returnItems="returnItems" :paymentInfo="paymentInfo" @capturePayment="capturePayment" />
               </div>
               <div class="col-md-6">
                 <div>
@@ -178,6 +178,12 @@ export default {
   components: {
     LayawayPaymentForm
   },
+  props: {
+    orderItems: Array,
+    returnItems: Array,
+    paymentInfo: Array
+  },
+  emits: ['captureLayawayPayment'],
   data() {
     return {
       customerId: null,
@@ -197,9 +203,6 @@ export default {
         note: ''
       },
       table: null,
-      orderItems: localStorage.getItem('orderItems') ? JSON.parse(localStorage.getItem('orderItems')) : [],
-      returnItems: localStorage.getItem('returnItems') ? JSON.parse(localStorage.getItem('returnItems')) : [],
-      paymentInfo: localStorage.getItem('paymentInfo') ? JSON.parse(localStorage.getItem('paymentInfo')) : [],
     };
   },
   async mounted() {
@@ -225,15 +228,7 @@ export default {
       return `£${parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
     },
     capturePayment(payment) {
-      const existingPayment = this.paymentInfo.find(item => item.method === payment.method);
-
-      if (existingPayment) {
-        existingPayment.amount += payment.amount;
-      } else {
-        this.paymentInfo.push({ method: payment.method, amount: payment.amount });
-      }
-
-      localStorage.setItem('paymentInfo', JSON.stringify(this.paymentInfo));
+      this.$emit('captureLayawayPayment', payment, true)
     },
     initializeDataTable() {
       const vm = this;

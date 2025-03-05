@@ -27,7 +27,7 @@
                     Please enter a valid amount.
                 </div>
                 <span class="font-size-12">minimum recommended amunt is {{ formatPrice((grandTotal * 20) / 100)
-                }}</span>
+                    }}</span>
             </div>
             <div class="col-md-6 mb-2" v-else>
                 <label for="layaway_payment_barcode">Barcode</label>
@@ -62,13 +62,13 @@ export default {
                 barcode: '',
                 note: ''
             },
-            orderItems: localStorage.getItem('orderItems') ? JSON.parse(localStorage.getItem('orderItems')) : [],
-            returnItems: localStorage.getItem('returnItems') ? JSON.parse(localStorage.getItem('returnItems')) : [],
-            paymentInfo: localStorage.getItem('paymentInfo') ? JSON.parse(localStorage.getItem('paymentInfo')) : [],
         };
     },
     props: {
-        customerId: Number
+        customerId: Number,
+        orderItems: Array,
+        returnItems: Array,
+        paymentInfo: Array
     },
     computed: {
         isAmountValid() {
@@ -106,23 +106,12 @@ export default {
             if (!price) return '£0.00';
             return `£${parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
         },
-        capturePayment(payment) {
-            const existingPayment = this.paymentInfo.find(item => item.method === payment.method);
-
-            if (existingPayment) {
-                existingPayment.amount += payment.amount;
-            } else {
-                this.paymentInfo.push({ method: payment.method, amount: payment.amount });
-            }
-
-            localStorage.setItem('paymentInfo', JSON.stringify(this.paymentInfo));
-        },
         makePayment(amount) {
             let paymentInfo = {
                 method: this.layawayForm.paymentMethod,
                 amount: parseFloat(amount)
             }
-            this.capturePayment(paymentInfo);
+            this.$emit('capturePayment', paymentInfo);
         },
         async payViaBarcode(barcode) {
             let payload = {

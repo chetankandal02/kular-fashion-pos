@@ -51,7 +51,7 @@
                 </div>
 
                 <!-- Layaway Button -->
-                <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
+                <div class="col-6 mb-2 pe-1" v-if="amountToBePaid() > 0">
                     <button class="btn btn-secondary w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#layawayModal">
                         <i class="mdi mdi-account-cash me-1"></i>
                         Layaway
@@ -118,7 +118,7 @@
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
     <MenuModal />
     <EODModal />
-    <LayawayModal />
+    <LayawayModal :order-items="orderItems" :return-items="returnItems" :payment-info="paymentInfo" @captureLayawayPayment="capturePayment" />
 </template>
 
 <script>
@@ -188,7 +188,8 @@ export default {
                 });
             }
         },
-        capturePayment(payment) {
+        capturePayment(payment, isLayawayPayment = false) {
+            console.log('payment', payment, isLayawayPayment)
             const existingPayment = this.paymentInfo.find(item => item.method === payment.method);
 
             if (existingPayment) {
@@ -198,6 +199,10 @@ export default {
             }
 
             localStorage.setItem('paymentInfo', JSON.stringify(this.paymentInfo));
+            
+            if(isLayawayPayment){
+                return;
+            }
 
             if (this.amountToBePaid() <= 0) {
                 $('.modal-backdrop').remove();

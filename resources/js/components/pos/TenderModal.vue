@@ -43,7 +43,7 @@ export default {
             required: true
         },
     },
-    emits: ['capturePaymentConfirmed', 'captureLayawayPayment'],
+    emits: ['capturePaymentConfirmed'],
     data() {
         return {
             tenderMethods: [
