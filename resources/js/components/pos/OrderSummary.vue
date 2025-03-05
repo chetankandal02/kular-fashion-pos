@@ -112,13 +112,13 @@
     <ReturnSaleModal @returnItemConfirmed="returnItem" />
     <HoldSaleModal @holdSaleConfirmed="holdSale" />
     <CancelSaleModal @cancelSaleConfirmed="cancelSale" />
-    <TenderModal :paymentInfo="paymentInfo" :shouldPlaceOrder="true" :amountToBePaid="String(amountToBePaid())"
+    <TenderModal :paymentInfo="paymentInfo" :amountToBePaid="String(amountToBePaid())"
         @capturePaymentConfirmed="capturePayment" />
     <GiftVoucherModal />
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
     <MenuModal></MenuModal>
     <EODModal></EODModal>
-    <LayawayModal :grandTotal="parseFloat(grandTotal(false))" :pendingBalance="parseFloat(amountToBePaid(false))" />
+    <LayawayModal :grandTotal="grandTotal(false)" :pendingBalance="amountToBePaid()" />
 </template>
 
 <script>

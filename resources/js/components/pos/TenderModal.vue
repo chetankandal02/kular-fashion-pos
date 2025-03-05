@@ -21,7 +21,8 @@
         </div>
     </div>
 
-    <TenderMethodModal :amountToBePaid="String(amountToBePaid)" :shouldPlaceOrder="shouldPlaceOrder" :selectedMethod="selectedMethod"
+
+    <TenderMethodModal :amountToBePaid="String(amountToBePaid)" :selectedMethod="selectedMethod"
         @on-payment-done="onPaymentDone" />
 </template>
 
@@ -41,12 +42,8 @@ export default {
             type: String,
             required: true
         },
-        shouldPlaceOrder: {
-            type: Boolean,
-            default: false
-        }
     },
-    emits: ['capturePaymentConfirmed'],
+    emits: ['capturePaymentConfirmed', 'captureLayawayPayment'],
     data() {
         return {
             tenderMethods: [
@@ -55,7 +52,7 @@ export default {
                 { icon: 'mdi-currency-eur', label: 'Euro' },
                 { icon: 'mdi-gift-outline', label: 'Gift Voucher' },
                 { icon: 'mdi-note-minus-outline', label: 'Credit Note' },
-                { icon: 'mdi-note-text-outline', label: 'Deposit Note' },
+                //{ icon: 'mdi-note-text-outline', label: 'Deposit Note' },
             ],
             selectedMethod: ''
         };
@@ -70,13 +67,7 @@ export default {
             tenderMethodModal.show();
         },
         onPaymentDone(payment) {
-            console.log('.__.',payment, this.shouldPlaceOrder)
-
-            if(this.shouldPlaceOrder){
-                this.$emit('capturePaymentConfirmed', payment);
-            } else {
-                this.$emit('captureLayawayPayment', payment);
-            }
+            this.$emit('capturePaymentConfirmed', payment);
         }
     }
 };

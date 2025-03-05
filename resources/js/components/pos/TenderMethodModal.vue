@@ -36,7 +36,6 @@ export default {
     props: {
         selectedMethod: String,
         amountToBePaid: String,
-        shouldPlaceOrder: Boolean
     },
     components: {
         VirtualNumberKeyboard

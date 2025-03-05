@@ -1,9 +1,10 @@
 <template>
   <div class="modal fade" id="layawayModal" tabindex="-1" aria-labelledby="layawayModalLabel">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-fullscreen">
       <div class="modal-content">
         <div class="modal-header">
-          <button class="btn" v-if="isCreatingCustomer || customerId" @click="isCreatingCustomer = false, customerId = null">
+          <button class="btn" v-if="isCreatingCustomer || customerId"
+            @click="isCreatingCustomer = false, customerId = null">
             <i class="fa fa-arrow-left me-2"></i>Back
           </button>
           <h5 class="modal-title" id="layawayModalLabel">
@@ -31,13 +32,145 @@
             </table>
           </div>
 
-          <div :class="{ 'd-none': !customerId }">
-            <div class="col-3 mb-2 pe-1">
-              <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#tenderModal">
-                <i class="mdi mdi-cash-plus font-size-14 me-1"></i>
-                Tender
-              </button>
+          <div :class="{ 'd-none': !customerId }" v-if="selectedCustomer">
+            <div class="row">
+              <div class="col-md-6">
+                <div>
+                  <h4 class="fw-bold">Summary</h4>
+                  <h5>Sale Total: <strong>{{ formatPrice(grandTotal) }}</strong></h5>
+                  <h5>Paid Amount: <strong>{{ formatPrice(grandTotal - pendingBalance) }}</strong></h5>
+                  <h5>Pending Balance: <strong class="text-warning">{{ formatPrice(pendingBalance) }}</strong></h5>
+                  <h5 v-if="pendingBalance - layawayForm.amount < 0" class="text-success">Change: <strong>{{
+                    formatPrice(pendingBalance - layawayForm.amount) }}</strong></h5>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                  <h4 class="fw-bold">Make a Payment</h4>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-2">
+                    <label for="layaway_payment_method">Select Method</label>
+                    <select id="layaway_payment_method" class="form-control" v-model="layawayForm.paymentMethod">
+                      <option value="cash" selected>Cash</option>
+                      <option value="card">Card</option>
+                      <option value="euro">Euro</option>
+                      <option value="credit_note">Credit Note</option>
+                      <option value="gift_voucher">Gift Voucher</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-2">
+                    <label for="layaway_payment_method">Enter Amount</label>
+                    <input type="number" class="form-control" v-model="layawayForm.amount"
+                      :class="{ 'is-invalid': !isAmountValid }">
+                    <div class="invalid-feedback" v-if="!isAmountValid">
+                      Please enter a valid positive amount.
+                    </div>
+                    <span class="font-size-12">minimum recommended amunt is {{ formatPrice((grandTotal * 20) / 100)
+                      }}</span>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="layaway_note">Note</label>
+                    <textarea id="layaway_note" class="form-control" v-model="layawayForm.note"></textarea>
+                  </div>
+                </div>
+
+                <div class="mt-3">
+                  <button type="button" class="btn btn-lg btn-secondary" @click="closeModal">Cancel</button>
+                  <button type="button" class="btn btn-lg btn-success ms-2" :disabled="!customerId"
+                    @click="processLayaway">Proceed</button>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div>
+                  <h4 class="fw-bold">Customer Information</h4>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <h5>Code: <strong>#{{ selectedCustomer.code }}</strong></h5>
+                    </div>
+                    <div class="col-md-6">
+                      <h5>Name: <strong>{{ selectedCustomer.name }}</strong></h5>
+                    </div>
+                    <div class="col-md-6">
+                      <h5>Phone Number: <strong>{{ selectedCustomer.phone_number }}</strong></h5>
+                    </div>
+                    <div class="col-md-6">
+                      <h5>Email: <strong>{{ selectedCustomer.email }}</strong></h5>
+                    </div>
+                  </div>
+                  <h5>Address: <strong>{{ selectedCustomer.address }}</strong></h5>
+                </div>
+
+                <div class="mt-4">
+                  <h4 class="fw-bold">Items Details</h4>
+
+                  <div v-if="returnItems.length > 0">
+                    <h4 class="card-title mb-2">Return Items</h4>
+                    <div class="table-responsive mb-4">
+                      <table class="table align-middle table-nowrap mb-0">
+                        <thead class="table-light">
+                          <tr>
+                            <th class="align-middle p-1">Article Code</th>
+                            <th class="align-middle p-1">Description</th>
+                            <th class="align-middle p-1">Color</th>
+                            <th class="align-middle p-1">Size</th>
+                            <th class="align-middle p-1">Brand</th>
+                            <th class="align-middle p-1">Price</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="(item, index) in returnItems" :key="item.code + item.size">
+                            <td class="p-1"><a href="javascript: void(0);" class="text-body fw-bold">{{ item.code }}</a>
+                            </td>
+                            <td class="p-1">{{ item.description }}</td>
+                            <td class="p-1">{{ item.color }}</td>
+                            <td class="p-1">{{ item.size }}</td>
+                            <td class="p-1">{{ item.brand }}</td>
+                            <td class="p-1 text-danger">-{{ formatPrice(item.changedPrice ? item.changedPrice.amount :
+                              item.price) }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <h4 class="card-title mb-2">Sale Items</h4>
+                  <div class="table-responsive">
+                    <table class="table align-middle table-striped table-nowrap mb-0">
+                      <thead class="table-light">
+                        <tr>
+                          <th class="align-middle p-1">Article Code</th>
+                          <th class="align-middle p-1">Description</th>
+                          <th class="align-middle p-1">Color</th>
+                          <th class="align-middle p-1">Size</th>
+                          <th class="align-middle p-1">Brand</th>
+                          <th class="align-middle p-1">Price</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-if="!orderItems.length">
+                          <td colspan="7" class="text-center">No items added for sale</td>
+                        </tr>
+                        <tr v-for="(item, index) in orderItems" :key="index">
+                          <td class="p-1"><a href="javascript: void(0);" class="text-body fw-bold">{{ item.code }}</a>
+                          </td>
+                          <td class="p-1">{{ item.description }}</td>
+                          <td class="p-1">{{ item.color }}</td>
+                          <td class="p-1">{{ item.size }}</td>
+                          <td class="p-1">{{ item.brand }}</td>
+                          <td class="p-1">{{ formatPrice(item.changedPrice ? item.changedPrice.amount : item.price) }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             </div>
+
           </div>
           <div :class="{ 'd-none': !isCreatingCustomer }">
             <div class="row">
@@ -73,18 +206,13 @@
             </div>
           </div>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer" v-if="isCreatingCustomer">
           <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
-          <button type="button" class="btn btn-success" v-if="!isCreatingCustomer" :disabled="!customerId"
-            @click="createLayaway">Proceed</button>
-          <button type="button" class="btn btn-success" v-else @click="createCustomer">Save</button>
+          <button type="button" class="btn btn-success" @click="createCustomer">Save</button>
         </div>
       </div>
     </div>
   </div>
-
-  <TenderModal :paymentInfo="[]" :amountToBePaid="String(pendingBalance)"
-    @captureLayawayPayment="capturePayment" />
 </template>
 
 <script>
@@ -94,8 +222,8 @@ import TenderModal from './TenderModal.vue';
 
 export default {
   props: {
-    grandTotal: Number,
-    pendingBalance: Number,
+    grandTotal: String,
+    pendingBalance: String,
   },
   components: {
     TenderModal
@@ -103,6 +231,7 @@ export default {
   data() {
     return {
       customerId: null,
+      selectedCustomer: null,
       isCreatingCustomer: false,
       customerForm: {
         customerName: '',
@@ -111,18 +240,61 @@ export default {
         customerCompanyName: '',
         customerAddress: ''
       },
-      table: null
+      layawayForm: {
+        paymentMethod: 'cash',
+        amount: '',
+        note: ''
+      },
+      table: null,
+      orderItems: [],
+      returnItems: []
     };
   },
   async mounted() {
     this.initializeDataTable();
+    $('#layaway_payment_method').select2({
+      width: '100%',
+      dropdownParent: $('#layawayModal')
+    });
+
+    if (localStorage.getItem('orderItems')) {
+      this.orderItems = JSON.parse(localStorage.getItem('orderItems'));
+    }
+
+    if (localStorage.getItem('returnItems')) {
+      this.returnItems = JSON.parse(localStorage.getItem('returnItems'));
+    }
+  },
+  computed: {
+    isAmountValid() {
+      return (this.layawayForm.amount || 0) >= 0;
+    }
   },
   watch: {
-    isCreatingCustomer(newVal) {
+    isCreatingCustomer() {
       this.reloadCustomersTable();
     },
+    'layawayForm.amount': {
+      handler() {
+        this.handlePayingAmount();
+      }
+    },
+    'layawayForm.paymentMethod': {
+      handler() {
+        this.handlePayingAmount();
+      }
+    }
   },
   methods: {
+    formatPrice(price) {
+      if (!price) return '£0.00';
+      return `£${parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
+    },
+    handlePayingAmount() {
+      if (this.layawayForm.paymentMethod === 'card' && this.layawayForm.amount > this.pendingBalance) {
+        this.layawayForm.amount = this.pendingBalance;
+      }
+    },
     initializeDataTable() {
       const vm = this;
 
@@ -161,7 +333,7 @@ export default {
             data: null,
             render: function (data, type, row) {
               return `
-                <button class="btn btn-primary btn-sm py-0 px-1 pick-layaway-customer" data-customer-id='${row.id}'>
+                <button class="btn btn-primary btn-sm pick-layaway-customer" data-customer='${JSON.stringify(row)}'>
                   <i class="fas fa-piggy-bank"></i>
                 </button>
               `;
@@ -171,56 +343,64 @@ export default {
         order: [[0, 'desc']],
         drawCallback: function () {
           $('.pick-layaway-customer').on('click', (event) => {
-            const customerId = JSON.parse($(event.currentTarget).attr('data-customer-id'));
-            vm.chooseLayawayCustomer(customerId);
+            const customer = JSON.parse($(event.currentTarget).attr('data-customer'));
+            vm.chooseLayawayCustomer(customer);
           });
         },
       });
     },
-    async chooseLayawayCustomer(customerId) {
-      this.customerId = customerId;
+    async chooseLayawayCustomer(customer) {
+      this.selectedCustomer = customer;
+      this.customerId = customer.id;
     },
-    async capturePayment(payment) {
-      console.log('payment', payment)
-    },
-    async createLayaway() {
+    async processLayaway(param, forceProceedLayaway = false) {
+      if (Number((this.grandTotal - this.pendingBalance) + this.layawayForm.amount) < ((this.grandTotal * 20) / 100) && !forceProceedLayaway) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Warning...',
+          text: 'The amount is less than 20% of total amount.\n Do you still want to proceed with this amount?',
+          showCancelButton: true,
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.processLayaway(null, true);
+          }
+        });
+
+        return false;
+      }
+
       const formData = {
         customerId: this.customerId,
-        down_payment: this.form.down_payment,
-        grand_total: this.grandTotal,
+        paymentMethod: this.layawayForm.paymentMethod,
+        amount: this.layawayForm.amount,
+        note: this.layawayForm.note
       };
 
       try {
         const response = await axios.post('/api/layaway', formData);
 
         if (response.data.success) {
-          const customerId = response.data.customer_id;
-
-          this.form = {
-            customer_name: '',
-            customer_email: '',
-            contact_number: '',
-            down_payment: 0,
+          this.layawayForm = {
+            paymentMethod: 'Cash',
+            amount: '',
+            note: '',
           };
-          this.closeModal();
+          //this.closeModal();
         } else {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'Customer already exists with the same email or phone number.',
-          }).then(() => {
-            this.form = {
-              customer_name: '',
-              customer_email: '',
-              contact_number: '',
-              down_payment: 0,
-            };
-            this.closeModal();
+            text: 'Couldn\'t proceed layaway!',
           });
         }
       } catch (error) {
-        console.error('Error during API call:', error);
-        this.errorMessage = 'There was an issue processing your request. Please try again later.';
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Something went wrong!',
+        });
       }
     },
     validateForm() {
