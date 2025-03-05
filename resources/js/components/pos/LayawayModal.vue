@@ -36,7 +36,7 @@
           <div :class="{ 'd-none': !customerId }" v-if="selectedCustomer">
             <div class="row">
               <div class="col-md-6">
-                <LayawayPaymentForm :customerId="customerId" :orderItems="orderItems" :returnItems="returnItems" :paymentInfo="paymentInfo" @capturePayment="capturePayment" />
+                <LayawayPaymentForm :customerId="customerId" :orderItems="orderItems" :returnItems="returnItems" :paymentInfo="paymentInfo" @capturePayment="capturePayment" @clearSaleItems="clearSaleItems" />
               </div>
               <div class="col-md-6">
                 <div>
@@ -183,7 +183,6 @@ export default {
     returnItems: Array,
     paymentInfo: Array
   },
-  emits: ['captureLayawayPayment'],
   data() {
     return {
       customerId: null,
@@ -205,12 +204,8 @@ export default {
       table: null,
     };
   },
-  async mounted() {
+  mounted() {
     this.initializeDataTable();
-    $('#layaway_payment_method').select2({
-      width: '100%',
-      dropdownParent: $('#layawayModal')
-    });
   },
   computed: {
     isAmountValid() {
@@ -229,6 +224,9 @@ export default {
     },
     capturePayment(payment) {
       this.$emit('captureLayawayPayment', payment, true)
+    },
+    clearSaleItems(){
+      this.$emit('clearSaleItems');
     },
     initializeDataTable() {
       const vm = this;

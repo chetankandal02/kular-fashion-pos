@@ -20,14 +20,14 @@
             </div>
             <div class="col-md-6 mb-2"
                 v-if="layawayForm.paymentMethod === 'Cash' || layawayForm.paymentMethod === 'Card' || layawayForm.paymentMethod === 'Euro'">
-                <label for="layaway_payment_method">Enter Amount</label>
-                <input type="number" id="layaway_payment_method" class="form-control" v-model="layawayForm.amount"
+                <label for="layaway_payment_amount">Enter Amount</label>
+                <input type="number" id="layaway_payment_amount" class="form-control" v-model="layawayForm.amount"
                     :class="{ 'is-invalid': !isAmountValid }">
                 <div class="invalid-feedback" v-if="!isAmountValid">
                     Please enter a valid amount.
                 </div>
                 <span class="font-size-12">minimum recommended amunt is {{ formatPrice((grandTotal * 20) / 100)
-                    }}</span>
+                }}</span>
             </div>
             <div class="col-md-6 mb-2" v-else>
                 <label for="layaway_payment_barcode">Barcode</label>
@@ -131,7 +131,16 @@ export default {
             });
 
             if (response.data.success) {
-                this.makePayment(response.data[payload.param].amount || 0);
+                let capturedAmount = response.data[payload.param].amount;
+                Swal.fire({
+                    title: 'Success!',
+                    text: `${this.formatPrice(capturedAmount)} captured successfully!`,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                this.makePayment(capturedAmount || 0);
             } else {
                 Swal.fire({
                     title: 'Oops!',
@@ -159,46 +168,47 @@ export default {
                 return false;
             }
 
-            try {
-                if (this.layawayForm.amount) {
-                    this.makePayment(this.layawayForm.amount);
-                }
+            if (this.layawayForm.amount) {
+                this.makePayment(this.layawayForm.amount);
+                this.layawayForm.amount = '';
+            }
 
-                const orderApiResponse = await axios.post('/api/place-order', {
-                    orderItems: this.orderItems,
-                    returnItems: this.returnItems,
-                    paymentInfo: [],
-                    salesPersonId: window.config.userId
+            const orderApiResponse = await axios.post('/api/place-order', {
+                orderItems: this.orderItems,
+                returnItems: this.returnItems,
+                paymentInfo: this.paymentInfo,
+                salesPersonId: window.config.userId
+            });
+
+            const layawayApiResponse = await axios.post('/api/layaways', {
+                orderId: orderApiResponse.data.order.id,
+                customerId: this.customerId,
+                paymentMethods: this.paymentInfo,
+                note: this.layawayForm.note,
+            });
+
+            if (layawayApiResponse.data.success) {
+                this.layawayForm = {
+                    paymentMethod: 'Cash',
+                    amount: '',
+                    note: '',
+                };
+
+                this.$emit('clearSaleItems');
+                this.closeModal();
+
+                Swal.fire({
+                    title: 'Success!',
+                    text: `Layaway processed successfully!`,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
                 });
-
-                const layawayApiResponse = await axios.post('/api/layaways', {
-                    orderId: orderApiResponse.data.order.id,
-                    customerId: this.customerId,
-                    paymentMethods: this.paymentInfo,
-                    note: this.layawayForm.note,
-                });
-
-                console.log('layawayApiResponse', layawayApiResponse);
-
-                if (layawayApiResponse.data.success) {
-                    /* this.layawayForm = {
-                      paymentMethod: 'Cash',
-                      amount: '',
-                      note: '',
-                    }; */
-                    //this.closeModal();
-                } else {
-                    /* Swal.fire({
-                      icon: 'error',
-                      title: 'Oops...',
-                      text: 'Couldn\'t proceed layaway!',
-                    }); */
-                }
-            } catch (error) {
+            } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Something went wrong!',
+                    text: response.data.message || 'Something went wrong!',
                 });
             }
         },
@@ -216,6 +226,10 @@ export default {
         },
         pendingBalance() {
             return this.grandTotal - this.getTotalPaidAmount();
+        },
+        closeModal() {
+            const modal = bootstrap.Modal.getInstance($('#layawayModal'));
+            modal.hide();
         },
     }
 };

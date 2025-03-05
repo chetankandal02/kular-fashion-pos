@@ -118,7 +118,7 @@
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
     <MenuModal />
     <EODModal />
-    <LayawayModal :order-items="orderItems" :return-items="returnItems" :payment-info="paymentInfo" @captureLayawayPayment="capturePayment" />
+    <LayawayModal :order-items="orderItems" :return-items="returnItems" :payment-info="paymentInfo" @captureLayawayPayment="capturePayment" @clearSaleItems="cancelSale" />
 </template>
 
 <script>
@@ -189,7 +189,6 @@ export default {
             }
         },
         capturePayment(payment, isLayawayPayment = false) {
-            console.log('payment', payment, isLayawayPayment)
             const existingPayment = this.paymentInfo.find(item => item.method === payment.method);
 
             if (existingPayment) {

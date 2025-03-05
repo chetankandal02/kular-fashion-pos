@@ -131,7 +131,7 @@ class OrderController extends Controller
             'total_payable_amount' => $totalPayableAmount,
             'total_amount' => $totalAmount,
             'paid_amount' => $totalPaidAmount,
-            'source' => 'POS'
+            'source' => 0
         ]);
 
         foreach ($orderItems as $orderItem) {
