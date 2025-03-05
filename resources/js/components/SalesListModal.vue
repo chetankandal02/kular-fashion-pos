@@ -1,6 +1,6 @@
 <template>
     <div class="modal fade" id="salesListModal" tabindex="-1" aria-labelledby="salesListModalLabel">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
                 <div class="modal-header py-2 px-3">
                     <h5 class="modal-title" id="salesListModalLabel">Sales List</h5>
@@ -9,15 +9,15 @@
 
                 <div class="modal-body py-1">
                     <div class="row">
-                        <div class="col-6 col-md-4 mb-1">
+                        <div class="col-6 col-md-2 mb-1">
                             <label for="article_code" class="mb-0">Article Code:</label>
                             <input id="article_code" class="form-control h-50" />
                         </div>
-                        <div class="col-6 col-md-4 mb-1">
+                        <div class="col-6 col-md-2 mb-1">
                             <label for="article_code" class="mb-0">From Date:</label>
                             <input id="sales_start_date" class="form-control h-50" />
                         </div>
-                        <div class="col-6 col-md-4 mb-1">
+                        <div class="col-6 col-md-2 mb-1">
                             <label for="article_code" class="mb-0">To Date:</label>
                             <input id="sales_end_date" class="form-control h-50" />
                         </div>

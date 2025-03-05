@@ -36,48 +36,48 @@
             <div class="row">
                 <!-- Hold Sale Button -->
                 <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
-                    <button class="btn btn-warning w-100" data-bs-toggle="modal" data-bs-target="#holdSaleModal">
-                        <i class="mdi mdi-pause font-size-14 me-1"></i>
+                    <button class="btn btn-warning w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#holdSaleModal">
+                        <i class="mdi mdi-pause fs-4 me-1"></i>
                         Hold Sale
                     </button>
                 </div>
 
                 <!-- Cancel Button -->
                 <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
-                    <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#cancelSaleModal">
-                        <i class="mdi mdi-close font-size-14 me-1"></i>
+                    <button class="btn btn-danger w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#cancelSaleModal">
+                        <i class="mdi mdi-close fs-4 me-1"></i>
                         Cancel
                     </button>
                 </div>
 
                 <!-- Layaway Button -->
                 <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
-                    <button class="btn btn-secondary w-100" data-bs-toggle="modal" data-bs-target="#layawayModal">
-                        <i class="mdi mdi-account-cash font-size-14 me-1"></i>
+                    <button class="btn btn-secondary w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#layawayModal">
+                        <i class="mdi mdi-account-cash fs-4 me-1"></i>
                         Layaway
                     </button>
                 </div>
 
                 <!-- Return Sale Button -->
                 <div class="col-6 mb-2 pe-1">
-                    <button class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#returnSaleModal">
-                        <i class="mdi mdi-keyboard-return font-size-14 me-1"></i>
+                    <button class="btn btn-danger w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#returnSaleModal">
+                        <i class="mdi mdi-keyboard-return fs-4 me-1"></i>
                         Return Sale
                     </button>
                 </div>
 
                 <!-- Gift Voucher Button -->
                 <div class="col-6 mb-2 pe-1">
-                    <button class="btn btn-dark w-100" data-bs-toggle="modal" data-bs-target="#giftVoucherModal">
-                        <i class="mdi mdi-gift font-size-14 me-1"></i>
+                    <button class="btn btn-dark w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#giftVoucherModal">
+                        <i class="mdi mdi-gift fs-4 me-1"></i>
                         Gift Voucher
                     </button>
                 </div>
 
                 <!-- EOD Button -->
                 <div class="col-6 mb-2 pe-1">
-                    <button class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#menuModal">
-                        <i class="mdi mdi-menu font-size-14 me-1"></i>
+                    <button class="btn btn-info w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#menuModal">
+                        <i class="mdi mdi-menu fs-4 me-1"></i>
                         Menu
                     </button>
                     <!-- <button class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#eodModal">

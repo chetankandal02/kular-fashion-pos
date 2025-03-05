@@ -1,15 +1,15 @@
 <template>
   <div class="modal fade" id="searchArticalModal" tabindex="-1" aria-labelledby="searchArticalModalLabel">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-fullscreen">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="searchArticalModalLabel">Search Article</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body pt-1">
           <div class="row">
-            <div class="col-md-4 mb-3">
-              <label for="search_by_brand">Brand</label>
+            <div class="col-md-3 mb-1">
+              <label for="search_by_brand" class="mb-0">Brand</label>
               <select id="search_by_brand" class="form-control">
                 <option value="">Select brand</option>
                 <option v-for="brand in brands" :key="brand.id" :value="brand.id">
@@ -17,14 +17,18 @@
                 </option>
               </select>
             </div>
-            <div class="col-md-4 mb-3">
-              <label for="search_by_product_type">Product Type</label>
+            <div class="col-md-3 mb-1">
+              <label for="search_by_product_type" class="mb-0">Product Type</label>
               <select id="search_by_product_type" class="form-control">
                 <option value="">Select Product Type</option>
                 <option v-for="productType in productTypes" :key="productType.id" :value="productType.id">
                   {{ productType.name }}
                 </option>
               </select>
+            </div>
+            <div class="col-md-3 mb-1">
+              <label for="search_product" class="mb-0">Search</label>
+              <input type="text" id="search_product" class="form-control">
             </div>
           </div>
 
@@ -316,11 +320,15 @@ export default {
       this.table = $('#search-article-modal').DataTable({
         processing: true,
         serverSide: true,
+        pageLength: 20,
+        lengthChange: false,
+        searching: false,
         ajax: {
           url: '/get-products',
           data: (d) => {
             d.brand_id = $('#search_by_brand').val();
             d.product_type_id = $('#search_by_product_type').val();
+            d.search['value'] = $('#search_product').val();
             d.page = Math.floor(d.start / d.length) + 1;
           },
         },
@@ -423,6 +431,10 @@ export default {
     });
 
     $('#search_by_brand').on('change', () => {
+      this.reloadDataTable();
+    });
+
+    $('#search_product').on('keyup', () => {
       this.reloadDataTable();
     });
 

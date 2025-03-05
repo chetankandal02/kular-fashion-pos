@@ -30,7 +30,7 @@ class ProductController extends Controller
                         $q->where('name', 'like', "%{$search}%");
                     })
                     ->orWhereHas('productType', function ($q) use ($search) {
-                        $q->where('product_type_name', 'like', "%{$search}%");
+                        $q->where('name', 'like', "%{$search}%");
                     });
             });
         }
