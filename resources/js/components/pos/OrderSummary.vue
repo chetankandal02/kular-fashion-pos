@@ -37,7 +37,7 @@
                 <!-- Hold Sale Button -->
                 <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
                     <button class="btn btn-warning w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#holdSaleModal">
-                        <i class="mdi mdi-pause fs-4 me-1"></i>
+                        <i class="mdi mdi-pause me-1"></i>
                         Hold Sale
                     </button>
                 </div>
@@ -45,7 +45,7 @@
                 <!-- Cancel Button -->
                 <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
                     <button class="btn btn-danger w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#cancelSaleModal">
-                        <i class="mdi mdi-close fs-4 me-1"></i>
+                        <i class="mdi mdi-close me-1"></i>
                         Cancel
                     </button>
                 </div>
@@ -53,7 +53,7 @@
                 <!-- Layaway Button -->
                 <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
                     <button class="btn btn-secondary w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#layawayModal">
-                        <i class="mdi mdi-account-cash fs-4 me-1"></i>
+                        <i class="mdi mdi-account-cash me-1"></i>
                         Layaway
                     </button>
                 </div>
@@ -61,7 +61,7 @@
                 <!-- Return Sale Button -->
                 <div class="col-6 mb-2 pe-1">
                     <button class="btn btn-danger w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#returnSaleModal">
-                        <i class="mdi mdi-keyboard-return fs-4 me-1"></i>
+                        <i class="mdi mdi-keyboard-return me-1"></i>
                         Return Sale
                     </button>
                 </div>
@@ -69,7 +69,7 @@
                 <!-- Gift Voucher Button -->
                 <div class="col-6 mb-2 pe-1">
                     <button class="btn btn-dark w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#giftVoucherModal">
-                        <i class="mdi mdi-gift fs-4 me-1"></i>
+                        <i class="mdi mdi-gift me-1"></i>
                         Gift Voucher
                     </button>
                 </div>
@@ -77,7 +77,7 @@
                 <!-- EOD Button -->
                 <div class="col-6 mb-2 pe-1">
                     <button class="btn btn-info w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#menuModal">
-                        <i class="mdi mdi-menu fs-4 me-1"></i>
+                        <i class="mdi mdi-menu me-1"></i>
                         Menu
                     </button>
                     <!-- <button class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#eodModal">
@@ -88,20 +88,20 @@
 
                 <!-- Tender Button -->
                 <div class="col-12 mb-2 pe-1" v-if="amountToBePaid() > 0">
-                    <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#tenderModal">
-                        <i class="mdi mdi-cash-plus font-size-14 me-1"></i>
+                    <button class="btn btn-success w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#tenderModal">
+                        <i class="mdi mdi-cash-plus me-1"></i>
                         Tender
                     </button>
                 </div>
                 <div class="col-12 mb-2 pe-1" v-else-if="amountToBePaid() < 0">
-                    <button class="btn btn-success w-100" @click="handleActionClick('Credit Note')">
-                        <i class="mdi mdi-notebook-edit-outline font-size-14 me-1"></i>
+                    <button class="btn btn-success w-100 fs-4 py-4" @click="handleActionClick('Credit Note')">
+                        <i class="mdi mdi-notebook-edit-outline me-1"></i>
                         Credit Note
                     </button>
                 </div>
                 <div class="col-12 mb-2 pe-1" v-else-if="this.orderItems.length || this.returnItems.length">
-                    <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#finishSaleModal">
-                        <i class="mdi mdi-check-all font-size-14 me-1"></i>
+                    <button class="btn btn-success w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#finishSaleModal">
+                        <i class="mdi mdi-check-all me-1"></i>
                         Finish
                     </button>
                 </div>
