@@ -16,6 +16,7 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/layaways', [LayawayController::class, 'store']);
 Route::get('/layaways', [LayawayController::class, 'getLayaways']);
+Route::put('/layaways/{layaway}', [LayawayController::class, 'update']);
 
 Route::get('/customers', [CustomerController::class, 'getCustomers']);
 Route::post('/customers', [CustomerController::class, 'store']);

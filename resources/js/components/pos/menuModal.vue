@@ -48,7 +48,7 @@
     </div>
 
     <EODModal />
-   <!--  <RecallLayawayModal /> -->
+    <RecallLayawayModal />
 </template>
 
 <script>

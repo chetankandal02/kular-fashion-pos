@@ -34,14 +34,6 @@
             </div>
 
             <div class="row">
-                
-                <div class="col-md-12 mb-2">
-                    <button class="btn btn-primary btn-lg w-100" data-bs-toggle="modal"
-                        data-bs-target="#recallLayawayModal">
-                        <i class="mdi mdi-account-cash font-size-20 me-1"></i>
-                        Recall Layaway
-                    </button>
-                </div>
                 <!-- Hold Sale Button -->
                 <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
                     <button class="btn btn-warning w-100 fs-4 py-4" data-bs-toggle="modal"
@@ -133,7 +125,6 @@
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
     <MenuModal />
     <EODModal />
-    <RecallLayawayModal />
     <LayawayModal :order-items="orderItems" :return-items="returnItems" :payment-info="paymentInfo"
         @captureLayawayPayment="capturePayment" @clearSaleItems="cancelSale" />
 </template>
@@ -148,7 +139,6 @@ import FinishSaleModal from './FinishSaleModal.vue';
 import LayawayModal from './LayawayModal.vue';
 import EODModal from './EODModal.vue';
 import MenuModal from './menuModal.vue';
-import RecallLayawayModal from './RecallLayawayModal.vue';
 import axios from 'axios';
 
 export default {
@@ -161,7 +151,6 @@ export default {
         FinishSaleModal,
         LayawayModal,
         EODModal,
-        RecallLayawayModal,
         MenuModal
     },
     props: {

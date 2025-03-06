@@ -104,4 +104,38 @@ class LayawayController extends Controller
 
         return response()->json($data);
     }
+
+    public function update(Request $request, Layaway $layaway){
+        $paidAmount = $request->amount;
+        if ($request->paymentMethod === 'Euro') {
+            $exchangeRate = setting("euro_to_pound");
+            $paidAmount = (float) $request->amount * $exchangeRate;
+        }
+
+        $layaway->paid_amount += $paidAmount;
+        $layaway->balance -= $paidAmount;
+        $layaway->note = $request->note;
+        $layaway->save();
+
+        $customer = Customer::find($layaway->customer_id);
+        if($customer){
+            $customer->balance -= $paidAmount;
+            $customer->save();    
+        }
+
+        LayawayPayment::create([
+            'layaway_id' => $layaway->id,
+            'customer_id' => $layaway->customer_id,
+            'method' => $request->paymentMethod,
+            'amount' => $paidAmount,
+            'original_amount' => $request->amount,
+            'sales_person_id' => $request->salesPersonId,
+            'payment_date' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Payment added successfully!',
+        ], 201);
+    }
 }

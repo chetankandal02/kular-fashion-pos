@@ -25,7 +25,7 @@
     </div>
   </div>
 
-  <EditLayawayModal :layaway="selectedLayaway" />
+  <EditLayawayModal :layaway="selectedLayaway" @reloadTable="reloadTable" />
 </template>
 
 <script>
@@ -102,6 +102,11 @@ export default {
           });
         },
       });
+    },
+    reloadTable() {
+      if (this.table) {
+        this.table.ajax.reload();
+      }
     },
     pickLayaway(layaway){
       this.selectedLayaway = layaway;
