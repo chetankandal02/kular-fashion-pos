@@ -46,7 +46,7 @@ class OrderController extends Controller
 
                 if ($branchId > 1) {
                     $storeInventory = StoreInventory::where('store_id', $branchId)->where('product_quantity_id', $returnItem['product_quantity_id'])->first();
-                    if($storeInventory){
+                    if ($storeInventory) {
                         $storeInventory->quantity = $storeInventory->quantity + 1;
                         $storeInventory->save();
                     } else {
@@ -65,20 +65,20 @@ class OrderController extends Controller
                     }
                 } else {
                     $productQuantity = ProductQuantity::find($productQuantityId);
-                    if($productQuantity){
+                    if ($productQuantity) {
                         $productQuantity->quantity = $productQuantity->quantity + 1;
-                        $productQuantity->save();    
+                        $productQuantity->save();
                     }
                 }
             }
-            
+
             foreach ($orderItems as $orderItem) {
                 $productQuantityId = $orderItem['product_quantity_id'];
                 if ($branchId > 1) {
                     $storeInventory = StoreInventory::where('store_id', $branchId)->where('product_quantity_id', $orderItem['product_quantity_id'])->first();
-                    if($storeInventory){
+                    if ($storeInventory) {
                         $storeInventory->quantity = $storeInventory->quantity - 1;
-                        $storeInventory->save();    
+                        $storeInventory->save();
                     } else {
                         $productQuantity = ProductQuantity::find($productQuantityId);
 
@@ -95,7 +95,7 @@ class OrderController extends Controller
                     }
                 } else {
                     $productQuantity = ProductQuantity::find($productQuantityId);
-                    if($productQuantity){
+                    if ($productQuantity) {
                         $productQuantity->quantity = $productQuantity->quantity - 1;
                         $productQuantity->save();
                     }
@@ -121,7 +121,16 @@ class OrderController extends Controller
         });
         $totalPayableAmount = $totalOrderPayableAmount - $totalReturnAmount;
 
-        $totalPaidAmount = array_sum(array_column($request->paymentInfo, 'amount'));
+        $paymentMethods = $request->input('paymentInfo', []);
+        $exchangeRate = setting("euro_to_pound");
+
+        $paidAmount = 0;
+        foreach ($paymentMethods as $paymentMethod) {
+            $amount = (float) $paymentMethod['amount'];  // cast once
+            $paidAmount += ($paymentMethod['method'] === 'Euro')
+                ? $amount * $exchangeRate
+                : $amount;
+        }
 
         $order = Order::create([
             'sales_person_id' => $salesPersonId,
@@ -130,7 +139,7 @@ class OrderController extends Controller
             'total_return_items' => $totalReturnItems,
             'total_payable_amount' => $totalPayableAmount,
             'total_amount' => $totalAmount,
-            'paid_amount' => $totalPaidAmount,
+            'paid_amount' => $paidAmount,
             'source' => 0
         ]);
 
@@ -155,9 +164,6 @@ class OrderController extends Controller
 
             $this->createOrderItem($returnItem, $params);
         }
-
-        $paymentMethods = $request->input('paymentInfo', []);
-        $exchangeRate = setting("euro_to_pound");
 
         foreach ($paymentMethods as $paymentMethod) {
             if ($paymentMethod['method'] === 'Euro') {
@@ -201,7 +207,7 @@ class OrderController extends Controller
     {
         $productId = $orderItem['product_id'];
         $product = Product::with('brand', 'supplier')->find($productId);
-        if($product){
+        if ($product) {
             $colorDetail = Color::find($orderItem['color_id']);
 
             OrderItem::create([
@@ -271,7 +277,7 @@ class OrderController extends Controller
             foreach ($sale->orderItems as $orderItem) {
                 if (
                     (!is_null($orderItem->changed_price_reason_id) ||
-                    !is_null($orderItem->changed_price_reason)) &&
+                        !is_null($orderItem->changed_price_reason)) &&
                     $orderItem->original_price != $orderItem->changed_price
                 ) {
                     $isPriceChanged = true;
@@ -328,16 +334,17 @@ class OrderController extends Controller
         ]);
     }
 
-    public function printLastReceipt(){
+    public function printLastReceipt()
+    {
         try {
-            $lastOrder = Order::latest()->first(); 
-            if(!$lastOrder){
+            $lastOrder = Order::latest()->first();
+            if (!$lastOrder) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No previous sale found!',
                 ], 200);
             }
-            
+
             $this->receiptService->printOrderReceipt($lastOrder->id);
 
             return response()->json([
@@ -352,7 +359,8 @@ class OrderController extends Controller
         }
     }
 
-    public function saleDetail($saleId){
+    public function saleDetail($saleId)
+    {
         $sale = Order::with('orderItems', 'paymentMethods', 'salesPerson')->find($saleId);
         return response()->json([
             'sale' => $sale,

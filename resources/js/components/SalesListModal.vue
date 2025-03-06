@@ -14,16 +14,16 @@
                             <input id="article_code" class="form-control h-50" />
                         </div>
                         <div class="col-6 col-md-2 mb-1">
-                            <label for="article_code" class="mb-0">From Date:</label>
+                            <label for="sales_start_date" class="mb-0">From Date:</label>
                             <input id="sales_start_date" class="form-control h-50" />
                         </div>
                         <div class="col-6 col-md-2 mb-1">
-                            <label for="article_code" class="mb-0">To Date:</label>
+                            <label for="sales_end_date" class="mb-0">To Date:</label>
                             <input id="sales_end_date" class="form-control h-50" />
                         </div>
                     </div>
 
-                    <table class="table table-bordered table-sm" id="sales-list" style="width: 100%;">
+                    <table class="table table-bordered table-sm" id="sales-list">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -36,9 +36,7 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
-
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -113,8 +111,10 @@
                                 <td>{{ item.color_name }}</td>
                                 <td>{{ item.size }}</td>
                                 <td>{{ item.brand_name }}</td>
-                                <td :class="{'text-danger': item.flag !== 'SALE'}"><span v-if="item.flag !== 'SALE'">-</span>£{{ item.original_price }}</td>
-                                <td :class="{'text-danger': item.flag !== 'SALE'}"><span v-if="item.flag !== 'SALE'">-</span>£{{ item.changed_price }}</td>
+                                <td :class="{ 'text-danger': item.flag !== 'SALE' }"><span
+                                        v-if="item.flag !== 'SALE'">-</span>£{{ item.original_price }}</td>
+                                <td :class="{ 'text-danger': item.flag !== 'SALE' }"><span
+                                        v-if="item.flag !== 'SALE'">-</span>£{{ item.changed_price }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -150,6 +150,9 @@ export default {
             this.table = $('#sales-list').DataTable({
                 processing: true,
                 serverSide: true,
+                pageLength: 20,
+                lengthChange: false,
+                searching: false,
                 ajax: {
                     url: "/get-orders",
                     data: function (d) {
@@ -206,7 +209,7 @@ export default {
             let now = new Date(timestamp);
             let day = now.getDate();
             let month = now.getMonth() + 1;
-            let year = now.toLocaleDateString('en', {year: '2-digit'});
+            let year = now.toLocaleDateString('en', { year: '2-digit' });
             let hours = now.getHours();
             let minutes = now.getMinutes();
             let seconds = now.getSeconds();

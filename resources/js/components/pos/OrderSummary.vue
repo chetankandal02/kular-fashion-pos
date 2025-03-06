@@ -34,9 +34,18 @@
             </div>
 
             <div class="row">
+                
+                <div class="col-md-12 mb-2">
+                    <button class="btn btn-primary btn-lg w-100" data-bs-toggle="modal"
+                        data-bs-target="#recallLayawayModal">
+                        <i class="mdi mdi-account-cash font-size-20 me-1"></i>
+                        Recall Layaway
+                    </button>
+                </div>
                 <!-- Hold Sale Button -->
                 <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
-                    <button class="btn btn-warning w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#holdSaleModal">
+                    <button class="btn btn-warning w-100 fs-4 py-4" data-bs-toggle="modal"
+                        data-bs-target="#holdSaleModal">
                         <i class="mdi mdi-pause me-1"></i>
                         Hold Sale
                     </button>
@@ -44,7 +53,8 @@
 
                 <!-- Cancel Button -->
                 <div class="col-6 mb-2 pe-1" v-if="this.orderItems.length || this.returnItems.length">
-                    <button class="btn btn-danger w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#cancelSaleModal">
+                    <button class="btn btn-danger w-100 fs-4 py-4" data-bs-toggle="modal"
+                        data-bs-target="#cancelSaleModal">
                         <i class="mdi mdi-close me-1"></i>
                         Cancel
                     </button>
@@ -52,7 +62,8 @@
 
                 <!-- Layaway Button -->
                 <div class="col-6 mb-2 pe-1" v-if="amountToBePaid() > 0">
-                    <button class="btn btn-secondary w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#layawayModal">
+                    <button class="btn btn-secondary w-100 fs-4 py-4" data-bs-toggle="modal"
+                        data-bs-target="#layawayModal">
                         <i class="mdi mdi-account-cash me-1"></i>
                         Layaway
                     </button>
@@ -60,7 +71,8 @@
 
                 <!-- Return Sale Button -->
                 <div class="col-6 mb-2 pe-1">
-                    <button class="btn btn-danger w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#returnSaleModal">
+                    <button class="btn btn-danger w-100 fs-4 py-4" data-bs-toggle="modal"
+                        data-bs-target="#returnSaleModal">
                         <i class="mdi mdi-keyboard-return me-1"></i>
                         Return Sale
                     </button>
@@ -68,7 +80,8 @@
 
                 <!-- Gift Voucher Button -->
                 <div class="col-6 mb-2 pe-1">
-                    <button class="btn btn-dark w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#giftVoucherModal">
+                    <button class="btn btn-dark w-100 fs-4 py-4" data-bs-toggle="modal"
+                        data-bs-target="#giftVoucherModal">
                         <i class="mdi mdi-gift me-1"></i>
                         Gift Voucher
                     </button>
@@ -88,7 +101,8 @@
 
                 <!-- Tender Button -->
                 <div class="col-12 mb-2 pe-1" v-if="amountToBePaid() > 0">
-                    <button class="btn btn-success w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#tenderModal">
+                    <button class="btn btn-success w-100 fs-4 py-4" data-bs-toggle="modal"
+                        data-bs-target="#tenderModal">
                         <i class="mdi mdi-cash-plus me-1"></i>
                         Tender
                     </button>
@@ -100,7 +114,8 @@
                     </button>
                 </div>
                 <div class="col-12 mb-2 pe-1" v-else-if="this.orderItems.length || this.returnItems.length">
-                    <button class="btn btn-success w-100 fs-4 py-4" data-bs-toggle="modal" data-bs-target="#finishSaleModal">
+                    <button class="btn btn-success w-100 fs-4 py-4" data-bs-toggle="modal"
+                        data-bs-target="#finishSaleModal">
                         <i class="mdi mdi-check-all me-1"></i>
                         Finish
                     </button>
@@ -118,7 +133,9 @@
     <FinishSaleModal @finishSaleConfirmed="finishSale" />
     <MenuModal />
     <EODModal />
-    <LayawayModal :order-items="orderItems" :return-items="returnItems" :payment-info="paymentInfo" @captureLayawayPayment="capturePayment" @clearSaleItems="cancelSale" />
+    <RecallLayawayModal />
+    <LayawayModal :order-items="orderItems" :return-items="returnItems" :payment-info="paymentInfo"
+        @captureLayawayPayment="capturePayment" @clearSaleItems="cancelSale" />
 </template>
 
 <script>
@@ -131,6 +148,7 @@ import FinishSaleModal from './FinishSaleModal.vue';
 import LayawayModal from './LayawayModal.vue';
 import EODModal from './EODModal.vue';
 import MenuModal from './menuModal.vue';
+import RecallLayawayModal from './RecallLayawayModal.vue';
 import axios from 'axios';
 
 export default {
@@ -143,6 +161,7 @@ export default {
         FinishSaleModal,
         LayawayModal,
         EODModal,
+        RecallLayawayModal,
         MenuModal
     },
     props: {
@@ -198,14 +217,14 @@ export default {
             }
 
             localStorage.setItem('paymentInfo', JSON.stringify(this.paymentInfo));
-            
-            if(isLayawayPayment){
+
+            if (isLayawayPayment) {
                 return;
             }
 
             if (this.amountToBePaid() <= 0) {
                 $('.modal-backdrop').remove();
-                
+
                 setTimeout(() => {
                     if (bootstrap.Modal.getInstance($('#tenderModal'))) {
                         bootstrap.Modal.getInstance($('#tenderModal')).hide();

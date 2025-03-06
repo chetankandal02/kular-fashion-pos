@@ -38,7 +38,6 @@ class LayawayController extends Controller
             ], 200);  
         }
 
-
         $layaway = Layaway::create([
             'customer_id'       => $request->customerId,
             'order_id'          => $request->orderId,
@@ -72,5 +71,37 @@ class LayawayController extends Controller
             'success' => true,
             'message' => 'Layaway processed successfully!',
         ], 201);
+    }
+
+    public function getLayaways(Request $request)
+    {
+        $query = Layaway::with(['customer', 'order', 'order.orderItems', 'payments']);
+
+        if ($request->has('search') && !empty($request->input('search.value'))) {
+            $search = $request->input('search.value');
+            $query->where(function ($q) use ($search) {
+                $q->where('code', 'like', "%{$search}%")
+                    ->orWhereHas('customer', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone_number', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('order', function ($q) use ($search) {
+                        $q->where('code', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $layaways = $query->orderBy('id', 'desc')
+            ->paginate($request->input('length', 10));
+
+        $data = [
+            'draw' => $request->input('draw'),
+            'recordsTotal' => $layaways->total(),
+            'recordsFiltered' => $layaways->total(),
+            'data' => $layaways->items(),
+        ];
+
+        return response()->json($data);
     }
 }

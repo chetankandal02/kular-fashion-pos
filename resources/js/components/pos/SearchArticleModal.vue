@@ -32,7 +32,7 @@
             </div>
           </div>
 
-          <table class="table table-striped table-bordered w-100" id="search-article-modal">
+          <table class="table table-striped table-bordered w-100 table-sm" id="search-article-table">
             <thead>
               <tr>
                 <th>#</th>
@@ -102,7 +102,7 @@
 
   <div class="modal fade" id="stocksDetailModal" tabindex="-1" aria-labelledby="stocksDetailModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-fullscreen">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="stocksDetailModalLabel">Stocks Details</h5>
@@ -317,7 +317,7 @@ export default {
 
       const vm = this;
 
-      this.table = $('#search-article-modal').DataTable({
+      this.table = $('#search-article-table').DataTable({
         processing: true,
         serverSide: true,
         pageLength: 20,
@@ -376,8 +376,6 @@ export default {
         ],
         order: [[0, 'desc']],
         drawCallback: function () {
-          $('#search-article-modal th, #search-article-modal td').addClass('p-1');
-
           $('.pick-product-for-sale').on('click', (event) => {
             const product = JSON.parse($(event.currentTarget).attr('data-product'));
             vm.pickProduct(product);

@@ -29,4 +29,19 @@ class Layaway extends Model
             $layaway->code = 'LW-' . $newNumber;
         });
     }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(LayawayPayment::class);
+    }
 }

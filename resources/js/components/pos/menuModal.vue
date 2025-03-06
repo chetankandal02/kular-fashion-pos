@@ -32,6 +32,12 @@
                                 EOD
                             </button>
                         </div>
+                        <div class="col-md-6 mb-2">
+                            <button class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#recallLayawayModal">
+                                <i class="mdi mdi-account-cash font-size-20 me-1"></i>
+                                Recall Layaway
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -42,15 +48,18 @@
     </div>
 
     <EODModal />
+   <!--  <RecallLayawayModal /> -->
 </template>
 
 <script>
 import axios from 'axios';
 import EODModal from './EODModal.vue';
+import RecallLayawayModal from './RecallLayawayModal.vue';
 
 export default {
     components: {
-        EODModal
+        EODModal,
+        RecallLayawayModal
     },
     methods: {
         async printLastOrderReceipt(){
