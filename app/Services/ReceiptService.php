@@ -181,6 +181,7 @@ class ReceiptService
     protected function printOrderItem($item){
         $product = Product::find($item->product_id);
         $this->printer->text(str_pad($item->barcode.' * 1', 30) . '£'.$item->changed_price."\n");
+        $this->printer->text($product->article_code.'      '.$item->color_name.'      '.$item->size."\n");
         $this->printer->text($product->short_description."\n\n");
     }
 
