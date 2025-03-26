@@ -290,7 +290,7 @@ class OrderController extends Controller
                 'customer_name' => $sale->user ? $sale->user->name : 'N/A',
                 'sales_person_name' => $sale->salesPerson ? $sale->salesPerson->name : 'N/A',
                 'total_items' => $sale->total_items,
-                'total_amount' => $sale->total_amount,
+                'total_payable_amount' => $sale->total_payable_amount,
                 'is_price_changed' => $isPriceChanged,
                 'date_time' => $sale->created_at->format('d-m-y H:i:s'),
             ];
