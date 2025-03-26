@@ -121,7 +121,7 @@ class ReceiptService
         $this->printer->close();
     }
 
-    public function printOrderReceipt($orderId){
+    public function printOrderReceipt($orderId, $isDuplicate = false){
         $order = Order::with('orderItems', 'paymentMethods')->find($orderId);
         $groupedItems = $order->orderItems->groupBy('flag');
 
@@ -140,12 +140,14 @@ class ReceiptService
                 $this->printer->text("Tel. ".$branch->contact."\n");
             }
             $this->printer->text("www.kularfashion.com\n");
-
-            $this->printFullWidthLine('-');
-            $this->printer->setEmphasis(true);
-            $this->printer->text("Duplicate\n");
-            $this->printer->setEmphasis(false);
-            $this->printFullWidthLine('-');
+            
+            if($isDuplicate){
+                $this->printFullWidthLine('-');
+                $this->printer->setEmphasis(true);
+                $this->printer->text("Duplicate\n");
+                $this->printer->setEmphasis(false);
+                $this->printFullWidthLine('-');    
+            }
 
             foreach($groupedItems as $saleType => $group){
                 $this->printer->text("\n".$saleType." ITEMS\n");
@@ -165,11 +167,13 @@ class ReceiptService
             $this->printPaymentMethods($order->paymentMethods);
 
             $this->printer->setJustification(Printer::JUSTIFY_CENTER);
-            $this->printFullWidthLine('-');
-            $this->printer->setEmphasis(true);
-            $this->printer->text("Duplicate\n");
-            $this->printer->setEmphasis(false);
-            $this->printFullWidthLine('-');
+            if($isDuplicate){
+                $this->printFullWidthLine('-');
+                $this->printer->setEmphasis(true);
+                $this->printer->text("Duplicate\n");
+                $this->printer->setEmphasis(false);
+                $this->printFullWidthLine('-');
+            }
             $this->printer->text($orderReceiptFooter."\n");
             $this->printer->cut();
             $this->printer->close();

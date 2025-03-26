@@ -23,7 +23,7 @@
                         </div>
                     </div>
 
-                    <table class="table table-bordered table-sm" id="sales-list">
+                    <table class="table table-bordered table-sm w-100" id="sales-list">
                         <thead>
                             <tr>
                                 <th>#</th>

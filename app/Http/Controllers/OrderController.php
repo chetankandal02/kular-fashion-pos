@@ -345,7 +345,7 @@ class OrderController extends Controller
                 ], 200);
             }
 
-            $this->receiptService->printOrderReceipt($lastOrder->id);
+            $this->receiptService->printOrderReceipt($lastOrder->id, true);
 
             return response()->json([
                 'success' => true,
