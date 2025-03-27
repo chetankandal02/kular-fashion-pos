@@ -78,6 +78,10 @@ class ProductController extends Controller
         $branch_id = Auth::user()->branch_id;
         $products = ProductQuantity::with('product.brand', 'product.department', 'sizes.sizeDetail', 'colors.colorDetail')->get();
         foreach ($products as $product) {
+            if (is_null($product->product)) {
+                continue;
+            }
+
             $article_code = $product->product->article_code;
             $color_code = $product->colors->colorDetail->code;
             $size_code = $product->sizes->sizeDetail->new_code;
