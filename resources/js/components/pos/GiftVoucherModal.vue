@@ -33,7 +33,7 @@
                     </div>
 
                     <div class="search-box mb-2">
-                        <VirtualNumberKeyboard ref="virtualKeyboard" :inputValue="amount" :invalidMessage="invalidMessage"
+                        <VirtualNumberKeyboard ref="virtualKeyboard" :selectedPayment="selectedPayment" :inputValue="amount" :invalidMessage="invalidMessage"
                             @on-change="changeAmount" @on-submit="generateGiftVoucher" />
                     </div>
                 </div>
