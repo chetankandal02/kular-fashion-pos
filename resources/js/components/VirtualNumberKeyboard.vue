@@ -60,6 +60,10 @@ export default {
         variant: {
             type: String,
             default: "amount"
+        },
+        selectedPayment : {
+            type: String,
+            default: "amount"
         }
     },
     data() {
@@ -94,7 +98,12 @@ export default {
             return this.variant === "amount" ? "Enter amount" : "Scan barcode";
         },
         iconClass() {
-            return this.variant === "amount" ? "mdi mdi-currency-eur" : "bx bx-barcode";
+            if(this.selectedPayment == 'Euro'){
+                return this.variant === "amount" ? "mdi mdi-currency-eur" : "bx bx-barcode";
+            }else{
+                return this.variant === "amount" ? "mdi mdi-currency-gbp" : "bx bx-barcode";
+            }
+            
         }
     },
     methods: {
