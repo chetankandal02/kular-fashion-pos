@@ -29,9 +29,16 @@ class GiftVoucherController extends Controller
                 'error' => $validator->errors()
             ], 422);
         }
+        if($request->payment_method == 'Euro'){
+            $exchangeRate = setting("euro_to_pound");
+            $amount = (float) $request->amount;
+            $amount = $amount * $exchangeRate;
+        }else{
+            $amount = $request->amount;
+        }
 
         $giftVoucher = GiftVoucher::create([
-            'amount' => $request->amount,
+            'amount' => $amount,
             'payment_through' => $request->payment_method,
             'generated_by' => $request->auth_user_id
         ]);
