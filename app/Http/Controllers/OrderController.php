@@ -359,6 +359,30 @@ class OrderController extends Controller
         }
     }
 
+    public function printGiftReceipt(){
+        try {
+            $lastOrder = Order::latest()->first();
+            if (!$lastOrder) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No previous sale found!',
+                ], 200);
+            }
+
+            $this->receiptService->printGiftReceipt($lastOrder->id);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Receipt printed successfully!',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to print order receipt!',
+            ], 200);
+        }
+    }
+
     public function saleDetail($saleId)
     {
         $sale = Order::with('orderItems', 'paymentMethods', 'salesPerson')->find($saleId);
