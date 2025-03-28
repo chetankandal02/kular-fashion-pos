@@ -22,7 +22,6 @@ Route::get('/customers', [CustomerController::class, 'getCustomers']);
 Route::post('/customers', [CustomerController::class, 'store']);
 
 Route::post('/gift-voucher', [GiftVoucherController::class, 'create']);
-Route::post('/print-last-gift-voucher-receipt', [GiftVoucherController::class, 'printLastReceipt']);
 Route::post('/gift-voucher/apply', [GiftVoucherController::class, 'apply']);
 
 Route::post('/credit-note', [CreditNoteController::class, 'create']);
@@ -34,6 +33,7 @@ Route::post('/products/add-manufacture-barcode', [ProductController::class, 'add
 
 Route::post('/sales/today', [OrderController::class, 'getTodaysSales']);
 Route::post('/print-last-sale-receipt', [OrderController::class, 'printLastReceipt']);
+Route::post('/print-gift-receipt', [OrderController::class, 'printGiftReceipt']);
 
 Route::post('/quick-validate-item', [ProductController::class, 'quickValidateItem']);
 Route::get('/product-stocks/{product}', [ProductController::class, 'stocksDetail']);

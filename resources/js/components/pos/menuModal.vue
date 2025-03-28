@@ -77,7 +77,7 @@ export default {
             }
         },
         async printLastGiftReceipt(){
-            const response = await axios.post('/api/print-last-gift-voucher-receipt');
+            const response = await axios.post('/api/print-gift-receipt');
 
             if (response.data.success) {
                 Swal.fire({
