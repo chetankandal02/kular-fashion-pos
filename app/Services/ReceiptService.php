@@ -57,7 +57,7 @@ class ReceiptService
 
     public function printFullWidthLine($character = '=')
     {
-        $lineWidth = 48;
+        $lineWidth = 40;
         $this->printer->text(str_repeat($character, $lineWidth) . "\n");
     }
 
