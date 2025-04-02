@@ -57,29 +57,6 @@ class GiftVoucherController extends Controller
             ], 200);
         }
     }
-    
-    public function printLastReceipt(){
-        try {
-            $lastGiftVoucher = GiftVoucher::latest()->first(); 
-            if(!$lastGiftVoucher){
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No previous gift voucher found!',
-                ], 200);
-            }
-            
-            $this->receiptService->printGiftVoucher($lastGiftVoucher->toArray());
-            return response()->json([
-                'success' => true,
-                'message' => 'Receipt printed successfully!',
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to print order receipt!',
-            ], 200);
-        }
-    }
 
     public function apply(Request $request){
         $giftVoucher = GiftVoucher::where('barcode', $request->barcode)->whereNull('deleted_at')->first();
