@@ -50,7 +50,7 @@ export default {
     data() {
         return {
             table: null,
-            expandedRows: new Set() 
+            expandedRows: new Set()
         };
     },
     methods: {
@@ -190,7 +190,7 @@ export default {
             return date.toLocaleString();
         }
     },
-    
+
     mounted() {
         this.initializeDataTable();
 
@@ -198,4 +198,7 @@ export default {
         $('#sales_start_date, #sales_end_date').on('change', this.reloadDataTable);
     }
 };
+$('#salesListModal').on('hidden.bs.modal', function () {
+    $('.modal-backdrop').remove();
+});
 </script>
