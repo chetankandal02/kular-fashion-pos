@@ -34,6 +34,24 @@ class ProductController extends Controller
                     });
             });
         }
+        if ($request->has('order')) {
+            $columns = [
+                1 => 'article_code',
+                2 => 'manufacture_code',
+                3 => 'brands.name',
+                4 => 'product_types.name',
+                5 => 'departments.name',
+                6 => 'short_description',
+                7 => 'price',
+            ];
+
+            $orderColumnIndex = $request->input('order.0.column');
+            $orderDirection = $request->input('order.0.dir', 'asc'); 
+
+            if (isset($columns[$orderColumnIndex])) {
+                $query->orderBy($columns[$orderColumnIndex], $orderDirection);
+            }
+        }
 
         if ($request->brand_id) {
             $query->where('brand_id', $request->brand_id);
@@ -131,8 +149,8 @@ class ProductController extends Controller
         $branch_id = User::find($request->userId)->branch_id;
 
         $product = ProductQuantity::where('product_id', $request->id)->where('product_size_id', $request->sizeId)->where('product_color_id', $request->colorId)->with('product.brand', 'product.department', 'sizes.sizeDetail', 'colors.colorDetail')->first();
-        
-        if(!$product){
+
+        if (!$product) {
             return response()->json(['success' => false, 'message' => 'Could not found product']);
         }
 
@@ -154,7 +172,7 @@ class ProductController extends Controller
         $article_code = $article_code . $color_code . $size_code;
         $checkCode = $this->generateCheckDigit($article_code);
         $generated_code = $article_code . $checkCode;
-        
+
         $productData = [
             'id' => $product->id,
             'product_id'   => $product->product->id,
@@ -176,10 +194,11 @@ class ProductController extends Controller
         return response()->json(['success' => true, 'message' => 'Product found successfullly!', 'product' => $productData], 200);
     }
 
-    public function stocksDetail(Product $product){
+    public function stocksDetail(Product $product)
+    {
         $product = Product::with(['sizes.sizeDetail', 'colors.colorDetail', 'quantities'])->find($product->id);
 
-        $branches = Branch::with(['inventory' => function($query) use ($product) {
+        $branches = Branch::with(['inventory' => function ($query) use ($product) {
             $query->where('product_id', $product->id);
         }])->get();
 

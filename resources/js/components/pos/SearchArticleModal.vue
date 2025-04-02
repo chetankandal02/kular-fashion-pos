@@ -38,8 +38,11 @@
                 <th>#</th>
                 <th>Article Code</th>
                 <th>Manufacture Code</th>
-                <th>Department</th>
                 <th>Brand</th>
+                <th>Product Type</th>
+                <th>Department</th>
+                <th>Short Description</th>
+                <th>Price</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -108,7 +111,8 @@
           <h5 class="modal-title" id="stocksDetailModalLabel">Stocks Details</h5>
           <div>
             <button type="button" class="btn btn-primary btn-sm inventory-change"
-              @click="storeWiseInventory = !storeWiseInventory">{{ !storeWiseInventory ? 'Store' : 'Color' }} wise Inventory</button>
+              @click="storeWiseInventory = !storeWiseInventory">{{ !storeWiseInventory ? 'Store' : 'Color' }} wise
+              Inventory</button>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
         </div>
@@ -330,6 +334,7 @@ export default {
             d.product_type_id = $('#search_by_product_type').val();
             d.search['value'] = $('#search_product').val();
             d.page = Math.floor(d.start / d.length) + 1;
+            d.order = d.order;
           },
         },
         columns: [
@@ -346,12 +351,24 @@ export default {
             data: 'manufacture_code',
           },
           {
+            title: 'Brand',
+            data: 'brand.name',
+          },
+          {
+            title: 'Product Type',
+            data: 'product_type.name',
+          },
+          {
             title: 'Department',
             data: 'department.name',
           },
           {
-            title: 'Brand',
-            data: 'brand.name',
+            title: 'Short Description',
+            data: 'short_description',
+          },
+          {
+            title: 'Price',
+            data: 'price',
           },
           {
             title: 'Action',
@@ -374,7 +391,7 @@ export default {
             },
           },
         ],
-        order: [[0, 'desc']],
+        order: [[2,'asc']],
         drawCallback: function () {
           $('.pick-product-for-sale').on('click', (event) => {
             const product = JSON.parse($(event.currentTarget).attr('data-product'));
