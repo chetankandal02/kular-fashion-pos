@@ -334,8 +334,12 @@ export default {
             d.product_type_id = $('#search_by_product_type').val();
             d.search['value'] = $('#search_product').val();
             d.page = Math.floor(d.start / d.length) + 1;
-            d.order = d.order;
+            // d.order = d.order;
           },
+          error: function (xhr, error, thrown) {
+            console.error('Error fetching data:', error);
+            console.error('Response:', xhr.responseText);
+          }
         },
         columns: [
           {
@@ -391,7 +395,7 @@ export default {
             },
           },
         ],
-        order: [[2,'asc']],
+        order: [[2, 'asc']],
         drawCallback: function () {
           $('.pick-product-for-sale').on('click', (event) => {
             const product = JSON.parse($(event.currentTarget).attr('data-product'));
