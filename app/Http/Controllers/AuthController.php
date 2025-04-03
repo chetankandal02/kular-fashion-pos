@@ -9,17 +9,25 @@ use Spatie\Permission\Models\Permission;
 
 class AuthController extends Controller
 {
-    public function login(){
+    public function login()
+    {
+        if (Auth::check()) {
+            return redirect()->route('home');
+        }
         return view('auth.login');
     }
 
     public function authenticate(Request $request): RedirectResponse
     {
+        if (Auth::check()) {
+            return redirect()->route('home');
+        }
+
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
- 
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             $user = Auth::user();
@@ -27,10 +35,11 @@ class AuthController extends Controller
                 return redirect('/');
             } else {
                 return back()->withErrors([
-                    'message' => 'You have no permission to login Pos dashboard.']);
+                    'message' => 'You have no permission to login Pos dashboard.'
+                ]);
             }
         }
- 
+
         return back()->withErrors([
             'message' => 'The provided credentials do not match our records.',
         ]);
