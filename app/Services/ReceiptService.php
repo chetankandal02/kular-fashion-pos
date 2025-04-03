@@ -47,7 +47,7 @@ class ReceiptService
     public function printBarcode($barcode)
     {
         $generator = new BarcodeGeneratorPNG();
-        $barcodeImage = $generator->getBarcode($barcode, $generator::TYPE_CODE_128, 3, 100);
+        $barcodeImage = $generator->getBarcode($barcode, $generator::TYPE_CODE_128, 3, 70);
         file_put_contents('barcode.png', $barcodeImage);
 
         $imagePath = public_path('barcode.png');
