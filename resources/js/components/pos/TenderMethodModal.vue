@@ -11,7 +11,7 @@
                     <div class="search-box mb-2">
                         <VirtualNumberKeyboard ref="virtualKeyboard"
                             v-if="selectedMethod === 'Cash' || selectedMethod === 'Card' || selectedMethod === 'Euro'"
-                            :inputValue="initialAmount" @on-change="changeAmount" @on-submit="savePaymentInfo" />
+                            :inputValue="initialAmount" @on-change="changeAmount" :selectedPayment="selectedMethod" @on-submit="savePaymentInfo" />
 
                         <VirtualNumberKeyboard ref="virtualKeyboard" v-else variant="barcode" :inputValue="barcode"
                             @on-change="changeBarcode" @on-submit="savePaymentInfo" />
