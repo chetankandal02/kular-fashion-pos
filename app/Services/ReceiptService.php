@@ -223,7 +223,6 @@ class ReceiptService
                 $this->printer->setJustification(Printer::JUSTIFY_LEFT);
                 foreach ($group as $item) {
                     $this->printGiftItem($item);
-                    // dd($item);
                 }
                 // $this->printer->setJustification(Printer::JUSTIFY_CENTER);
             }
@@ -267,7 +266,18 @@ class ReceiptService
         $brand = Brand::find($item->brand_id);
         $this->printer->text(str_pad($item->barcode . ' * 1', 30) . "\n");
         $this->printer->text($product->article_code . '      ' . $item->color_name . '      ' . $item->size . '      ' . ($brand ? $brand->short_name : $item->brand_name) . "\n");
-        $this->printer->text($product->short_description . "\n\n");
+        $this->printer->text($product->short_description . "\n");
+
+        $generator = new BarcodeGeneratorPNG();
+        $barcode = $item->changed_price;
+        $barcodeImage = $generator->getBarcode($barcode, $generator::TYPE_CODE_128, 1, 25);
+        file_put_contents('barcode.png', $barcodeImage);
+
+        $imagePath = public_path('barcode.png');
+        $image = EscposImage::load($imagePath);
+        $this->printer->bitImage($image);
+        $this->printer->text("\n");
+
     }
 
     protected function printPaymentMethods($paymentMethods)

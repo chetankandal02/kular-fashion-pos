@@ -84,8 +84,9 @@ export default {
                     title: 'Success!',
                     text: 'Gift voucher receipt printed successfully.',
                     icon: 'success',
-                    confirmButtonText: 'Great!'
+                    timer: 1000
                 });
+                this.closeModal();
             } else {
                 alert(response.data.message || 'Something went wrong!')
             }
