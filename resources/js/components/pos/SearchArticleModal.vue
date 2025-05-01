@@ -118,42 +118,68 @@
         </div>
         <div class="modal-body">
           <div v-if="stocksDetail && stocksDetail.product">
+            <div class="p-3 mb-4">
+              <div class="row">
+                <div class="col-sm-4 mb-2">
+                  <h6>Article Code: <strong>{{ stocksDetail.product.article_code }}</strong></h6>
+                </div>
+                <div class="col-sm-4 mb-2">
+                  <h6>Brand: <strong>{{ stocksDetail.product.brand?.name || 'N/A' }}</strong></h6>
+                </div>
+                <div class="col-sm-4 mb-2">
+                  <h6>Manufacture Code: <strong>{{ stocksDetail.product.manufacture_code || 'N/A' }}</strong></h6>
+                </div>
+                <div class="col-sm-4 mb-2">
+                  <h6>Price: <strong>£{{ stocksDetail.product.price || '0.00' }}</strong></h6>
+                </div>
+                <div class="col-sm-4 mb-2">
+                  <h6>In Date: <strong>{{ stocksDetail.product.in_date || 'N/A' }}</strong></h6>
+                </div>
+                <div class="col-sm-4 mb-2">
+                  <h6>Last In Date: <strong>{{ stocksDetail.product.last_date || 'N/A' }}</strong></h6>
+                </div>
+              </div>
+            </div>
+
             <div v-if="storeWiseInventory">
               <div class="mb-2" v-for="(branch, index) in stocksDetail.branches" :key="index">
-                <div>
-                  <div class="text-center">
-                    <h5 class="mb-0"><strong>{{ branch.name }}</strong></h5>
-                  </div>
-
-                  <div class="table-responsive">
-                    <table class="table mb-0 table-bordered">
-                      <tbody>
-                        <tr>
-                          <th scope="row" class="p-1">Size</th>
-                          <th class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">{{
-                            size.size_detail.size }}</th>
-                        </tr>
-
-                        <tr v-for="(color, index) in stocksDetail.product.colors" :key="index">
-                          <th class="d-flex p-1">
-                            <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }">
-                            </div>
-                            <h6 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
-                          </th>
-                          <td class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">
-                            <div v-if="branch.id === 1">
-                              {{stocksDetail.product.quantities.find(item => item.product_size_id === size.id &&
-                                item.product_color_id === color.id)?.quantity || 0}}
-                            </div>
-                            <div v-else>
-                              {{branch.inventory.find(item => item.product_size_id === size.id &&
-                                item.product_color_id === color.id)?.quantity || 0}}
-                            </div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                <div class="text-center">
+                  <h5 class="mb-0"><strong>{{ branch.name }}</strong></h5>
+                </div>
+                <div class="table-responsive">
+                  <table class="table mb-0 table-bordered">
+                    <tbody>
+                      <tr>
+                        <th scope="row" class="p-1" style="width: 180px;">Size</th>
+                        <th class="p-1" v-for="(size, i) in stocksDetail.product.sizes" :key="i">
+                          {{ size.size_detail.size }}
+                        </th>
+                      </tr>
+                      <tr v-for="(color, i) in stocksDetail.product.colors" :key="i">
+                        <th class="d-flex p-1">
+                          <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }">
+                          </div>
+                          <h6 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
+                        </th>
+                        <td class="p-1" v-for="(size, j) in stocksDetail.product.sizes" :key="j">
+                          <div v-if="branch.id === 1">
+                            {{
+                              stocksDetail.product.quantities.find(item =>
+                                item.product_size_id === size.id &&
+                                item.product_color_id === color.id)?.quantity || 0
+                            }}
+                          </div>
+                          <div v-else>
+                            {{
+                              branch.inventory.find(item =>
+                                item.product_size_id === size.id &&
+                                item.product_color_id === color.id)?.quantity || 0
+                            }}
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
 
@@ -161,24 +187,25 @@
                 <div class="text-center">
                   <h5 class="text-success mb-0"><strong>Goods In</strong></h5>
                 </div>
-
                 <table class="table mb-0 table-bordered">
                   <tbody>
                     <tr>
-                      <th scope="row" class="p-1">Size</th>
-                      <th class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">{{
-                        size.size_detail.size }}</th>
+                      <th scope="row" class="p-1" style="width: 180px;">Size</th>
+                      <th class="p-1" v-for="(size, i) in stocksDetail.product.sizes" :key="i">
+                        {{ size.size_detail.size }}
+                      </th>
                     </tr>
-
-                    <tr v-for="(color, index) in stocksDetail.product.colors" :key="index">
+                    <tr v-for="(color, i) in stocksDetail.product.colors" :key="i">
                       <th class="d-flex p-1">
-                        <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }">
-                        </div>
+                        <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }"></div>
                         <h6 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
                       </th>
-                      <td class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">
-                        {{stocksDetail.product.quantities.find(item => item.product_size_id === size.id &&
-                          item.product_color_id === color.id)?.total_quantity || 0}}
+                      <td class="p-1" v-for="(size, j) in stocksDetail.product.sizes" :key="j">
+                        {{
+                          stocksDetail.product.quantities.find(item =>
+                            item.product_size_id === size.id &&
+                            item.product_color_id === color.id)?.total_quantity || 0
+                        }}
                       </td>
                     </tr>
                   </tbody>
@@ -186,53 +213,58 @@
               </div>
             </div>
             <div v-else>
-              <div class="mb-2" v-for="(color, index) in stocksDetail.product.colors" :key="index">
-                <div>
-                  <div class="d-flex justify-content-center align-items-center mt-2">
-                    <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }"></div>
-                    <h5 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h5>
-                  </div>
-
-                  <div class="table-responsive">
-                    <table class="table mb-0 table-bordered">
-                      <tbody>
-                        <tr>
-                          <th scope="row" class="p-1">Size</th>
-                          <th class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">{{
-                            size.size_detail.size }}</th>
-                        </tr>
-
-                        <tr v-for="(branch, index) in stocksDetail.branches" :key="index">
-                          <th class="d-flex p-1">
-                            <h6 class="m-0">{{ branch.name }}</h6>
-                          </th>
-                          <td class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">
-                            <div v-if="branch.id === 1">
-                              {{stocksDetail.product.quantities.find(item => item.product_size_id === size.id &&
-                                item.product_color_id === color.id)?.quantity || 0}}
-                            </div>
-                            <div v-else>
-                              {{branch.inventory.find(item => item.product_size_id === size.id &&
-                                item.product_color_id === color.id)?.quantity || 0}}
-                            </div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="d-flex p-1">
-                            <h6 class="m-0 text-success">Goods In</h6>
-                          </th>
-                          <td class="p-1" v-for="(size, index) in stocksDetail.product.sizes" :key="index">
-                            {{stocksDetail.product.quantities.find(item => item.product_size_id === size.id &&
-                              item.product_color_id === color.id)?.total_quantity || 0}}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+              <div class="mb-2" v-for="(color, i) in stocksDetail.product.colors" :key="i">
+                <div class="d-flex justify-content-center align-items-center mt-2">
+                  <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }"></div>
+                  <h5 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h5>
+                </div>
+                <div class="table-responsive">
+                  <table class="table mb-0 table-bordered">
+                    <tbody>
+                      <tr>
+                        <th scope="row" class="p-1" style="width: 180px;">Size</th>
+                        <th class="p-1" v-for="(size, i) in stocksDetail.product.sizes" :key="i">
+                          {{ size.size_detail.size }}
+                        </th>
+                      </tr>
+                      <tr v-for="(branch, i) in stocksDetail.branches" :key="i">
+                        <th class="d-flex p-1">
+                          <h6 class="m-0">{{ branch.name }}</h6>
+                        </th>
+                        <td class="p-1" v-for="(size, j) in stocksDetail.product.sizes" :key="j">
+                          <div v-if="branch.id === 1">
+                            {{
+                              stocksDetail.product.quantities.find(item =>
+                                item.product_size_id === size.id &&
+                                item.product_color_id === color.id)?.quantity || 0
+                            }}
+                          </div>
+                          <div v-else>
+                            {{
+                              branch.inventory.find(item =>
+                                item.product_size_id === size.id &&
+                                item.product_color_id === color.id)?.quantity || 0
+                            }}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th class="d-flex p-1 text-success">
+                          <h6 class="m-0">Goods In</h6>
+                        </th>
+                        <td class="p-1" v-for="(size, j) in stocksDetail.product.sizes" :key="j">
+                          {{
+                            stocksDetail.product.quantities.find(item =>
+                              item.product_size_id === size.id &&
+                              item.product_color_id === color.id)?.total_quantity || 0
+                          }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>

@@ -196,7 +196,7 @@ class ProductController extends Controller
 
     public function stocksDetail(Product $product)
     {
-        $product = Product::with(['sizes.sizeDetail', 'colors.colorDetail', 'quantities'])->find($product->id);
+        $product = Product::with(['sizes.sizeDetail', 'colors.colorDetail', 'quantities','brand'])->find($product->id);
 
         $branches = Branch::with(['inventory' => function ($query) use ($product) {
             $query->where('product_id', $product->id);
