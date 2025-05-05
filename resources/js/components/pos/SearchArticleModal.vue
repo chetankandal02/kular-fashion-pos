@@ -160,7 +160,7 @@
                           <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }">
                           </div>
                           <h6 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
-                          <img :src="mainUrl + color.image_path" alt="Color Image" class="ms-2"
+                          <img :src="mainUrl + color.image_path" alt="Color Image" class="ms-2 zoomable-image"
                             style="width: 30px; height: 30px; object-fit: cover; cursor: pointer;"
                             @click="showFullScreenImage(mainUrl + color.image_path)" />
                         </th>
@@ -273,6 +273,28 @@
       </div>
     </div>
   </div>
+  
+  <div class="modal fade" id="imageZoomModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-body p-0" style="max-height: 80vh; overflow: auto;">
+          <div class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
+            <img :src="zoomImageUrl" class="img-fluid" :style="{
+              transform: 'scale(' + zoomLevel + ')',
+              transition: 'transform 0.2s ease',
+              transformOrigin: 'center center'
+            }" />
+          </div>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button class="btn btn-secondary" @click="zoomOut">-</button>
+          <button class="btn btn-secondary" @click="zoomIn">+</button>
+          <button class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <script>
@@ -300,7 +322,9 @@ export default {
       selectedSize: null,
       selectedColor: null,
       stocksDetail: null,
-      storeWiseInventory: true
+      storeWiseInventory: true,
+      zoomImageUrl: '',
+      zoomLevel: 1,
     };
   },
   methods: {
@@ -478,17 +502,17 @@ export default {
       }
     },
     showFullScreenImage(url) {
-      const imgWindow = window.open('', '_blank');
-      imgWindow.document.write(`
-    <html>
-      <head><title>Zoomed Image</title></head>
-      <body style="margin:0;display:flex;justify-content:center;align-items:center;background:#000;">
-        <img src="${url}" style="max-width:100%; max-height:100%;" />
-      </body>
-    </html>
-  `);
-    }
-
+      this.zoomImageUrl = url;
+      this.zoomLevel = 1;
+      const modal = new bootstrap.Modal(document.getElementById('imageZoomModal'));
+      modal.show();
+    },
+    zoomIn() {
+      this.zoomLevel += 0.1;
+    },
+    zoomOut() {
+      if (this.zoomLevel > 0.2) this.zoomLevel -= 0.1;
+    },
   },
   mounted() {
     $('#search_by_brand').chosen({
