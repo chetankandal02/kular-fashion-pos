@@ -150,7 +150,7 @@
                   <table class="table mb-0 table-bordered">
                     <tbody>
                       <tr>
-                        <th scope="row" class="p-1" style="width: 180px;">Size</th>
+                        <th scope="row" class="p-1" style="width: 220px;">Size</th>
                         <th class="p-1" v-for="(size, i) in stocksDetail.product.sizes" :key="i">
                           {{ size.size_detail.size }}
                         </th>
@@ -160,6 +160,9 @@
                           <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }">
                           </div>
                           <h6 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
+                          <img :src="mainUrl + color.image_path" alt="Color Image" class="ms-2 zoomable-image"
+                            style="width: 30px; height: 30px; object-fit: cover; cursor: pointer;"
+                            @click="showFullScreenImage(mainUrl + color.image_path)" />
                         </th>
                         <td class="p-1" v-for="(size, j) in stocksDetail.product.sizes" :key="j">
                           <div v-if="branch.id === 1">
@@ -190,7 +193,7 @@
                 <table class="table mb-0 table-bordered">
                   <tbody>
                     <tr>
-                      <th scope="row" class="p-1" style="width: 180px;">Size</th>
+                      <th scope="row" class="p-1" style="width: 220px;">Size</th>
                       <th class="p-1" v-for="(size, i) in stocksDetail.product.sizes" :key="i">
                         {{ size.size_detail.size }}
                       </th>
@@ -270,6 +273,28 @@
       </div>
     </div>
   </div>
+  
+  <div class="modal fade" id="imageZoomModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-body p-0" style="max-height: 80vh; overflow: auto;">
+          <div class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
+            <img :src="zoomImageUrl" class="img-fluid" :style="{
+              transform: 'scale(' + zoomLevel + ')',
+              transition: 'transform 0.2s ease',
+              transformOrigin: 'center center'
+            }" />
+          </div>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button class="btn btn-secondary" @click="zoomOut">-</button>
+          <button class="btn btn-secondary" @click="zoomIn">+</button>
+          <button class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <script>
@@ -285,6 +310,9 @@ export default {
     productTypes: {
       type: Array,
       required: true
+    },
+    mainUrl: {
+      type: String,
     }
   },
   data() {
@@ -294,7 +322,9 @@ export default {
       selectedSize: null,
       selectedColor: null,
       stocksDetail: null,
-      storeWiseInventory: true
+      storeWiseInventory: true,
+      zoomImageUrl: '',
+      zoomLevel: 1,
     };
   },
   methods: {
@@ -470,6 +500,18 @@ export default {
       if (this.table) {
         this.table.ajax.reload();
       }
+    },
+    showFullScreenImage(url) {
+      this.zoomImageUrl = url;
+      this.zoomLevel = 1;
+      const modal = new bootstrap.Modal(document.getElementById('imageZoomModal'));
+      modal.show();
+    },
+    zoomIn() {
+      this.zoomLevel += 0.1;
+    },
+    zoomOut() {
+      if (this.zoomLevel > 0.2) this.zoomLevel -= 0.1;
     },
   },
   mounted() {

@@ -29,7 +29,7 @@
 
                     @if(Route::currentRouteName()==='home')
                         <on-hold-sales-modal></on-hold-sales-modal>
-                        <search-article-modal :brands="{{ json_encode($brands) }}" :product-types="{{ json_encode($productTypes) }}"></search-article-modal>
+                        <search-article-modal :brands="{{ json_encode($brands) }}" :product-types="{{ json_encode($productTypes) }}" main-url="{{ env('ADMIN_URL') }}"></search-article-modal>
                         <inventory-transfer-modal></inventory-transfer-modal>
                     @endif
 
