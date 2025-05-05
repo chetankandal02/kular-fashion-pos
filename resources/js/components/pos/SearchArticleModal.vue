@@ -150,7 +150,7 @@
                   <table class="table mb-0 table-bordered">
                     <tbody>
                       <tr>
-                        <th scope="row" class="p-1" style="width: 180px;">Size</th>
+                        <th scope="row" class="p-1" style="width: 220px;">Size</th>
                         <th class="p-1" v-for="(size, i) in stocksDetail.product.sizes" :key="i">
                           {{ size.size_detail.size }}
                         </th>
@@ -160,6 +160,9 @@
                           <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }">
                           </div>
                           <h6 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
+                          <img :src="mainUrl + color.image_path" alt="Color Image" class="ms-2"
+                            style="width: 30px; height: 30px; object-fit: cover; cursor: pointer;"
+                            @click="showFullScreenImage(mainUrl + color.image_path)" />
                         </th>
                         <td class="p-1" v-for="(size, j) in stocksDetail.product.sizes" :key="j">
                           <div v-if="branch.id === 1">
@@ -190,7 +193,7 @@
                 <table class="table mb-0 table-bordered">
                   <tbody>
                     <tr>
-                      <th scope="row" class="p-1" style="width: 180px;">Size</th>
+                      <th scope="row" class="p-1" style="width: 220px;">Size</th>
                       <th class="p-1" v-for="(size, i) in stocksDetail.product.sizes" :key="i">
                         {{ size.size_detail.size }}
                       </th>
@@ -285,6 +288,9 @@ export default {
     productTypes: {
       type: Array,
       required: true
+    },
+    mainUrl: {
+      type: String,
     }
   },
   data() {
@@ -471,6 +477,18 @@ export default {
         this.table.ajax.reload();
       }
     },
+    showFullScreenImage(url) {
+      const imgWindow = window.open('', '_blank');
+      imgWindow.document.write(`
+    <html>
+      <head><title>Zoomed Image</title></head>
+      <body style="margin:0;display:flex;justify-content:center;align-items:center;background:#000;">
+        <img src="${url}" style="max-width:100%; max-height:100%;" />
+      </body>
+    </html>
+  `);
+    }
+
   },
   mounted() {
     $('#search_by_brand').chosen({
