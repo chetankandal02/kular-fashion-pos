@@ -33,12 +33,15 @@
               <div class="col-9 ps-4">Misc Returns</div>
               <div class="col-3">£{{ salesData.miscReturns }}</div>
             </div>
+            <div class="text-center">
+              <div class="border-divider mb-2"></div>
+              <h5>Payments History</h5>
+            </div>
             <div v-if="totalsByMethod.length > 0">
-              <ul>
-                <li v-for="(method, index) in totalsByMethod" :key="index">
-                  {{ method.method }}: £{{ method.total_amount }}
-                </li>
-              </ul>
+              <div class="row" v-for="(method, index) in totalsByMethod" :key="index">
+                <div class="col-9 ps-4">{{ method.method }}</div>
+                <div class="col-3">£{{ method.total_amount }}</div>
+              </div>
             </div>
           </div>
           <div class="text-center">
