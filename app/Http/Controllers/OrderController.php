@@ -316,7 +316,6 @@ class OrderController extends Controller
         $giftVoucherSold = GiftVoucher::where('generated_by', $request->salesPersonId)->whereDate('created_at', $today)->withTrashed()->count();
         $creditNotesIssue = CreditNote::where('generated_by', $request->salesPersonId)->whereDate('created_at', $today)->withTrashed()->count();
 
-
         $totals = [
             'saleItems' => $salesData->where('flag', 'SALE')->count(),
             'saleReturns' => $salesData->where('flag', 'RETURN')->count(),
@@ -328,9 +327,15 @@ class OrderController extends Controller
             'creditNotesRedeemed' => number_format($giftVoucherRedeemeds->where('method', 'Credit Note')->sum('original_amount'), 2)
         ];
 
+        $totalsByMethod = OrderPayment::select('method')
+            ->selectRaw('SUM(amount) as total_amount')
+            ->groupBy('method')
+            ->get();
+
         return response()->json([
             'salesData' => $salesData,
             'totals' => $totals,
+            'totalsByMethod' => $totalsByMethod,
         ]);
     }
 
@@ -359,7 +364,8 @@ class OrderController extends Controller
         }
     }
 
-    public function printGiftReceipt(){
+    public function printGiftReceipt()
+    {
         try {
             $lastOrder = Order::latest()->first();
             if (!$lastOrder) {

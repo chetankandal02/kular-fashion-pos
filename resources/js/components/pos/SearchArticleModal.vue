@@ -202,6 +202,9 @@
                       <th class="d-flex p-1">
                         <div class="me-1 d-color-code" :style="{ background: color.color_detail.ui_color_code }"></div>
                         <h6 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
+                        <img :src="mainUrl + color.image_path" alt="Color Image" class="ms-2 zoomable-image"
+                          style="width: 30px; height: 30px; object-fit: cover; cursor: pointer;"
+                          @click="showFullScreenImage(mainUrl + color.image_path)"/>
                       </th>
                       <td class="p-1" v-for="(size, j) in stocksDetail.product.sizes" :key="j">
                         {{
@@ -273,7 +276,7 @@
       </div>
     </div>
   </div>
-  
+
   <div class="modal fade" id="imageZoomModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">

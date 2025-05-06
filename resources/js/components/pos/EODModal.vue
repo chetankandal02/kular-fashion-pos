@@ -10,8 +10,8 @@
           <div class="text-center">
             <h6>{{ currentStoreName }}</h6>
             <h6 v-html="nl2br(orderReceiptHeader)"></h6>
-            <h6 v-if="storeDetail.contact">Phone Number: {{storeDetail.contact}}</h6>
-            <h6 v-if="storeDetail.email">Email: {{storeDetail.email}}</h6>
+            <h6 v-if="storeDetail.contact">Phone Number: {{ storeDetail.contact }}</h6>
+            <h6 v-if="storeDetail.email">Email: {{ storeDetail.email }}</h6>
             <h6>{{ currentDate }}</h6>
             <div class="border-divider mb-2"></div>
             <h5>SALE OF GOODS</h5>
@@ -32,6 +32,13 @@
             <div class="row">
               <div class="col-9 ps-4">Misc Returns</div>
               <div class="col-3">£{{ salesData.miscReturns }}</div>
+            </div>
+            <div v-if="totalsByMethod.length > 0">
+              <ul>
+                <li v-for="(method, index) in totalsByMethod" :key="index">
+                  {{ method.method }}: £{{ method.total_amount }}
+                </li>
+              </ul>
             </div>
           </div>
           <div class="text-center">
@@ -59,7 +66,8 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-success"><i class="mdi mdi-printer font-size-14 me-1" @click="handlePrint"></i>Print</button>
+          <button type="button" class="btn btn-success"><i class="mdi mdi-printer font-size-14 me-1"
+              @click="handlePrint"></i>Print</button>
         </div>
       </div>
     </div>
@@ -86,6 +94,7 @@ export default {
         creditNotesIssued: 0,
         creditNotesRedeemed: 0
       },
+      totalsByMethod: [],
       salesPersonId: window.config.userId || 0,
     };
   },
@@ -94,8 +103,9 @@ export default {
       return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
     },
     async fetchSalesData() {
-        const response = await axios.post('api/sales/today', { salesPersonId: Number(this.salesPersonId) });
-        this.salesData = response.data.totals;
+      const response = await axios.post('api/sales/today', { salesPersonId: Number(this.salesPersonId) });
+      this.salesData = response.data.totals;
+      this.totalsByMethod = response.data.totalsByMethod; // Store totals by method in the data property
     },
     nl2br(text) {
       return text?.replace(/\n/g, '<br>');
