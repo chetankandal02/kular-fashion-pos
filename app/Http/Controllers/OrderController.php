@@ -328,6 +328,7 @@ class OrderController extends Controller
         ];
 
         $totalsByMethod = OrderPayment::select('method')
+            ->whereDate('created_at', $today)
             ->selectRaw('SUM(amount) as total_amount')
             ->groupBy('method')
             ->get();

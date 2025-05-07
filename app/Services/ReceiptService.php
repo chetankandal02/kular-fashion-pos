@@ -277,7 +277,6 @@ class ReceiptService
         $image = EscposImage::load($imagePath);
         $this->printer->bitImage($image);
         $this->printer->text("\n");
-
     }
 
     protected function printPaymentMethods($paymentMethods)
@@ -309,7 +308,11 @@ class ReceiptService
         $giftVouchersRedeemed = number_format($giftVoucherRedeemeds->where('method', '!=', 'Credit Note')->sum('original_amount'), 2);
         $creditNotesIssued = $creditNotesIssue->count();
         $creditNotesRedeemed = number_format($giftVoucherRedeemeds->where('method', 'Credit Note')->sum('original_amount'), 2);
-
+        $totalsByMethod = OrderPayment::select('method')
+            ->whereDate('created_at', $date)
+            ->selectRaw('SUM(amount) as total_amount')
+            ->groupBy('method')
+            ->get();
         $this->printLogo();
         $this->printer->setJustification(Printer::JUSTIFY_CENTER);
 
@@ -330,6 +333,19 @@ class ReceiptService
         $this->printer->text(str_pad('       Sale Return Items', 35) . $saleReturns . "\n");
         $this->printer->text(str_pad('       Misc Sales', 35) . '£' . $miscSales . "\n");
         $this->printer->text(str_pad('       Misc Returns', 35) . '£' . $miscReturns . "\n");
+        $this->printFullWidthLine('=');
+
+        $this->printer->setJustification(Printer::JUSTIFY_CENTER);
+        $this->printer->setEmphasis(true);
+        $this->printer->text("Payments History\n");
+        $this->printer->setEmphasis(false);
+        $this->printer->setJustification(Printer::JUSTIFY_LEFT);
+
+        foreach ($totalsByMethod as $method) {
+            $methodName = str_pad('       ' . $method->method, 35);
+            $methodTotal = '£' . number_format($method->total_amount, 2);
+            $this->printer->text($methodName . $methodTotal . "\n");
+        }
         $this->printFullWidthLine('=');
 
         $this->printer->setJustification(Printer::JUSTIFY_CENTER);
