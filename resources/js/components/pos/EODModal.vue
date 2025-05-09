@@ -69,8 +69,9 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-success"><i class="mdi mdi-printer font-size-14 me-1"
-              @click="handlePrint"></i>Print</button>
+          <button type="button" class="btn btn-success" @click="handlePrint">
+            <i class="mdi mdi-printer font-size-14 me-1"></i>
+            Print</button>
         </div>
       </div>
     </div>
