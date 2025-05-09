@@ -89,7 +89,7 @@ export default {
                 ],
                 order: [[0, 'desc']],
                 rowCallback: function (row, data) {
-                    $(row).on('click', function () {
+                    $(row).off('click').on('click', function () {
                         vm.toggleRowDetails(row, data);
                     });
                 },
@@ -196,9 +196,29 @@ export default {
 
         $('#article_code').on('keyup', this.reloadDataTable);
         $('#sales_start_date, #sales_end_date').on('change', this.reloadDataTable);
+
+        // Add row background color logic with jQuery
+        $(document).on('click', '#sales-list tr', function () {
+            $('#sales-list tr').children('td').removeClass('bg-warning'); // optional: clear warning
+            $('#sales-list tr').children('td').css('background', '');     // clear all backgrounds
+            $(this).children('td').css('background', 'pink');              // set red background on clicked row
+        });
+    },
+
+    beforeUnmount() {
+        // Clean up the click event handler
+        $(document).off('click', '#sales-list tr');
     }
 };
+
 $('#salesListModal').on('hidden.bs.modal', function () {
     $('.modal-backdrop').remove();
 });
 </script>
+
+<style scoped>
+/* Optional scoped style for consistent red background */
+#sales-list tr td {
+    transition: background-color 0.2s;
+}
+</style>
