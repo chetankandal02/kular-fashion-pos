@@ -56,6 +56,9 @@ export default {
     methods: {
         initializeDataTable() {
             const vm = this;
+            if ($.fn.dataTable.isDataTable('#sales-list')) {
+                return;
+            }
 
             this.table = $('#sales-list').DataTable({
                 processing: true,
@@ -115,7 +118,7 @@ export default {
                 const detailsRowHtml = `
                     <tr class="order-details-row">
                         <td colspan="7">
-                            <div class="p-2">
+                            <div class="p-2 bg-dark">
                                 <div class="row">
                                     <div class="col-md-4"><strong>Sale ID:</strong> #${saleDetails.code}</div>
                                     <div class="col-md-4"><strong>Sale Date:</strong> ${this.formatDateTime(saleDetails.created_at)}</div>
@@ -128,6 +131,7 @@ export default {
                                 <hr class="m-1">
 
                                 ${saleDetails.payment_methods.length > 0 ? `
+                                    <h6>Payment Methods:</h6>
                                     <div class="row">
                                         ${saleDetails.payment_methods.map(pm => `
                                             <div class="col-md-4"><strong>${pm.method}:</strong> £${pm.amount}</div>
@@ -186,45 +190,36 @@ export default {
 
         formatDateTime(timestamp) {
             const date = new Date(timestamp);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-            const year = date.getFullYear();
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-
-            return `${day}-${month}-${year} ${hours}:${minutes}`;
+            return date.toLocaleString();
         }
-
     },
-
     mounted() {
         this.initializeDataTable();
 
         $('#article_code').on('keyup', this.reloadDataTable);
         $('#sales_start_date, #sales_end_date').on('change', this.reloadDataTable);
 
-        // Add row background color logic with jQuery
+
         $(document).on('click', '#sales-list tr', function () {
-            $('#sales-list tr').children('td').removeClass('bg-warning'); // optional: clear warning
-            $('#sales-list tr').children('td').css('background', '');     // clear all backgrounds
-            $(this).children('td').css('background', 'pink');              // set red background on clicked row
+            // Remove previous highlight from all rows
+            $('#sales-list tr').children('td').removeClass('bg-dark');
+
+            // Add highlight to the clicked row
+            $(this).children('td').addClass('bg-dark');
+
+
+        });
+
+        $('#salesListModal').on('hidden.bs.modal', function () {
+            if ($.fn.dataTable.isDataTable('#sales-list')) {
+                $('#sales-list').DataTable().clear().destroy();
+            }
+            $('.modal-backdrop').remove();
         });
     },
-
     beforeUnmount() {
-        // Clean up the click event handler
-        $(document).off('click', '#sales-list tr');
+
+        $(document).off('click', '#sales-list tbody tr');
     }
 };
-
-$('#salesListModal').on('hidden.bs.modal', function () {
-    $('.modal-backdrop').remove();
-});
 </script>
-
-<style scoped>
-/* Optional scoped style for consistent red background */
-#sales-list tr td {
-    transition: background-color 0.2s;
-}
-</style>
