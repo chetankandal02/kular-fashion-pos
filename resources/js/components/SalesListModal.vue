@@ -182,8 +182,7 @@ export default {
             }
         },
 
-        
-        () {
+        reloadDataTable() {
             if (this.table) {
                 this.table.ajax.reload();
             }
@@ -201,6 +200,10 @@ export default {
 
         $('#article_code').on('keyup', this.reloadDataTable);
         $('#sales_start_date, #sales_end_date').on('change', this.reloadDataTable);
+
+        $('[data-bs-target="#salesListModal"]').on('click', function(){
+            
+        });
 
         $(document).on('click', '#sales-list tr', function () {
             $('#sales-list tr').children('td').removeClass('bg-dark');
