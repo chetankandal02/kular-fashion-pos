@@ -155,6 +155,9 @@ class ReceiptService
                 $this->printFullWidthLine('-');
             }
 
+            $this->printer->text("\n");
+            $this->printBarcode($order->code);
+
             foreach ($groupedItems as $saleType => $group) {
                 $this->printer->text("\n" . $saleType . " ITEMS\n");
                 $this->printer->setJustification(Printer::JUSTIFY_LEFT);

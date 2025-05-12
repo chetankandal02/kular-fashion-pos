@@ -182,7 +182,8 @@ export default {
             }
         },
 
-        reloadDataTable() {
+        
+        () {
             if (this.table) {
                 this.table.ajax.reload();
             }
@@ -196,18 +197,14 @@ export default {
     mounted() {
         this.initializeDataTable();
 
+        
+
         $('#article_code').on('keyup', this.reloadDataTable);
         $('#sales_start_date, #sales_end_date').on('change', this.reloadDataTable);
 
-
         $(document).on('click', '#sales-list tr', function () {
-            // Remove previous highlight from all rows
             $('#sales-list tr').children('td').removeClass('bg-dark');
-
-            // Add highlight to the clicked row
             $(this).children('td').addClass('bg-dark');
-
-
         });
 
         $('#salesListModal').on('hidden.bs.modal', function () {
