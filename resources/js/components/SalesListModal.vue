@@ -56,6 +56,9 @@ export default {
     methods: {
         initializeDataTable() {
             const vm = this;
+            if ($.fn.dataTable.isDataTable('#sales-list')) {
+                return;
+            }
 
             this.table = $('#sales-list').DataTable({
                 processing: true,
@@ -89,7 +92,7 @@ export default {
                 ],
                 order: [[0, 'desc']],
                 rowCallback: function (row, data) {
-                    $(row).on('click', function () {
+                    $(row).off('click').on('click', function () {
                         vm.toggleRowDetails(row, data);
                     });
                 },
@@ -115,7 +118,7 @@ export default {
                 const detailsRowHtml = `
                     <tr class="order-details-row">
                         <td colspan="7">
-                            <div class="p-2">
+                            <div class="p-2 bg-dark">
                                 <div class="row">
                                     <div class="col-md-4"><strong>Sale ID:</strong> #${saleDetails.code}</div>
                                     <div class="col-md-4"><strong>Sale Date:</strong> ${this.formatDateTime(saleDetails.created_at)}</div>
@@ -128,6 +131,7 @@ export default {
                                 <hr class="m-1">
 
                                 ${saleDetails.payment_methods.length > 0 ? `
+                                    <h6>Payment Methods:</h6>
                                     <div class="row">
                                         ${saleDetails.payment_methods.map(pm => `
                                             <div class="col-md-4"><strong>${pm.method}:</strong> £${pm.amount}</div>
@@ -178,7 +182,8 @@ export default {
             }
         },
 
-        reloadDataTable() {
+        
+        () {
             if (this.table) {
                 this.table.ajax.reload();
             }
@@ -186,25 +191,32 @@ export default {
 
         formatDateTime(timestamp) {
             const date = new Date(timestamp);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-            const year = date.getFullYear();
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-
-            return `${day}-${month}-${year} ${hours}:${minutes}`;
+            return date.toLocaleString();
         }
-
     },
-
     mounted() {
         this.initializeDataTable();
 
+        
+
         $('#article_code').on('keyup', this.reloadDataTable);
         $('#sales_start_date, #sales_end_date').on('change', this.reloadDataTable);
+
+        $(document).on('click', '#sales-list tr', function () {
+            $('#sales-list tr').children('td').removeClass('bg-dark');
+            $(this).children('td').addClass('bg-dark');
+        });
+
+        $('#salesListModal').on('hidden.bs.modal', function () {
+            if ($.fn.dataTable.isDataTable('#sales-list')) {
+                $('#sales-list').DataTable().clear().destroy();
+            }
+            $('.modal-backdrop').remove();
+        });
+    },
+    beforeUnmount() {
+
+        $(document).off('click', '#sales-list tbody tr');
     }
 };
-$('#salesListModal').on('hidden.bs.modal', function () {
-    $('.modal-backdrop').remove();
-});
 </script>

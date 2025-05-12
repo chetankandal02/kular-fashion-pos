@@ -111,3 +111,7 @@ input[type="number"] {
 .color-box.selected{
     border-radius: 4px;
 }
+
+.bg-dark{
+    color:white!important;
+}
