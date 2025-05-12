@@ -183,7 +183,7 @@ export default {
         },
 
         
-        () {
+        reloadDataTable() {
             if (this.table) {
                 this.table.ajax.reload();
             }
