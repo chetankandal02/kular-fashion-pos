@@ -7,7 +7,7 @@
             <span>Search Article</span>
         </button>
 
-        <button type="button" class="btn header-item waves-effect btn-dark" data-bs-toggle="modal"
+        <button type="button"  style="background-color: yellow; color:black;" class="btn header-item waves-effect btn-dark" data-bs-toggle="modal"
             data-bs-target="#salesListModal">
             <span>Sales List</span>
         </button>
