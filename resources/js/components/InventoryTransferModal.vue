@@ -77,6 +77,48 @@
         </div>
     </div>
 
+    <div class="modal fade" id="transferInventoryHistoryModal" tabindex="-1" aria-labelledby="transferInventoryHistoryModalLabel"
+        aria-hidden="true" @shown.bs.modal="onHistoryModalShow">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="transferInventoryHistoryModalLabel">Transfer Inventory History</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <table class="table table-bordered" id="tranfer-history-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Sent By</th>
+                                <th>No. of Items</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(transfer, index) in inventoryHistory" :key="transfer.id">
+                                <td>{{ index + 1 }}</td>
+                                <td>{{ transfer.sent_from.name }}</td>
+                                <td>{{ transfer.sent_to.name }}</td>
+                                <td>{{ transfer.sent_by.name }}</td>
+                                <td>{{ inventoryHistory.length }}</td>
+                                <td>{{ formatDate(transfer.created_at) }}</td>
+                                <td>
+                                    <a :href="`/inventory-transfer-view/${transfer.id}`" class="btn btn-secondary btn-sm py-0 px-1">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     <AddManufactureBarcodeModal :item="itemToBeAdd" @item-scanned="itemScanned" />
 
 </template>
@@ -97,11 +139,13 @@ export default {
         const storedItems = localStorage.getItem('transferItems') ? JSON.parse(localStorage.getItem('transferItems')) : [];
         const sortedItems = storedItems.sort((a, b) => b.sno - a.sno);
         return {
+            table : null,
             branches: [],
             fromStore: window.config.currentUserStore,
             toStore: '',
             itemToBeAdd: {},
-            items: sortedItems
+            items: sortedItems,
+            inventoryHistory: [],
         };
     },
     created() {
@@ -118,6 +162,24 @@ export default {
             if (newVal === this.fromStore) {
                 this.selectAnotherStore('fromStore');
             }
+        }
+    },
+    mounted() {
+        const historyModal = document.getElementById('transferInventoryHistoryModal');
+        if (historyModal) {
+            historyModal.addEventListener('shown.bs.modal', this.onHistoryModalShow);
+            historyModal.addEventListener('hidden.bs.modal', () => {
+                // Clean up DataTable when modal is closed
+                if ($.fn.DataTable.isDataTable('#tranfer-history-table')) {
+                    this.table.destroy();
+                }
+            });
+        }
+    },
+    beforeUnmount() {
+        const historyModal = document.getElementById('transferInventoryHistoryModal');
+        if (historyModal) {
+            historyModal.removeEventListener('shown.bs.modal', this.onHistoryModalShow);
         }
     },
     methods: {
@@ -205,6 +267,9 @@ export default {
         onModalShow() {
             this.toStore = ''
         },
+        initializeDataTable() {
+           // this.table = $('#tranfer-history-table').DataTable();
+        },
         async transferInventory() {
             const response = await axios.post('/transfer-inventory', {
                 items: this.items,
@@ -232,6 +297,45 @@ export default {
                     confirmButtonText: 'Okay'
                 });
             }
+        },
+        async onHistoryModalShow() {
+            try {
+                // Destroy existing DataTable if it exists
+                if ($.fn.DataTable.isDataTable('#tranfer-history-table')) {
+                    this.table.destroy();
+                }
+                
+                const response = await axios.get('/inventory-transfer-history');
+                this.inventoryHistory = response.data;
+                
+                // Initialize DataTable after Vue has updated the DOM
+                this.$nextTick(() => {
+                    this.table = $('#tranfer-history-table').DataTable({
+                        responsive: true,
+                        destroy: true // Allows reinitialization
+                    });
+                });
+            } catch (error) {
+                console.error('Failed to fetch inventory history:', error);
+            }
+        },
+        formatDate(dateStr) {
+            const date = new Date(dateStr);
+            
+            // Get day, month, year components
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = String(date.getFullYear()).slice(-2); // Last 2 digits of year
+            
+            // Format time in 12-hour format with AM/PM
+            let hours = date.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // Convert 0 to 12
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            
+            return `${day}-${month}-${year} ${hours}:${minutes}:${seconds} ${ampm}`;
         }
     }
 };

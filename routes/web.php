@@ -30,4 +30,5 @@ Route::get('/sale-detail/{saleId}', [OrderController::class, 'saleDetail']);
 Route::get('/change-price-reasons', [ChangePriceReasonController::class, 'index']);
 Route::get('/test-print', [PrinterController::class, 'printTestReceipt']);
 Route::post('/transfer-inventory', [InventoryTransferController::class, 'InventoryTransferItems']);
+Route::get('/inventory-transfer-history', [InventoryTransferController::class, 'InventoryTransferHistory']);
 Route::post('/print-eod', [PrinterController::class, 'printEod']);
