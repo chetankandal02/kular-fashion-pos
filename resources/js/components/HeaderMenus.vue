@@ -21,6 +21,11 @@
             data-bs-target="#transferInventoryModal">
             <span>Transfer Inventory</span>
         </button>
+
+        <button type="button" class="btn header-item waves-effect btn-danger" data-bs-toggle="modal"
+            data-bs-target="#transferInventoryHistoryModal">
+            <span>Inventory Transfer History</span>
+        </button>
     </div>
 </template>
 

@@ -5,8 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ProductQuantity;
 use App\Models\InventoryTransfer;
-use App\Models\InventoryItem;
 use App\Models\StoreInventory;
+use App\Models\Branch;
+use App\Models\ProductSize;
+use App\Models\ProductColor;
+use App\Models\User;
+use App\Models\Brand;
+use App\Models\InventoryItem;
 
 use Illuminate\Http\Request;
 
@@ -104,5 +109,10 @@ class InventoryTransferController extends Controller
             'success' => true,
             'message' => 'Items transferred successfully.'
         ]);
+    }
+    public function InventoryTransferHistory(){
+        $inventoryTransfer = InventoryTransfer::with('sentFrom', 'sentTo', 'sentBy')->orderBy('inventory_transfers.created_at', 'desc')->get();
+        
+        return response()->json($inventoryTransfer);
     }
 }
