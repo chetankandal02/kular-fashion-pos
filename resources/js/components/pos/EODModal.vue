@@ -119,11 +119,8 @@ export default {
       totalsByMethod: [],
       salesPersonId: window.config.userId || 0,
 
-      // New Payment
-      newPayment: {
-        method: '',
-        amount: null
-      }
+      
+      
     };
   },
   methods: {
@@ -174,9 +171,7 @@ export default {
           salesPersonId: this.salesPersonId
         });
 
-        // Clear input
-        this.newPayment.method = '';
-        this.newPayment.amount = null;
+       
 
         // Refresh data
         await this.fetchSalesData();
