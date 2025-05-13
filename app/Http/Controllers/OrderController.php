@@ -292,7 +292,7 @@ class OrderController extends Controller
                 'total_items' => $sale->total_items,
                 'total_payable_amount' => $sale->total_payable_amount,
                 'is_price_changed' => $isPriceChanged,
-                'date_time' => $sale->created_at->format('d-m-y H:i:s'),
+                'date_time' => $sale->created_at->format('d-m-y H:i'),
             ];
         });
 
