@@ -108,7 +108,7 @@
                                 <td>{{ inventoryHistory.length }}</td>
                                 <td>{{ formatDate(transfer.created_at) }}</td>
                                 <td>
-                                    <a :href="`/inventory-transfer-view/${transfer.id}`" class="btn btn-secondary btn-sm py-0 px-1">
+                                    <a :href="`/inventory-transfer-details/${transfer.id}`" target="_blank" class="btn btn-secondary btn-sm py-0 px-1">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>

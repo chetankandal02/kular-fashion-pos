@@ -184,32 +184,48 @@ export default {
 
         reloadDataTable() {
             if (this.table) {
-                this.table.ajax.reload();
+                this.table.ajax.reload(null, false); // false keeps the current pagination
+            } else {
+                this.initializeDataTable(); // If it was destroyed earlier
             }
         },
 
         formatDateTime(timestamp) {
-    const date = new Date(timestamp);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+            const date = new Date(timestamp);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
 
-    return `${day}-${month}-${year} ${hours}:${minutes}`;
-}
+            return `${day}-${month}-${year} ${hours}:${minutes}`;
+        }
     },
     mounted() {
-        this.initializeDataTable();
+        const vm = this;
 
-        
-
+        $('#salesListModal').on('shown.bs.modal', function () {
+            if (!$.fn.dataTable.isDataTable('#sales-list')) {
+                vm.initializeDataTable();
+            } else {
+                vm.reloadDataTable();
+            }
+        });
+        $('#sales_start_date').flatpickr({
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'F j, Y',
+            onChange: function(selectedDates, dateStr, instance) {
+                $('#sales_end_date').flatpickr({
+                    minDate: dateStr,
+                    dateFormat: 'Y-m-d',
+                    altInput: true,
+                    altFormat: 'F j, Y'
+                });
+            }
+        });
         $('#article_code').on('keyup', this.reloadDataTable);
         $('#sales_start_date, #sales_end_date').on('change', this.reloadDataTable);
-
-        $('[data-bs-target="#salesListModal"]').on('click', function(){
-            
-        });
 
         $(document).on('click', '#sales-list tr', function () {
             $('#sales-list tr').children('td').removeClass('bg-dark');
@@ -219,6 +235,7 @@ export default {
         $('#salesListModal').on('hidden.bs.modal', function () {
             if ($.fn.dataTable.isDataTable('#sales-list')) {
                 $('#sales-list').DataTable().clear().destroy();
+                vm.table = null; // Reset internal Vue reference
             }
             $('.modal-backdrop').remove();
         });
