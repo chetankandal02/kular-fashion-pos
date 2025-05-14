@@ -115,4 +115,19 @@ class InventoryTransferController extends Controller
         
         return response()->json($inventoryTransfer);
     }
+    public function InventoryTransferShow($id){
+
+        $inventoryTransfer = InventoryTransfer::with(
+            'sentFrom', 
+            'sentTo', 
+            'sentBy', 
+            'inventoryItems',
+            'inventoryItems.product.productType', 
+            'inventoryItems.productColor.colorDetail', 
+            'inventoryItems.productSize.sizeDetail', 
+            'inventoryItems.brand'
+        )->findOrFail($id);
+
+        return view('inventory.inventory-transfer-view',compact('inventoryTransfer'));
+    }
 }

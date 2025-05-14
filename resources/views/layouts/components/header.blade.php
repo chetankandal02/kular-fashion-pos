@@ -5,19 +5,19 @@
             <div class="navbar-brand-box">
                 <a href="{{ route('home') }}" class="logo logo-dark">
                     <span class="logo-sm">
-                        <img src="assets/images/logo.png" alt="" height="22">
+                        <img src="{{asset('assets/images/logo.png') }}" alt="" height="22">
                     </span>
                     <span class="logo-lg">
-                        <img src="assets/images/logo.png" alt="" height="17">
+                        <img src="{{asset('assets/images/logo.png') }}" alt="" height="17">
                     </span>
                 </a>
 
                 <a href="{{ route('home') }}" class="logo logo-light">
                     <span class="logo-sm">
-                        <img src="assets/images/logo.png" alt="" height="22">
+                        <img src="{{asset('assets/images/logo.png') }}" alt="" height="22">
                     </span>
                     <span class="logo-lg">
-                        <img src="assets/images/logo.png" class=" bg-white" alt="" height="50">
+                        <img src="{{asset('assets/images/logo.png') }}" class=" bg-white" alt="" height="50">
                     </span>
                 </a>
             </div>
@@ -48,7 +48,7 @@
             <div class="dropdown d-inline-block">
                 <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="rounded-circle header-profile-user" src="assets/images/user.jpg" alt="Header Avatar">
+                    <img class="rounded-circle header-profile-user" src="{{asset('assets/images/user.jpg') }}" alt="Header Avatar">
                     <span class="d-none d-xl-inline-block ms-1">{{ Auth::user()->name }}</span>
                     <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                 </button>
