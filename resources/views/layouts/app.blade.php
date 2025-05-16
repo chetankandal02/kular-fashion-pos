@@ -31,6 +31,7 @@
                         <on-hold-sales-modal></on-hold-sales-modal>
                         <search-article-modal :brands="{{ json_encode($brands) }}" :product-types="{{ json_encode($productTypes) }}" main-url="{{ env('ADMIN_URL') }}"></search-article-modal>
                         <inventory-transfer-modal></inventory-transfer-modal>
+                        <inventory-transfer-history-modal></inventory-transfer-history-modal>
                     @endif
 
                     <!-- Virtual Keypad -->
