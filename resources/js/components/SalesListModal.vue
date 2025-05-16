@@ -131,7 +131,7 @@ export default {
                                 <hr class="m-1">
 
                                 ${saleDetails.payment_methods.length > 0 ? `
-                                    <h6>Payment Methods:</h6>
+                                  
                                     <div class="row">
                                         ${saleDetails.payment_methods.map(pm => `
                                             <div class="col-md-4"><strong>${pm.method}:</strong> £${pm.amount}</div>

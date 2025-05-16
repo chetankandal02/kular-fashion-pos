@@ -44,9 +44,9 @@ class InventoryTransferController extends Controller
                 'brand_id'              => $value['brand_id'],
                 'quantity'              => $quantity,
             ]);
-            
+
             // If any store expecting default is transfering the item, need to add quantity 0 or get existing quantity
-            if($fromStoreId > 1){
+            if ($fromStoreId > 1) {
                 $fromStoreInventory = StoreInventory::firstOrCreate(
                     [
                         'store_id' => $fromStoreId,
@@ -61,7 +61,7 @@ class InventoryTransferController extends Controller
                         'total_quantity' => 0,
                     ]
                 );
-    
+
                 $fromStoreInventory->update([
                     'quantity' => $fromStoreInventory->quantity - $quantity,
                 ]);
@@ -105,29 +105,33 @@ class InventoryTransferController extends Controller
             }
         }
 
+
+         
         return response()->json([
             'success' => true,
             'message' => 'Items transferred successfully.'
         ]);
     }
-    public function InventoryTransferHistory(){
-        $inventoryTransfer = InventoryTransfer::with('sentFrom', 'sentTo', 'sentBy')->orderBy('inventory_transfers.created_at', 'desc')->get();
-        
+    public function InventoryTransferHistory()
+    {
+        $inventoryTransfer = InventoryTransfer::with('sentFrom', 'sentTo', 'sentBy','inventoryItems')->orderBy('inventory_transfers.created_at', 'desc')->get();
+
         return response()->json($inventoryTransfer);
     }
-    public function InventoryTransferShow($id){
+    public function InventoryTransferShow($id)
+    {
 
         $inventoryTransfer = InventoryTransfer::with(
-            'sentFrom', 
-            'sentTo', 
-            'sentBy', 
+            'sentFrom',
+            'sentTo',
+            'sentBy',
             'inventoryItems',
-            'inventoryItems.product.productType', 
-            'inventoryItems.productColor.colorDetail', 
-            'inventoryItems.productSize.sizeDetail', 
+            'inventoryItems.product.productType',
+            'inventoryItems.productColor.colorDetail',
+            'inventoryItems.productSize.sizeDetail',
             'inventoryItems.brand'
         )->findOrFail($id);
-
-        return view('inventory.inventory-transfer-view',compact('inventoryTransfer'));
+       return response()->json($inventoryTransfer);
     }
+
 }
