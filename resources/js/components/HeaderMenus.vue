@@ -8,7 +8,7 @@
         </button>
 
         <button type="button" 
-                style="background-color: yellow; color: black;" 
+                style="background-color:  #e4606e; color: white;" 
                 class="btn header-item waves-effect btn-dark" 
                 data-bs-toggle="modal"
                 data-bs-target="#salesListModal"
@@ -19,16 +19,6 @@
         <button type="button" class="btn header-item waves-effect btn-warning" data-bs-toggle="modal"
             data-bs-target="#onHoldSalesModal">
             <span>On Hold Sales</span>
-        </button>
-
-        <button type="button" class="btn header-item waves-effect btn-secondary" data-bs-toggle="modal"
-            data-bs-target="#transferInventoryModal">
-            <span>Transfer Inventory</span>
-        </button>
-
-        <button type="button" class="btn header-item waves-effect btn-danger" data-bs-toggle="modal"
-            data-bs-target="#transferInventoryHistoryModal">
-            <span>Inventory Transfer History</span>
         </button>
     </div>
 </template>

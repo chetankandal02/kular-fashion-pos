@@ -204,7 +204,7 @@
                         <h6 class="m-0">{{ color.color_detail.name }} ({{ color.color_detail.code }})</h6>
                         <img :src="mainUrl + color.image_path" alt="Color Image" class="ms-2 zoomable-image"
                           style="width: 30px; height: 30px; object-fit: cover; cursor: pointer;"
-                          @click="showFullScreenImage(mainUrl + color.image_path)"/>
+                          @click="showFullScreenImage(mainUrl + color.image_path)" />
                       </th>
                       <td class="p-1" v-for="(size, j) in stocksDetail.product.sizes" :key="j">
                         {{
@@ -278,25 +278,30 @@
   </div>
 
   <div class="modal fade" id="imageZoomModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-body p-0" style="max-height: 80vh; overflow: auto;">
-          <div class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
-            <img :src="zoomImageUrl" class="img-fluid" :style="{
-              transform: 'scale(' + zoomLevel + ')',
-              transition: 'transform 0.2s ease',
-              transformOrigin: 'center center'
-            }" />
-          </div>
-        </div>
-        <div class="modal-footer justify-content-center">
-          <button class="btn btn-secondary" @click="zoomOut">-</button>
-          <button class="btn btn-secondary" @click="zoomIn">+</button>
-          <button class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-        </div>
+  <div class="modal-dialog modal-fullscreen" role="document">
+    <div class="modal-content bg-dark border-0">
+        <button type="button" class="btn-close btn-close-white position-absolute" 
+              style="top: 15px; right: 20px; z-index: 1051;" 
+              data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-body p-0 m-0 d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <img
+          :src="zoomImageUrl"
+          @click="toggleZoom"
+          class="img-fluid"
+          :style="{
+            maxWidth: '100%',
+            maxHeight: '100%',
+            transform: 'scale(' + zoomLevel + ')',
+            transition: 'transform 0.3s ease',
+            transformOrigin: 'center center',
+            cursor: zoomLevel === 1 ? 'zoom-in' : 'zoom-out'
+          }"
+        />
       </div>
     </div>
   </div>
+</div>
+
 
 </template>
 
@@ -505,17 +510,15 @@ export default {
       }
     },
     showFullScreenImage(url) {
-      this.zoomImageUrl = url;
-      this.zoomLevel = 1;
-      const modal = new bootstrap.Modal(document.getElementById('imageZoomModal'));
-      modal.show();
-    },
-    zoomIn() {
-      this.zoomLevel += 0.1;
-    },
-    zoomOut() {
-      if (this.zoomLevel > 0.2) this.zoomLevel -= 0.1;
-    },
+  this.zoomImageUrl = url;
+  this.zoomLevel = 1;
+  const modal = new bootstrap.Modal(document.getElementById('imageZoomModal'));
+  modal.show();
+},
+toggleZoom() {
+  this.zoomLevel = this.zoomLevel === 1 ? 1.5 : 1;
+},
+
   },
   mounted() {
     $('#search_by_brand').chosen({

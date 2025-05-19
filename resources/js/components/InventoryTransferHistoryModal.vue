@@ -83,17 +83,17 @@ export default {
             const table = $('#transfer-history-table').DataTable();
             const dataTableRow = table.row(row);
 
-        
+
             $('#transfer-history-table tbody tr').removeClass('bg-dark text-white table-active');
 
-           
+
             table.rows().every(function () {
                 if (this.child.isShown()) {
                     this.child.hide();
                 }
             });
 
-           
+
             if (dataTableRow.child.isShown()) {
                 return;
             }
@@ -146,7 +146,7 @@ export default {
         `;
 
                 dataTableRow.child(detailsHtml).show();
-             
+
                 $(row).addClass('bg-dark text-white');
                 $(row).next('tr').addClass('bg-dark text-white');
 
