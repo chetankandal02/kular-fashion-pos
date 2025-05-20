@@ -120,9 +120,9 @@ export default {
                         <td colspan="7">
                             <div class="p-2 bg-dark">
                                 <div class="row">
-                                    <div class="col-md-4"><strong>Sale ID:</strong> #${saleDetails.code}</div>
+                                    <!--div class="col-md-4"><strong>Sale ID:</strong> #${saleDetails.code}</div>
                                     <div class="col-md-4"><strong>Sale Date:</strong> ${this.formatDateTime(saleDetails.created_at)}</div>
-                                    <div class="col-md-4"><strong>Sold By:</strong> ${saleDetails.sales_person.name}</div>
+                                    <div class="col-md-4"><strong>Sold By:</strong> ${saleDetails.sales_person.name}</div-->
                                     <div class="col-md-4"><strong>Total Sale Items:</strong> ${saleDetails.total_items - saleDetails.total_return_items}</div>
                                     <div class="col-md-4"><strong>Total Return Items:</strong> ${saleDetails.total_return_items}</div>
                                     <div class="col-md-4"><strong>Total Amount:</strong> £${saleDetails.total_payable_amount}</div>
@@ -241,7 +241,6 @@ export default {
         });
     },
     beforeUnmount() {
-
         $(document).off('click', '#sales-list tbody tr');
     }
 };

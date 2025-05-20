@@ -139,6 +139,7 @@ import FinishSaleModal from './FinishSaleModal.vue';
 import LayawayModal from './LayawayModal.vue';
 import EODModal from './EODModal.vue';
 import MenuModal from './menuModal.vue';
+import Swal from 'sweetalert2';
 import axios from 'axios';
 
 export default {
@@ -194,6 +195,8 @@ export default {
                     method: 'Credit Note',
                     amount: parseFloat(this.amountToBePaid())
                 });
+            }else{
+                Swal.fire('Error', response.data.message, 'error');            
             }
         },
         capturePayment(payment, isLayawayPayment = false) {
