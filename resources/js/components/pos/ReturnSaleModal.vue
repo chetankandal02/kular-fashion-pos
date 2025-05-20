@@ -14,6 +14,10 @@
                             :inputValue="query" 
                             @on-change="returnItem" />
                     </div>
+                    <label>If Barcode not available</label>
+                    <input class="form-control mb-2" type="text" v-model="manualProduct.code" placeholder="Enter Artical Code">
+                    <input class="form-control mb-2" type="number" v-model.number="manualProduct.price" placeholder="Enter Price">
+                    <input type="button" class="btn btn-primary" value="Add" @click="addReturnItem">
                 </div>
             </div>
         </div>
@@ -28,7 +32,11 @@ export default {
     data() {
         return {
             query: '',
-            barcodeInvalid: false
+            barcodeInvalid: false,
+            manualProduct: {
+                code: '',
+                price: null
+            }
         }
     },
     components: {
@@ -68,6 +76,32 @@ export default {
             if (this.$refs.virtualKeyboard && this.$refs.virtualKeyboard.$refs.input) {
                 this.$refs.virtualKeyboard.$refs.input.focus();
             }
+        },
+        addReturnItem() {
+            const { code, price } = this.manualProduct;
+            if (!code || !price) {
+                Swal.fire({
+                    title: 'Missing Fields',
+                    text: 'Please enter both Article Code and Price.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+
+            const product = {
+                code,
+                price
+            };
+
+            this.$emit('return-item-confirmed', product);
+
+            this.manualProduct.code = '';
+            this.manualProduct.price = null;
+
+            const myModalEl = $('#returnSaleModal');
+            const modal = bootstrap.Modal.getInstance(myModalEl);
+            modal.hide();
         }
     }
 };
