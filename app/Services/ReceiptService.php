@@ -301,13 +301,14 @@ class ReceiptService
         $saleReturns = $salesData->where('flag', 'RETURN')->count();
         $miscSales = number_format($salesData->where('flag', 'SALE')->sum('changed_price'), 2);
         $miscReturns = number_format($salesData->where('flag', 'RETURN')->sum('changed_price'), 2);
-        $giftVoucherSold = GiftVoucher::where('generated_by', $salesPersonId)->whereDate('created_at', $date)->get();
+        $giftVouchersList = GiftVoucher::withTrashed()->where('generated_by', $salesPersonId)->whereDate('created_at', $date)->get();
         $creditNotesIssue = DB::table('credit_notes')->where('generated_by', $salesPersonId)->whereDate('created_at', $date)->whereNull('deleted_at')->get();
         $giftVoucherRedeemeds = OrderPayment::whereDate('created_at', $date)
             ->whereHas('order', function ($query) use ($salesPersonId) {
                 $query->where('sales_person_id', $salesPersonId);
             })->get();
-        $giftVouchersSold = $giftVoucherSold->count();
+        $giftVouchersSold = $giftVouchersList->count();
+        $giftVoucherSoldAmount = number_format($giftVouchersList->sum('amount'), 2);
         $giftVouchersRedeemed = number_format($giftVoucherRedeemeds->where('method', '!=', 'Credit Note')->sum('original_amount'), 2);
         $creditNotesIssued = $creditNotesIssue->count();
         $creditNotesRedeemed = number_format($giftVoucherRedeemeds->where('method', 'Credit Note')->sum('original_amount'), 2);
@@ -356,7 +357,8 @@ class ReceiptService
         $this->printer->text("Vouchers Exchange\n");
         $this->printer->setEmphasis(false);
         $this->printer->setJustification(Printer::JUSTIFY_LEFT);
-        $this->printer->text(str_pad('       Gift Vouchers Sold', 35) . $giftVouchersSold . "\n");
+        $this->printer->text(str_pad('       Gift Vouchers Sold (Qty)', 35) . $giftVouchersSold . "\n");
+        $this->printer->text(str_pad('       Gift Vouchers Sold (Amt)', 35) . '£' . $giftVoucherSoldAmount . "\n");
         $this->printer->text(str_pad('       Gift Vouchers Redeemed', 35) . '£' . $giftVouchersRedeemed . "\n");
         $this->printer->text(str_pad('       Credit Notes Issued', 35) . $creditNotesIssued . "\n");
         $this->printer->text(str_pad('       Credit Notes Redeemed', 35) . '£' . $creditNotesRedeemed . "\n\n\n");
