@@ -315,13 +315,15 @@ class OrderController extends Controller
             })->get();
         $giftVoucherSold = GiftVoucher::where('generated_by', $request->salesPersonId)->whereDate('created_at', $today)->withTrashed()->count();
         $creditNotesIssue = CreditNote::where('generated_by', $request->salesPersonId)->whereDate('created_at', $today)->withTrashed()->count();
-
+        $giftVouchersList = GiftVoucher::where('generated_by', $request->salesPersonId)->whereDate('created_at', $today)->withTrashed()->get();
+        $giftVoucherSoldAmount = number_format($giftVouchersList->sum('amount'), 2);
         $totals = [
             'saleItems' => $salesData->where('flag', 'SALE')->count(),
             'saleReturns' => $salesData->where('flag', 'RETURN')->count(),
             'miscSales' => number_format($salesData->where('flag', 'SALE')->sum('changed_price'), 2),
             'miscReturns' => number_format($salesData->where('flag', 'RETURN')->sum('changed_price'), 2),
             'giftVouchersSold' => $giftVoucherSold,
+            'giftVouchersSoldAmount' => $giftVoucherSoldAmount,
             'giftVouchersRedeemed' => number_format($giftVoucherRedeemeds->where('method', 'Gift Voucher')->sum('original_amount'), 2),
             'creditNotesIssued' => $creditNotesIssue,
             'creditNotesRedeemed' => number_format($giftVoucherRedeemeds->where('method', 'Credit Note')->sum('original_amount'), 2)

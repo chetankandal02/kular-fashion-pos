@@ -55,7 +55,7 @@
                 </div>
               </div>
 
-             
+
             </div>
 
             <div class="text-center">
@@ -67,6 +67,10 @@
               <div class="row">
                 <div class="col-9 ps-4">Gift Vouchers Sold</div>
                 <div class="col-3">{{ salesData.giftVouchersSold }}</div>
+              </div>
+              <div class="row">
+                <div class="col-9 ps-4">Gift Vouchers Sold Amount</div>
+                <div class="col-3">£{{ salesData.giftVouchersSoldAmount }}</div>
               </div>
               <div class="row">
                 <div class="col-9 ps-4">Gift Vouchers Redeemed</div>
@@ -112,6 +116,7 @@ export default {
         miscSales: 0,
         miscReturns: 0,
         giftVouchersSold: 0,
+        giftVoucherSoldAmount: 0,
         giftVouchersRedeemed: 0,
         creditNotesIssued: 0,
         creditNotesRedeemed: 0
@@ -119,8 +124,8 @@ export default {
       totalsByMethod: [],
       salesPersonId: window.config.userId || 0,
 
-      
-      
+
+
     };
   },
   methods: {
@@ -128,12 +133,12 @@ export default {
       return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1)
         .toString()
         .padStart(2, '0')}-${date.getFullYear()} ${date
-        .getHours()
-        .toString()
-        .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date
-        .getSeconds()
-        .toString()
-        .padStart(2, '0')}`;
+          .getHours()
+          .toString()
+          .padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date
+            .getSeconds()
+            .toString()
+            .padStart(2, '0')}`;
     },
     async fetchSalesData() {
       const response = await axios.post('api/sales/today', {
@@ -171,7 +176,7 @@ export default {
           salesPersonId: this.salesPersonId
         });
 
-       
+
 
         // Refresh data
         await this.fetchSalesData();
@@ -189,6 +194,7 @@ export default {
         d.miscSales === 0 &&
         d.miscReturns === 0 &&
         d.giftVouchersSold === 0 &&
+        d.giftVoucherSoldAmount === 0 &&
         d.giftVouchersRedeemed === 0 &&
         d.creditNotesIssued === 0 &&
         d.creditNotesRedeemed === 0 &&
