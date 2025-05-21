@@ -48,7 +48,8 @@ class GiftVoucherController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Gift voucher generated successfully!',
-                'gift_voucher' => $giftVoucher
+                'gift_voucher' => $giftVoucher,
+                'amount' => $amount
             ], 201);
          } catch (\Exception $e) {
             return response()->json([
@@ -74,4 +75,8 @@ class GiftVoucherController extends Controller
             'gift' => $giftVoucher,
         ]);
     }
+
+    /*public function pound_to_euro(){
+
+    }*/
 }
