@@ -97,6 +97,7 @@ export default {
                     });
                 },
                 createdRow: function (row, data) {
+                    $(row).attr('id', 'sales-list-row');
                     if (data.is_price_changed === true) {
                         $(row).find('td').addClass('bg-warning');
                     }
@@ -108,73 +109,68 @@ export default {
             const table = $('#sales-list').DataTable();
             const rowIndex = table.row(row).index();
 
+            for (let expandedIndex of this.expandedRows) {
+                if (expandedIndex !== rowIndex) {
+                    table.row(expandedIndex).child.hide();
+                    this.expandedRows.delete(expandedIndex);
+                }
+            }
+
             if (this.expandedRows.has(rowIndex)) {
-                table.row(rowIndex + 1).remove().draw(false);
+                table.row(rowIndex).child.hide();
                 this.expandedRows.delete(rowIndex);
             } else {
                 const response = await axios.get(`/sale-detail/${data.id}`);
                 const saleDetails = response.data.sale;
 
                 const detailsRowHtml = `
-                    <tr class="order-details-row">
-                        <td colspan="7">
-                            <div class="p-2 bg-dark">
-                                <div class="row">
-                                    <!--div class="col-md-4"><strong>Sale ID:</strong> #${saleDetails.code}</div>
-                                    <div class="col-md-4"><strong>Sale Date:</strong> ${this.formatDateTime(saleDetails.created_at)}</div>
-                                    <div class="col-md-4"><strong>Sold By:</strong> ${saleDetails.sales_person.name}</div-->
-                                    <div class="col-md-4"><strong>Total Sale Items:</strong> ${saleDetails.total_items - saleDetails.total_return_items}</div>
-                                    <div class="col-md-4"><strong>Total Return Items:</strong> ${saleDetails.total_return_items}</div>
-                                    <div class="col-md-4"><strong>Total Amount:</strong> £${saleDetails.total_payable_amount}</div>
-                                </div>
+                    <div class="p-2 bg-dark" id="s-details">
 
-                                <hr class="m-1">
+                        <div class="row">
+                            <div class="col-md-2"><strong>Total Sale Items:</strong> ${saleDetails.total_items - saleDetails.total_return_items}</div>
+                            <div class="col-md-2"><strong>Total Return Items:</strong> ${saleDetails.total_return_items}</div>
+                            <div class="col-md-2"><strong>Total Amount:</strong> £${saleDetails.total_payable_amount}</div>
 
-                                ${saleDetails.payment_methods.length > 0 ? `
-                                  
-                                    <div class="row">
-                                        ${saleDetails.payment_methods.map(pm => `
-                                            <div class="col-md-4"><strong>${pm.method}:</strong> £${pm.amount}</div>
-                                        `).join('')}
-                                    </div>
-                                    <hr class="m-1">
-                                ` : ''}
+                            ${saleDetails.payment_methods.length > 0 ? saleDetails.payment_methods.map(pm => `
+                                <div class="col-md-2"><strong>${pm.method}:</strong> £${pm.amount}</div>
+                            `).join('') : ''}
+                        </div>
 
-                                <table class="table table-sm mt-2">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Article Code</th>
-                                            <th>Description</th>
-                                            <th>Color</th>
-                                            <th>Size</th>
-                                            <th>Brand</th>
-                                            <th>Amount</th>
-                                            <th>Changed Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${saleDetails.order_items.map((item, index) => `
-                                            <tr>
-                                                <td>${index + 1}</td>
-                                                <td>${item.article_code}</td>
-                                                <td>${item.description}</td>
-                                                <td>${item.color_name}</td>
-                                                <td>${item.size}</td>
-                                                <td>${item.brand_name}</td>
-                                                <td class="${item.flag !== 'SALE' ? 'text-danger' : ''}">
-                                                    ${item.flag !== 'SALE' ? '-' : ''}£${item.original_price}
-                                                </td>
-                                                <td class="${item.flag !== 'SALE' ? 'text-danger' : ''}">
-                                                    ${item.flag !== 'SALE' ? '-' : ''}£${item.changed_price}
-                                                </td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
+                        <hr class="m-1">
+
+                        <table class="table table-sm mt-2">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Article Code</th>
+                                    <th>Description</th>
+                                    <th>Color</th>
+                                    <th>Size</th>
+                                    <th>Brand</th>
+                                    <th>Amount</th>
+                                    <th>Changed Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${saleDetails.order_items.map((item, index) => `
+                                    <tr>
+                                        <td>${index + 1}</td>
+                                        <td>${item.article_code}</td>
+                                        <td>${item.description}</td>
+                                        <td>${item.color_name}</td>
+                                        <td>${item.size}</td>
+                                        <td>${item.brand_name}</td>
+                                        <td class="${item.flag !== 'SALE' ? 'text-danger' : ''}">
+                                            ${item.flag !== 'SALE' ? '-' : ''}£${item.original_price}
+                                        </td>
+                                        <td class="${item.flag !== 'SALE' ? 'text-danger' : ''}">
+                                            ${item.flag !== 'SALE' ? '-' : ''}£${item.changed_price}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 `;
 
                 table.row(rowIndex).child(detailsRowHtml).show();
@@ -227,9 +223,12 @@ export default {
         $('#article_code').on('keyup', this.reloadDataTable);
         $('#sales_start_date, #sales_end_date').on('change', this.reloadDataTable);
 
-        $(document).on('click', '#sales-list tr', function () {
-            $('#sales-list tr').children('td').removeClass('bg-dark');
-            $(this).children('td').addClass('bg-dark');
+        $(document).on('click', 'tr#sales-list-row', function () {
+            const isActive = $(this).children('td').hasClass('bg-dark');
+            $('tr#sales-list-row').children('td').removeClass('bg-dark');
+            if (!isActive) {
+                $(this).children('td').addClass('bg-dark');
+            }
         });
 
         $('#salesListModal').on('hidden.bs.modal', function () {

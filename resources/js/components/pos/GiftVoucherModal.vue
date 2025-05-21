@@ -112,7 +112,31 @@ export default {
             this.amount = value;
         },
         selectPayment(paymentMethod) {
+            const euroToPound = window.config.euro_to_pound || 0;
+            const previousPayment = this.selectedPayment;
+            
+            // Only convert if there's a valid amount and conversion rate
+            if (this.amount && !isNaN(this.amount) && euroToPound > 0) {
+                const numericAmount = parseFloat(this.amount);
+                
+                // If switching from Euro to non-Euro (convert Euro to Pound)
+                if (previousPayment === 'Euro' && paymentMethod !== 'Euro') {
+                    console.log('Converting Euro to Pound');
+                    this.amount = this.formatCurrency(numericAmount * euroToPound);
+                }
+                // If switching to Euro from non-Euro (convert Pound to Euro)
+                else if (paymentMethod === 'Euro' && previousPayment !== 'Euro') {
+                    console.log('Converting Pound to Euro');
+                    this.amount = this.formatCurrency(numericAmount / euroToPound);
+                }
+            }
+            
+            // Update the selected payment method
             this.selectedPayment = paymentMethod;
+            this.previousPayment = previousPayment;
+        },
+        formatCurrency(value) {
+            return parseFloat(parseFloat(value).toFixed(2));
         },
         focusInput() {
             if (this.$refs.virtualKeyboard && this.$refs.virtualKeyboard.$refs.input) {
