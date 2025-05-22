@@ -6,6 +6,7 @@ use App\Models\GiftVoucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Services\ReceiptService;
+use Illuminate\Support\Facades\DB;
 
 class GiftVoucherController extends Controller
 {
@@ -29,11 +30,11 @@ class GiftVoucherController extends Controller
                 'error' => $validator->errors()
             ], 422);
         }
-        if($request->payment_method == 'Euro'){
+        if ($request->payment_method == 'Euro') {
             $exchangeRate = setting("euro_to_pound");
             $amount = (float) $request->amount;
             $amount = $amount * $exchangeRate;
-        }else{
+        } else {
             $amount = $request->amount;
         }
 
@@ -51,7 +52,7 @@ class GiftVoucherController extends Controller
                 'gift_voucher' => $giftVoucher,
                 'amount' => $amount
             ], 201);
-         } catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to print gift voucher!',
@@ -59,9 +60,10 @@ class GiftVoucherController extends Controller
         }
     }
 
-    public function apply(Request $request){
+    public function apply(Request $request)
+    {
         $giftVoucher = GiftVoucher::where('barcode', $request->barcode)->whereNull('deleted_at')->first();
-        if(!$giftVoucher){
+        if (!$giftVoucher) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid gift voucher',
@@ -76,7 +78,37 @@ class GiftVoucherController extends Controller
         ]);
     }
 
-    /*public function pound_to_euro(){
+    public function getGiftVoucherOrders(Request $request)
+    {
+        $query = DB::table('gift_vouchers') // or your model
+            ->select('id', 'barcode', 'payment_through', 'amount', 'generated_by', 'created_at');
 
-    }*/
+        // Apply filters if any
+        if ($request->filled('voucher_code')) {
+            $query->where('barcode', 'like', '%' . $request->voucher_code . '%');
+        }
+
+        if ($request->filled('voucher_start_date')) {
+            $query->whereDate('created_at', '>=', $request->voucher_start_date);
+        }
+
+        if ($request->filled('voucher_end_date')) {
+            $query->whereDate('created_at', '<=', $request->voucher_end_date);
+        }
+
+        $total = $query->count();
+
+        // Pagination for DataTables
+        $data = $query
+            ->offset($request->start)
+            ->limit($request->length)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $data,
+            'recordsTotal' => $total,
+            'recordsFiltered' => $total,
+        ]);
+    }
 }
