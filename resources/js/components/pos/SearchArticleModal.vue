@@ -118,25 +118,25 @@
         </div>
         <div class="modal-body">
           <div v-if="stocksDetail && stocksDetail.product">
-            <div class="p-3 mb-4">
+            <div class=" mb-0">
               <div class="row">
-                <div class="col-sm-4 mb-2">
+                <div class="col-sm-4 mb-0">
                   <h6>Article Code: <strong>{{ stocksDetail.product.article_code }}</strong></h6>
                 </div>
-                <div class="col-sm-4 mb-2">
+                <div class="col-sm-4 mb-0">
                   <h6>Brand: <strong>{{ stocksDetail.product.brand?.name || 'N/A' }}</strong></h6>
                 </div>
-                <div class="col-sm-4 mb-2">
+                <div class="col-sm-4 mb-0">
                   <h6>Manufacture Code: <strong>{{ stocksDetail.product.manufacture_code || 'N/A' }}</strong></h6>
                 </div>
-                <div class="col-sm-4 mb-2">
+                <div class="col-sm-4 mb-0">
                   <h6>Price: <strong>£{{ stocksDetail.product.price || '0.00' }}</strong></h6>
                 </div>
-                <div class="col-sm-4 mb-2">
-                  <h6>In Date: <strong>{{ stocksDetail.product.in_date || 'N/A' }}</strong></h6>
+                <div class="col-sm-4 mb-0">
+                  <h6>In Date:  <strong>{{ stocksDetail.product.in_date ? formatDate(stocksDetail.product.in_date) : 'N/A' }}</strong></h6>
                 </div>
-                <div class="col-sm-4 mb-2">
-                  <h6>Last In Date: <strong>{{ stocksDetail.product.last_date || 'N/A' }}</strong></h6>
+                <div class="col-sm-4 mb-0">
+                  <h6>Last In Date:   <strong>{{ stocksDetail.product.last_date ? formatDate(stocksDetail.product.last_date) : 'N/A' }}</strong></h6>
                 </div>
               </div>
             </div>
@@ -518,7 +518,16 @@ export default {
 toggleZoom() {
   this.zoomLevel = this.zoomLevel === 1 ? 1.5 : 1;
 },
-
+ formatDate(dateStr) {
+            const d = new Date(dateStr);
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            const hours = d.getHours() % 12 || 12;
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const ampm = d.getHours() >= 12 ? '' : '';
+            return `${day}-${month}-${String(year).slice(-2)} `;
+        },
   },
   mounted() {
     $('#search_by_brand').chosen({
@@ -543,5 +552,7 @@ toggleZoom() {
 
     this.initializeDataTable();
   }
+  
 };
+
 </script>
