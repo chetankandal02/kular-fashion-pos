@@ -121,12 +121,12 @@ export default {
                 
                 // If switching from Euro to non-Euro (convert Euro to Pound)
                 if (previousPayment === 'Euro' && paymentMethod !== 'Euro') {
-                    console.log('Converting Euro to Pound');
+                   // console.log('Converting Euro to Pound');
                     this.amount = this.formatCurrency(numericAmount * euroToPound);
                 }
                 // If switching to Euro from non-Euro (convert Pound to Euro)
                 else if (paymentMethod === 'Euro' && previousPayment !== 'Euro') {
-                    console.log('Converting Pound to Euro');
+                  //  console.log('Converting Pound to Euro');
                     this.amount = this.formatCurrency(numericAmount / euroToPound);
                 }
             }
