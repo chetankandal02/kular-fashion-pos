@@ -21,6 +21,13 @@
                             <label for="sales_end_date" class="mb-0">To Date:</label>
                             <input id="sales_end_date" class="form-control h-50" />
                         </div>
+                        <div class=" col-6 col-md-2 mb-2 d-flex align-items-end">
+                            <button class="btn btn-primary btn-md " data-bs-toggle="modal"
+                                data-bs-target="#giftVoucherSaleListModal">
+                                <i class="mdi mdi-gift-outline font-size-2 me-1"></i>
+                                Gift Voucher Sale List
+                            </button>
+                        </div>
                     </div>
 
                     <table class="table table-bordered table-sm w-100" id="sales-list">
@@ -41,6 +48,59 @@
             </div>
         </div>
     </div>
+    <!-- Gift Voucher Sale List Modal -->
+    <div class="modal fade" id="giftVoucherSaleListModal" tabindex="-1" aria-labelledby="giftVoucherSaleListLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+
+                <div class="modal-header py-2 px-3">
+                    <h5 class="modal-title" id="giftVoucherSaleListLabel">Gift Voucher Sale List</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body py-1">
+                    <div class="row">
+                        <div class="col-6 col-md-2 mb-1">
+                            <label for="voucher_code" class="mb-0">Voucher Code:</label>
+                            <input id="voucher_code" class="form-control h-50" />
+                        </div>
+                        <div class="col-6 col-md-2 mb-1">
+                            <label for="voucher_start_date" class="mb-0">From Date:</label>
+                            <input id="voucher_start_date" class="form-control h-50" />
+                        </div>
+                        <div class="col-6 col-md-2 mb-1">
+                            <label for="voucher_end_date" class="mb-0">To Date:</label>
+                            <input id="voucher_end_date" class="form-control h-50" />
+                        </div>
+                        <div class="col-6 col-md-2 mb-2 d-flex align-items-end" id="backToSalesListBtn">
+                            <button class="btn btn-primary w-100">
+                                <i class="mdi mdi-arrow-left-bold me-1"></i>
+                                Back to Sales List
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm w-100" id="gift-voucher-sales-list">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>BarCode</th>
+                                    <th>Customer Name</th>
+                                    <th>Sales Person</th>
+                                    <th>Items</th>
+                                    <th>Amount</th>
+                                    <!-- <th>Date & Time</th> -->
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -50,10 +110,56 @@ export default {
     data() {
         return {
             table: null,
+            giftVoucherTable: null,
             expandedRows: new Set()
         };
     },
     methods: {
+        initializeGiftVoucherTable() {
+            const vm = this;
+            if ($.fn.dataTable.isDataTable('#gift-voucher-sales-list')) {
+                return;
+            }
+
+            this.giftVoucherTable = $('#gift-voucher-sales-list').DataTable({
+                processing: true,
+                serverSide: true,
+                pageLength: 20,
+                ajax: {
+                    url: '/get-gift-voucher-orders',
+                    data: function (d) {
+                        d.voucher_code = $('#voucher_code').val();
+                        d.voucher_start_date = $('#voucher_start_date').val();
+                        d.voucher_end_date = $('#voucher_end_date').val();
+                    },
+                    error: function (xhr) {
+                        console.log("ERROR RESPONSE:", xhr.responseText); // Debug in browser
+                    }
+                },
+                columns: [
+                    { data: 'id', title: '#' },
+                    { data: 'barcode', title: 'Barcode' },
+                    { data: 'payment_through', title: 'Payment Method' },
+                    {
+                        data: 'amount',
+                        title: 'Amount',
+                        render: function (data) {
+                            return '£' + parseFloat(data).toFixed(2);
+                        }
+                    },
+                    { data: 'generated_by', title: 'Generated By' },
+                    { data: 'created_at', title: 'Created At' }
+                ]
+            });
+        },
+
+        reloadGiftVoucherTable() {
+            if (this.giftVoucherTable) {
+                this.giftVoucherTable.ajax.reload(null, false);
+            } else {
+                this.initializeGiftVoucherTable();
+            }
+        },
         initializeDataTable() {
             const vm = this;
             if ($.fn.dataTable.isDataTable('#sales-list')) {
@@ -207,12 +313,19 @@ export default {
                 vm.reloadDataTable();
             }
         });
-        $('#sales_start_date').flatpickr({
+
+        $('#article_code').on('keyup', this.reloadDataTable);
+        $('#sales_start_date, #sales_end_date').on('change', this.reloadDataTable);
+
+        $('#voucher_code').on('keyup', this.reloadGiftVoucherTable);
+        $('#voucher_start_date, #voucher_end_date').on('change', this.reloadGiftVoucherTable);
+
+        $('#voucher_start_date').flatpickr({
             dateFormat: 'Y-m-d',
             altInput: true,
             altFormat: 'F j, Y',
-            onChange: function(selectedDates, dateStr, instance) {
-                $('#sales_end_date').flatpickr({
+            onChange: function (selectedDates, dateStr) {
+                $('#voucher_end_date').flatpickr({
                     minDate: dateStr,
                     dateFormat: 'Y-m-d',
                     altInput: true,
@@ -220,8 +333,21 @@ export default {
                 });
             }
         });
-        $('#article_code').on('keyup', this.reloadDataTable);
-        $('#sales_start_date, #sales_end_date').on('change', this.reloadDataTable);
+
+        $('#giftVoucherSaleListModal').on('shown.bs.modal', function () {
+            if (!$.fn.dataTable.isDataTable('#gift-voucher-sales-list')) {
+                vm.initializeGiftVoucherTable();
+            } else {
+                vm.reloadGiftVoucherTable();
+            }
+        });
+
+        $('#backToSalesListBtn').on('click', function () {
+            $('#giftVoucherSaleListModal').modal('hide');
+            setTimeout(function () {
+                $('#salesListModal').modal('show');
+            }, 100);
+        });
 
         $(document).on('click', 'tr#sales-list-row', function () {
             const isActive = $(this).children('td').hasClass('bg-dark');
@@ -231,12 +357,33 @@ export default {
             }
         });
 
+        $('#sales_start_date').flatpickr({
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'F j, Y',
+            onChange: function (selectedDates, dateStr) {
+                $('#sales_end_date').flatpickr({
+                    minDate: dateStr,
+                    dateFormat: 'Y-m-d',
+                    altInput: true,
+                    altFormat: 'F j, Y'
+                });
+            }
+        });
+
         $('#salesListModal').on('hidden.bs.modal', function () {
             if ($.fn.dataTable.isDataTable('#sales-list')) {
                 $('#sales-list').DataTable().clear().destroy();
-                vm.table = null; // Reset internal Vue reference
+                vm.table = null;
             }
             $('.modal-backdrop').remove();
+        });
+
+        $('#giftVoucherSaleListModal').on('hidden.bs.modal', function () {
+            if ($.fn.dataTable.isDataTable('#gift-voucher-sales-list')) {
+                $('#gift-voucher-sales-list').DataTable().clear().destroy();
+                vm.giftVoucherTable = null;
+            }
         });
     },
     beforeUnmount() {
