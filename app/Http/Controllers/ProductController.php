@@ -221,4 +221,12 @@ class ProductController extends Controller
             'success' => true
         ]);
     }
+
+    public function validateProductByArticleCoe($code){
+        $product = Product::with(['sizes.sizeDetail', 'colors.colorDetail', 'quantities','brand'])->where('article_code',$code)->first();
+        return response()->json([
+            'success' => true,
+            'date' => $product
+        ]);
+    }
 }
