@@ -35,7 +35,6 @@
           <table class="table table-striped table-bordered w-100 table-sm" id="search-article-table">
             <thead>
               <tr>
-                <th>#</th>
                 <th>Article Code</th>
                 <th>Manufacture Code</th>
                 <th>Brand</th>
@@ -120,22 +119,30 @@
           <div v-if="stocksDetail && stocksDetail.product">
             <div class=" mb-0">
               <div class="row">
-                <div class="col-sm-4 mb-0">
+                <div class="col-sm-3 mb-0">
                   <h6>Article Code: <strong>{{ stocksDetail.product.article_code }}</strong></h6>
                 </div>
-                <div class="col-sm-4 mb-0">
-                  <h6>Brand: <strong>{{ stocksDetail.product.brand?.name || 'N/A' }}</strong></h6>
+                <div class="col-sm-3 mb-0">
+                  <h6>Brand: <strong>{{ stocksDetail.product.brand?.short_name || 'N/A' }}</strong></h6>
                 </div>
-                <div class="col-sm-4 mb-0">
-                  <h6>Manufacture Code: <strong>{{ stocksDetail.product.manufacture_code || 'N/A' }}</strong></h6>
+                <div class="col-sm-3 mb-0">
+                  <h6>Product Type: <strong>{{ stocksDetail.product.name || 'N/A' }}</strong></h6>
                 </div>
-                <div class="col-sm-4 mb-0">
-                  <h6>Price: <strong>£{{ stocksDetail.product.price || '0.00' }}</strong></h6>
-                </div>
-                <div class="col-sm-4 mb-0">
+                <div class="col-sm-3 mb-0">
                   <h6>In Date:  <strong>{{ stocksDetail.product.in_date ? formatDate(stocksDetail.product.in_date) : 'N/A' }}</strong></h6>
                 </div>
-                <div class="col-sm-4 mb-0">
+              </div>
+              <div class="row">
+                <div class="col-sm-3 mb-0">
+                  <h6>Short Description: <strong>{{ stocksDetail.product.short_description || 'N/A' }}</strong></h6>
+                </div>
+                <div class="col-sm-3 mb-0">
+                  <h6>Manufacture Code: <strong>{{ stocksDetail.product.manufacture_code || 'N/A' }}</strong></h6>
+                </div>
+                <div class="col-sm-3 mb-0">
+                  <h6>Price: <strong>£{{ stocksDetail.product.price || '0.00' }}</strong></h6>
+                </div>
+                <div class="col-sm-3 mb-0">
                   <h6>Last In Date:   <strong>{{ stocksDetail.product.last_date ? formatDate(stocksDetail.product.last_date) : 'N/A' }}</strong></h6>
                 </div>
               </div>
@@ -412,10 +419,10 @@ export default {
           }
         },
         columns: [
-          {
+         /* {
             title: '#',
             data: 'id',
-          },
+          },*/
           {
             title: 'Article Code',
             data: 'article_code',
@@ -426,14 +433,14 @@ export default {
           },
           {
             title: 'Brand',
-            data: 'brand.name',
+            data: 'brand.short_name',
           },
           {
             title: 'Product Type',
             data: 'product_type.name',
           },
           {
-            title: 'Department',
+            title: 'DEPT',
             data: 'department.name',
           },
           {

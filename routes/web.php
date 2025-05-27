@@ -27,6 +27,7 @@ Route::middleware(['auth', 'auth.session'])->group(function () {
     Route::get('/inventory-transfer-history', [InventoryTransferController::class, 'InventoryTransferHistory']);
     Route::get('/inventory-transfer-details/{id}', [InventoryTransferController::class, 'InventoryTransferShow']);
     Route::get('/validate-item/{barcode}', [ProductController::class, 'productValidate']);
+    Route::get('/get-product-by-code/{code}', [ProductController::class, 'validateProductByArticleCoe']);
     Route::get('/sale-detail/{saleId}', [OrderController::class, 'saleDetail']);
     Route::get('/change-price-reasons', [ChangePriceReasonController::class, 'index']);
     Route::get('/test-print', [PrinterController::class, 'printTestReceipt']);
