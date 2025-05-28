@@ -156,7 +156,7 @@ export default {
                 
                 if (response.data.success && response.data.date) {
                     const productData = response.data.date;
-                    
+                    console.log('productData',productData);
                     this.selectedProduct = {
                         id: productData.id,
                         article_code: productData.article_code,
@@ -167,7 +167,7 @@ export default {
                         sizes: productData.sizes,
                         quantities: productData.quantities
                     };
-                    
+                    console.log('selectedProduct',this.selectedProduct);
                     // Reset selections
                     this.selectedSize = null;
                     this.selectedColor = null;
@@ -225,21 +225,31 @@ export default {
                     throw new Error('Invalid size or color selection');
                 }
 
+                // Find the matching quantity record
+                const quantityRecord = this.selectedProduct.quantities.find(q => 
+                    q.product_size_id === this.selectedSize && 
+                    q.product_color_id === this.selectedColor
+                );
+
+                // Use size_id from size_detail instead of product_size_id
+                const correctSizeId = selectedSize.size_detail.id;
+
                 // Create return product object with all required fields
                 const returnProduct = {
                     id: this.selectedProduct.id,
                     product_id: this.selectedProduct.id,
                     code: this.selectedProduct.article_code,
                     description: this.selectedProduct.short_description,
+                    product_quantity_id: quantityRecord ? quantityRecord.id : null,
                     brand: this.selectedProduct.brand.short_name,
                     brand_id: this.selectedProduct.brand.id,
                     color: selectedColor.color_detail.name,
                     color_id: selectedColor.id,
                     size: selectedSize.size_detail.size,
-                    size_id: selectedSize.id,
+                    size_id: correctSizeId, // Use the correct size_id from size_detail
                     price: this.selectedProduct.price,
-                    available_quantity: 0, // Not relevant for returns
-                    manufacture_barcode: this.getManufactureBarcode(selectedSize.id, selectedColor.id),
+                    available_quantity: 0,
+                    manufacture_barcode: quantityRecord ? quantityRecord.manufacture_barcode : null,
                     barcode: this.generateBarcode(this.selectedProduct.article_code, selectedColor.color_detail.code, selectedSize.size_detail.new_code)
                 };
 
