@@ -16,7 +16,6 @@
                     </div>
                     <label>If Barcode not available</label>
                     <input class="form-control mb-2" type="text" v-model="manualProduct.code" placeholder="Enter Article Code">
-                    <input class="form-control mb-2" type="number" v-model.number="manualProduct.price" placeholder="Enter Price">
                     <input type="button" class="btn btn-primary" value="Add" @click="addReturnItem">
                 </div>
             </div>
@@ -92,8 +91,7 @@ export default {
             query: '',
             barcodeInvalid: false,
             manualProduct: {
-                code: '',
-                price: null
+                code: ''
             },
             selectedProduct: null,
             selectedSize: null,
@@ -139,8 +137,8 @@ export default {
             }
         },
         async addReturnItem() {
-            const { code, price } = this.manualProduct;
-            if (!code || !price) {
+            const { code } = this.manualProduct;
+            if (!code) {
                 Swal.fire({
                     title: 'Missing Fields',
                     text: 'Please enter both Article Code and Price.',
@@ -155,19 +153,20 @@ export default {
                 const response = await axios.get(`/get-product-by-code/${code}`);
                 
                 if (response.data.success && response.data.date) {
+
                     const productData = response.data.date;
-                    console.log('productData',productData);
+                    const apiPrice = parseInt(productData.price);
                     this.selectedProduct = {
                         id: productData.id,
                         article_code: productData.article_code,
                         short_description: productData.short_description,
                         brand: productData.brand,
-                        price: price, // Use the manually entered price
+                        price: apiPrice, // Use the manually entered price
                         colors: productData.colors,
                         sizes: productData.sizes,
                         quantities: productData.quantities
                     };
-                    console.log('selectedProduct',this.selectedProduct);
+                    //console.log('selectedProduct',this.selectedProduct);
                     // Reset selections
                     this.selectedSize = null;
                     this.selectedColor = null;
