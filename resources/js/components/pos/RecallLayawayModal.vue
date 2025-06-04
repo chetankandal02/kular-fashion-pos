@@ -57,7 +57,6 @@
       </div>
     </div>
   </div>
-
   <EditLayawayModal :layaway="selectedLayaway" @reloadTable="reloadTable" />
 </template>
 
