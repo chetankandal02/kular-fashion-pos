@@ -7,9 +7,16 @@ use App\Models\Customer;
 use App\Models\Layaway;
 use App\Models\LayawayPayment;
 use App\Models\Order;
+use App\Services\ReceiptService;
 
 class LayawayController extends Controller
 {
+    protected $receiptService;
+
+    public function __construct(ReceiptService $receiptService)
+    {
+        $this->receiptService = $receiptService;
+    }
     public function store(Request $request)
     {
         $request->validate([
@@ -132,6 +139,19 @@ class LayawayController extends Controller
             'sales_person_id' => $request->salesPersonId,
             'payment_date' => now(),
         ]);
+
+        try {
+            $this->receiptService->printOrderReceipt($layaway->order_id);
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment added successfully!',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to print order receipt!',
+            ], 200);
+        }
 
         return response()->json([
             'success' => true,

@@ -179,7 +179,7 @@ export default {
                 paymentInfo: this.paymentInfo,
                 salesPersonId: window.config.userId
             });
-
+            console.log('orderApiResponse',orderApiResponse);
             const layawayApiResponse = await axios.post('/api/layaways', {
                 orderId: orderApiResponse.data.order.id,
                 customerId: this.customerId,

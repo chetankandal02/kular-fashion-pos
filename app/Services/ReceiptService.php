@@ -128,7 +128,7 @@ class ReceiptService
 
     public function printOrderReceipt($orderId, $isDuplicate = false)
     {
-        $order = Order::with('orderItems', 'paymentMethods')->find($orderId);
+        $order = Order::with('orderItems', 'paymentMethods', 'layaway')->find($orderId);
         $groupedItems = $order->orderItems->groupBy('flag');
 
         if ($order) {
@@ -171,6 +171,8 @@ class ReceiptService
             $this->printer->setEmphasis(true);
             $this->printer->text(str_pad('Total Goods', 30) . '£' . $order->total_payable_amount    . "\n");
             $this->printer->text("Tender\n");
+            $balance = $order->layaway->balance ?? 0.00;
+            $this->printer->text(str_pad('Balance', 30) . '£' . number_format($balance, 2) . "\n");
             $this->printer->setEmphasis(false);
 
             $this->printPaymentMethods($order->paymentMethods);
@@ -184,6 +186,7 @@ class ReceiptService
                 $this->printFullWidthLine('-');
             }
             $this->printer->text($orderReceiptFooter . "\n");
+            
             $this->printer->cut();
             $this->printer->close();
         } else {
