@@ -177,9 +177,10 @@ export default {
                 orderItems: this.orderItems,
                 returnItems: this.returnItems,
                 paymentInfo: this.paymentInfo,
-                salesPersonId: window.config.userId
+                salesPersonId: window.config.userId,
+                fromOrder : 'lawayCreate'
             });
-            console.log('orderApiResponse',orderApiResponse);
+
             const layawayApiResponse = await axios.post('/api/layaways', {
                 orderId: orderApiResponse.data.order.id,
                 customerId: this.customerId,
