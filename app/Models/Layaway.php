@@ -44,4 +44,5 @@ class Layaway extends Model
     {
         return $this->hasMany(LayawayPayment::class);
     }
+
 }

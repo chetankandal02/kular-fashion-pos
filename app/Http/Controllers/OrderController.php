@@ -33,6 +33,7 @@ class OrderController extends Controller
 
         try { */
         $salesPersonId = $request->salesPersonId;
+        $fromOrder = $request->fromOrder ?? '';
         $branchId = User::find($salesPersonId)->branch_id ?? null;
         $totalSaleItems = count($request->input('orderItems', []));
         $totalReturnItems = count($request->input('returnItems', []));
@@ -177,7 +178,15 @@ class OrderController extends Controller
                 'original_amount' => $convertedAmount ?? $paymentMethod['amount']
             ]);
         }
-
+        // If from layway then no need to print
+        if($fromOrder == 'lawayCreate'){
+            return response()->json([
+                'success' => true,
+                'message' => 'Order created successfully!',
+                'order' => $order
+            ], 201);
+        }
+        
         try {
             $this->receiptService->printOrderReceipt($order->id);
             return response()->json([

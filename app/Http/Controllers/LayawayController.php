@@ -74,10 +74,18 @@ class LayawayController extends Controller
             ]);    
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Layaway processed successfully!',
-        ], 201);
+        try {
+            $this->receiptService->printOrderReceipt($request->orderId);
+            return response()->json([
+                'success' => true,
+                'message' => 'Layaway processed successfully!',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to print order receipt!',
+            ], 200);
+        }
     }
 
     public function getLayaways(Request $request)
@@ -153,9 +161,5 @@ class LayawayController extends Controller
             ], 200);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Payment added successfully!',
-        ], 201);
     }
 }
