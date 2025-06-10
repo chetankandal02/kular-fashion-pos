@@ -60,7 +60,6 @@
                         Layaway
                     </button>
                 </div>
-
                 <!-- Return Sale Button -->
                 <div class="col-6 mb-2 pe-1">
                     <button class="btn btn-danger w-100 fs-4 py-4" data-bs-toggle="modal"
