@@ -288,7 +288,6 @@ export default {
     },
     validateForm() {
       let isValid = true;
-
       // Validate Customer Name
       if (!this.customerForm.customerName.trim()) {
         isValid = false;
@@ -296,7 +295,6 @@ export default {
       } else {
         this.$refs.customerName.classList.remove('is-invalid');
       }
-
       // Validate Email
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!this.customerForm.customerEmail || !emailPattern.test(this.customerForm.customerEmail)) {
