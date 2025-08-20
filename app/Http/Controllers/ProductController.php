@@ -94,11 +94,11 @@ class ProductController extends Controller
     public function productValidate($barcode)
     {
         $branch_id = Auth::user()->branch_id;
-        $products = ProductQuantity::with('product.brand', 'product.department', 'sizes.sizeDetail', 'colors.colorDetail')->get();
-        foreach ($products as $product) {
+        $product = ProductQuantity::with('product.brand', 'product.department', 'sizes.sizeDetail', 'colors.colorDetail')->where('barcode',$barcode)->first();
+        /*foreach ($products as $product) {
             if (is_null($product->product)) {
                 continue;
-            }
+            }*/
 
             $article_code = $product->product->article_code;
             $color_code = $product->colors->colorDetail->code;
@@ -107,7 +107,7 @@ class ProductController extends Controller
             $checkCode = $this->generateCheckDigit($article_code);
             $generated_code = $article_code . $checkCode;
 
-            if ($generated_code == $barcode) {
+           // if ($generated_code == $barcode) {
                 $available_quantity = 0;
                 if ($branch_id === 1) {
                     $available_quantity = $product->quantity;
@@ -139,8 +139,8 @@ class ProductController extends Controller
                 ];
 
                 return response()->json(['success' => true, 'message' => 'Product barcode is valid.', 'product' => $productData], 200);
-            }
-        }
+            //}
+        //}
         return response()->json(['success' => false, 'message' => 'Product barcode is invalid.']);
     }
 
